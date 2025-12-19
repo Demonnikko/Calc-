@@ -747,6 +747,70 @@ body{
   *{ animation: none !important; transition: none !important; }
 }
 
+
+/* --- v17: iPhone adaptive fixes (no content removed) --- */
+:root{
+  --tabs-base: 64px;
+  --tabs-h: calc(var(--tabs-base) + var(--safe-bottom));
+  --vvh: 100svh; /* will be overwritten by JS for iOS keyboard */
+}
+html, body{ height: var(--vvh); }
+
+/* Make views scroll, keep tabbar fixed, remove "black gap" */
+body{
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  overflow: hidden;
+}
+.view{
+  height: calc(var(--vvh) - var(--tabs-h));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 18px;
+}
+.tabs{
+  height: var(--tabs-h);
+  padding-bottom: var(--safe-bottom);
+}
+
+/* Calendar: pin events card to bottom when мало контента */
+#view-calendar{ display:flex; flex-direction:column; }
+#view-calendar .events-container{ margin-top: auto; margin-bottom: 16px; }
+
+/* History: avoid empty bottom gap when list short */
+#view-history{ display:flex; flex-direction:column; }
+#history-list{ flex: 1; }
+
+/* Modal sheet: safe-area top + sticky header */
+.modal{ overscroll-behavior: contain; }
+.modal-card{
+  max-height: calc(var(--vvh) - 10px);
+  overflow: auto;
+  padding-top: calc(var(--safe-top) + 14px);
+  padding-bottom: calc(18px + var(--safe-bottom));
+}
+.modal-header{
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(28,28,30,.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  padding: 8px 0 12px;
+}
+.btn-close, .btn-save{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width: 74px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+.btn-save{ color: var(--accent); }
+.btn-close{ color: var(--text-secondary); }
+
 </style>
 </head>
 <body>
@@ -1062,6 +1126,32 @@ body{
 <div id="toast" class="toast">Скопировано!</div>
 
 <script>
+    
+    // --- v17: iOS visual viewport (keyboard) + focus scroll helpers ---
+    (function(){
+        const setVvh = () => {
+            const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+            document.documentElement.style.setProperty('--vvh', h + 'px');
+        };
+        setVvh();
+        window.addEventListener('resize', setVvh);
+        if(window.visualViewport){
+            window.visualViewport.addEventListener('resize', setVvh);
+            window.visualViewport.addEventListener('scroll', setVvh);
+        }
+
+        document.addEventListener('focusin', (e) => {
+            const t = e.target;
+            if(!t || !(t.matches && t.matches('input, textarea, select'))) return;
+            const sheet = t.closest && t.closest('.modal-card');
+            if(sheet){
+                setTimeout(() => {
+                    try { t.scrollIntoView({ block: 'center', inline: 'nearest' }); } catch(_) {}
+                }, 60);
+            }
+        });
+    })();
+
     // --- DB INIT (FULL RESTORED v10) ---
     const DEFAULT_DB = {
         travel: {
