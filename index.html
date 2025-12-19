@@ -754,8 +754,10 @@ body{
 
 /* Content should not add extra random space at the bottom */
 .view{
-  padding-bottom: 16px !important;
+  /* IMPORTANT: keep content above fixed tab bar */
+  padding-bottom: calc(var(--tabs-total) + 18px) !important;
   min-height: calc(var(--app-height) - var(--tabs-total) - var(--safe-top) - 10px);
+  scroll-padding-bottom: var(--tabs-total);
 }
 
 /* Avoid iOS “black gap” caused by large padding and short tab bar */
@@ -765,12 +767,16 @@ body{
 .modal-card{
   max-height: calc(var(--app-height) - var(--safe-top) - 8px);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   padding-bottom: calc(16px + var(--safe-bottom)) !important;
 }
 
 .modal-scroll{
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  flex: 1 1 auto;
+  min-height: 0; /* critical for iOS flex scroll */
   padding-bottom: 12px;
 }
 
@@ -781,6 +787,29 @@ body{
   padding-top: 6px;
   z-index: 10;
 }
+
+/* Bigger tap targets for modal actions */
+.modal-header .btn-close,
+.modal-header .btn-save{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.modal-header .btn-close{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+}
+.modal-header .btn-save{
+  background: rgba(10,132,255,.18);
+  border: 1px solid rgba(10,132,255,.35);
+}
+.modal-header .btn-close:active,
+.modal-header .btn-save:active{ transform: scale(.99); opacity: .92; }
+
 
 /* Template modal header (same behavior) */
 .tpl-header{
