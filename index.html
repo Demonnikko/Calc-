@@ -3,24 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-        <!-- PWA / iOS Add to Home Screen -->
-    <meta name="theme-color" content="#000000">
-    <meta name="color-scheme" content="dark">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Kostyuk CRM">
-    <meta name="format-detection" content="telephone=no">
-    <link rel="manifest" href="manifest.webmanifest">
-
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="icons/apple-touch-icon-120.png">
-<title>Kostyuk Event CRM</title>
+    <title>Kostyuk Event CRM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* --- iOS SYSTEM THEME (PLATINUM) --- */
@@ -53,10 +36,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        
-        html { background: var(--bg-body); height: 100%; }
-        body { min-height: 100%; }
-/* --- TABS --- */
+        /* --- TABS --- */
         .tabs {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: rgba(28, 28, 30, 0.85);
@@ -747,70 +727,6 @@ body{
   *{ animation: none !important; transition: none !important; }
 }
 
-
-/* --- v17: iPhone adaptive fixes (no content removed) --- */
-:root{
-  --tabs-base: 64px;
-  --tabs-h: calc(var(--tabs-base) + var(--safe-bottom));
-  --vvh: 100svh; /* will be overwritten by JS for iOS keyboard */
-}
-html, body{ height: var(--vvh); }
-
-/* Make views scroll, keep tabbar fixed, remove "black gap" */
-body{
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  overflow: hidden;
-}
-.view{
-  height: calc(var(--vvh) - var(--tabs-h));
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 18px;
-}
-.tabs{
-  height: var(--tabs-h);
-  padding-bottom: var(--safe-bottom);
-}
-
-/* Calendar: pin events card to bottom when мало контента */
-#view-calendar{ display:flex; flex-direction:column; }
-#view-calendar .events-container{ margin-top: auto; margin-bottom: 16px; }
-
-/* History: avoid empty bottom gap when list short */
-#view-history{ display:flex; flex-direction:column; }
-#history-list{ flex: 1; }
-
-/* Modal sheet: safe-area top + sticky header */
-.modal{ overscroll-behavior: contain; }
-.modal-card{
-  max-height: calc(var(--vvh) - 10px);
-  overflow: auto;
-  padding-top: calc(var(--safe-top) + 14px);
-  padding-bottom: calc(18px + var(--safe-bottom));
-}
-.modal-header{
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: rgba(28,28,30,.92);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  padding: 8px 0 12px;
-}
-.btn-close, .btn-save{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-width: 74px;
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 10px;
-  font-weight: 700;
-}
-.btn-save{ color: var(--accent); }
-.btn-close{ color: var(--text-secondary); }
-
 </style>
 </head>
 <body>
@@ -1126,32 +1042,6 @@ body{
 <div id="toast" class="toast">Скопировано!</div>
 
 <script>
-    
-    // --- v17: iOS visual viewport (keyboard) + focus scroll helpers ---
-    (function(){
-        const setVvh = () => {
-            const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
-            document.documentElement.style.setProperty('--vvh', h + 'px');
-        };
-        setVvh();
-        window.addEventListener('resize', setVvh);
-        if(window.visualViewport){
-            window.visualViewport.addEventListener('resize', setVvh);
-            window.visualViewport.addEventListener('scroll', setVvh);
-        }
-
-        document.addEventListener('focusin', (e) => {
-            const t = e.target;
-            if(!t || !(t.matches && t.matches('input, textarea, select'))) return;
-            const sheet = t.closest && t.closest('.modal-card');
-            if(sheet){
-                setTimeout(() => {
-                    try { t.scrollIntoView({ block: 'center', inline: 'nearest' }); } catch(_) {}
-                }, 60);
-            }
-        });
-    })();
-
     // --- DB INIT (FULL RESTORED v10) ---
     const DEFAULT_DB = {
         travel: {
@@ -2475,16 +2365,23 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Сохр�
             Touch.refresh(true);
         }
     };
-Storage.load();
-</script>
 
-<script>
-  // PWA: register Service Worker (works only on https:// or localhost)
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    });
-  }
+    // --- Make objects available to inline onclick/onchange handlers (iOS/Safari-safe) ---
+    try {
+        window.switchTab = switchTab;
+        window.App = App;
+        window.Storage = Storage;
+        window.History = History;
+        window.Admin = Admin;
+        window.Calendar = Calendar;
+        if (typeof Touch !== 'undefined') window.Touch = Touch;
+        if (typeof HolidayCfg !== 'undefined') window.HolidayCfg = HolidayCfg;
+    } catch(e) {
+        // If something is missing, avoid breaking app startup.
+        console.warn('Expose globals failed', e);
+    }
+
+Storage.load();
 </script>
 </body>
 </html>
