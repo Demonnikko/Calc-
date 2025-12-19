@@ -727,6 +727,80 @@ body{
   *{ animation: none !important; transition: none !important; }
 }
 
+
+/* --- v12 iPhone adaptive fixes (safe-area + no dead space + scrollable modals) --- */
+:root{
+  --tabs-height: 70px;             /* visual height of tab bar (without safe area) */
+  --tabs-total: calc(var(--tabs-height) + var(--safe-bottom));
+  --app-height: 100vh;             /* will be set by JS to window.innerHeight for iOS keyboard */
+}
+
+html, body{
+  height: 100%;
+}
+
+body{
+  min-height: var(--app-height);
+  padding-bottom: var(--tabs-total) !important;
+}
+
+/* Tab bar becomes a “real” bar with stable height */
+.tabs{
+  height: var(--tabs-total);
+  padding-top: 6px;
+  padding-bottom: var(--safe-bottom) !important;
+  align-items: flex-end;
+}
+
+/* Content should not add extra random space at the bottom */
+.view{
+  padding-bottom: 16px !important;
+  min-height: calc(var(--app-height) - var(--tabs-total) - var(--safe-top) - 10px);
+}
+
+/* Avoid iOS “black gap” caused by large padding and short tab bar */
+.view:last-child{ margin-bottom: 0 !important; }
+
+/* Modals: limit height, enable scrolling, keep header tappable */
+.modal-card{
+  max-height: calc(var(--app-height) - var(--safe-top) - 8px);
+  overflow: hidden;
+  padding-bottom: calc(16px + var(--safe-bottom)) !important;
+}
+
+.modal-scroll{
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 12px;
+}
+
+.modal-header{
+  position: sticky;
+  top: 0;
+  background: #1C1C1E;
+  padding-top: 6px;
+  z-index: 10;
+}
+
+/* Template modal header (same behavior) */
+.tpl-header{
+  position: sticky;
+  top: 0;
+  background: #1C1C1E;
+  z-index: 10;
+  padding-top: 6px;
+}
+
+/* Better touch targets on iPhone */
+.tab-btn{
+  padding: 10px 0 6px !important;
+}
+
+/* Prevent the sheet from hiding behind the home indicator when scrolling to the bottom */
+.modal-card *{
+  scroll-margin-bottom: calc(16px + var(--safe-bottom));
+}
+
 </style>
 </head>
 <body>
@@ -967,8 +1041,9 @@ body{
     <!-- MODAL -->
     <div id="event-modal" class="modal">
         <div class="modal-card">
-            <div class="modal-header"><span class="btn-close" onclick="Calendar.closeModal()">Отмена</span><div style="display:flex; gap:14px; align-items:center;"><span id="btn-modal-delete" style="color: var(--danger); display:none; cursor:pointer;" onclick="Calendar.deleteFromModal()">Удалить</span><span id="btn-modal-save" class="btn-save" onclick="Calendar.saveManualEvent()">Добавить</span></div></div>
-            <h2 style="font-size:20px; font-weight:700; margin-bottom:15px;">Запись</h2>
+            <div class="modal-header"><span class="btn-close" onclick="Calendar.closeModal()">Отмена</span><div style="display:flex; gap:14px; align-items:center;"><span id="btn-modal-delete" style="color: var(--danger); display:none; cursor:pointer;" onclick="Calendar.deleteFromModal()">Удалить</span><span id="btn-modal-save" class="btn-save" onclick="Calendar.saveManualEvent()">Добавить</span></div>
+            <div class="modal-scroll">
+<h2 style="font-size:20px; font-weight:700; margin-bottom:15px;">Запись</h2>
             <div class="group-container" style="margin:0;">
                 <div class="input-row"><div class="label">Название</div><input id="mod-title" class="text-input" placeholder="Иван"></div>
                 <div class="input-row"><div class="label">Дата</div><input type="date" id="mod-date" class="native-control-inline"></div>
@@ -1015,6 +1090,7 @@ body{
                 </div>
 
             </div>
+            </div>
         </div>
     </div>
 
@@ -1026,6 +1102,7 @@ body{
             <div class="tpl-header">
                 <span class="btn-close" id="tpl-close">Закрыть</span>
                 <div class="tpl-title">Шаблоны сообщений</div>
+            <div class="modal-scroll">
                 <span class="btn-save" id="tpl-add">Добавить</span>
             </div>
             <div class="tpl-sub">
@@ -1035,7 +1112,9 @@ body{
             <div class="tpl-tools">
                 <button class="touch-pill" id="tpl-export" type="button">Экспорт</button>
                 <button class="touch-pill" id="tpl-import" type="button">Импорт</button>
+            
             </div>
+</div>
         </div>
     </div>
 
@@ -2382,6 +2461,17 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Сохр�
     }
 
 Storage.load();
+
+// --- v12 iPhone viewport helper: keeps layouts correct when the keyboard opens ---
+(function(){
+  function setAppHeight(){
+    document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px');
+  }
+  window.addEventListener('resize', setAppHeight, {passive:true});
+  window.addEventListener('orientationchange', setAppHeight, {passive:true});
+  setAppHeight();
+})();
+
 </script>
 </body>
 </html>
