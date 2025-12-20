@@ -832,7 +832,16 @@ body{
 
 
 
-body.modal-lock{ overscroll-behavior: none; }
+html.modal-lock,
+body.modal-lock{
+  overscroll-behavior: none;
+  height: 100%;
+  overflow: hidden;
+}
+body.modal-lock{
+  -webkit-overflow-scrolling: auto;
+}
+
 
 </style>
 </head>
@@ -2539,25 +2548,37 @@ Storage.load();
   }
 
   function lockBody(){
-    // Prevent the page itself from scrolling under a bottom-sheet modal.
+    // Prevent the page itself from scrolling under a bottom-sheet modal (iOS standalone friendly).
     if(document.body.classList.contains('modal-lock')) return;
     lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+
+    document.documentElement.classList.add('modal-lock');
     document.body.classList.add('modal-lock');
+
+    // Freeze the document at the current scroll position
     document.body.style.position = 'fixed';
     document.body.style.top = (-lockedScrollY) + 'px';
     document.body.style.left = '0';
     document.body.style.right = '0';
     document.body.style.width = '100%';
+    document.body.style.height = '100%';
+    document.body.style.overflow = 'hidden';
   }
 
   function unlockBody(){
     if(!document.body.classList.contains('modal-lock')) return;
+
+    document.documentElement.classList.remove('modal-lock');
     document.body.classList.remove('modal-lock');
+
     document.body.style.position = '';
     document.body.style.top = '';
     document.body.style.left = '';
     document.body.style.right = '';
     document.body.style.width = '';
+    document.body.style.height = '';
+    document.body.style.overflow = '';
+
     window.scrollTo(0, lockedScrollY);
   }
 
@@ -2581,22 +2602,46 @@ Storage.load();
     if(!modal) return;
 
     setHeights();
-    // After keyboard animation starts
-    setTimeout(() => {
+
+    // iOS often tries to scroll the *page* to reveal the caret.
+    // We counter that by scrolling only inside the modal scroller.
+    const run = () => {
       try{
+        const card = t.closest('.modal-card') || modal.querySelector('.modal-card');
+        const scroller = (t.closest('.modal-scroll') || (card && card.querySelector('.modal-scroll')));
+        if(!scroller) return;
+
         const vv = window.visualViewport;
-        const vh = vv ? vv.height : window.innerHeight;
-        const kb = parseFloat(getComputedStyle(root).getPropertyValue('--kb')) || 0;
         const safeBottom = parseFloat(getComputedStyle(root).getPropertyValue('--safe-bottom')) || 0;
 
-        const rect = t.getBoundingClientRect();
-        const visibleBottom = vh - kb - safeBottom - 12;
-        if(rect.bottom > visibleBottom){
-          // Scroll just enough to reveal; scrollIntoView is acceptable here because body is locked.
-          t.scrollIntoView({block:'center', behavior:'smooth'});
+        // visual viewport bottom (relative to layout viewport coords)
+        const vvBottom = vv ? (vv.offsetTop + vv.height) : window.innerHeight;
+        const vvTop = vv ? vv.offsetTop : 0;
+
+        const sRect = scroller.getBoundingClientRect();
+        const r = t.getBoundingClientRect();
+
+        const pad = 12;
+        const visibleTop = Math.max(sRect.top + pad, vvTop + pad);
+        const visibleBottom = Math.min(sRect.bottom - pad, vvBottom - safeBottom - pad);
+
+        // If the field is below visible area, scroll scroller down.
+        if(r.bottom > visibleBottom){
+          const delta = r.bottom - visibleBottom;
+          scroller.scrollTop += delta;
+        }
+        // If it's above visible area, scroll up.
+        if(r.top < visibleTop){
+          const delta = visibleTop - r.top;
+          scroller.scrollTop -= delta;
         }
       }catch(_){}
-    }, 80);
+    };
+
+    // Run a couple times to survive keyboard animation frames
+    setTimeout(run, 0);
+    setTimeout(run, 120);
+    setTimeout(run, 260);
   }, true);
 })();
 </script>
