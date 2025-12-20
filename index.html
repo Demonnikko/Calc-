@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Kostyuk Event CRM</title>
+    <meta name="apple-mobile-web-app-title" content="Productive Magic">
+    <meta name="application-name" content="Productive Magic">
+    <meta name="theme-color" content="#000000">
+
+    <title>Productive Magic</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* --- iOS SYSTEM THEME (PLATINUM) --- */
@@ -248,10 +252,10 @@
         .btn-hist-del { position: absolute; top: 10px; right: 10px; color: var(--danger); opacity: 0.5; font-size: 18px; }
 
         /* Modal */
-        .modal { position: fixed; top: var(--vv-top, 0px); left: 0; width: 100%; height: var(--app-height, 100vh); background: rgba(0,0,0,0.8); z-index: 600; display: none; align-items: flex-end; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 600; display: none; align-items: flex-end; }
         .modal.active { display: flex; animation: slideUp 0.3s; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-card { background: #1C1C1E; width: 100%; border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: calc(20px + var(--kb, 0px) + var(--safe-bottom, 0px)); max-height: calc(var(--app-height, 100vh) - 10px); display: flex; flex-direction: column; }
+        .modal-card { background: #1C1C1E; width: 100%; border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: 50px; }
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
     
         /* --- v11: missing utility classes (keep existing UI, just make it consistent) --- */
@@ -732,8 +736,7 @@ body{
 :root{
   --tabs-height: 70px;             /* visual height of tab bar (without safe area) */
   --tabs-total: calc(var(--tabs-height) + var(--safe-bottom));
-  --app-height: 100vh;
-  --vv-top: 0px;             /* will be set by JS to window.innerHeight for iOS keyboard */
+  --app-height: 100vh;             /* will be set by JS to window.innerHeight for iOS keyboard */
 }
 
 html, body{
@@ -859,7 +862,7 @@ body.modal-lock{
     <!-- 1. КАЛЬКУЛЯТОР -->
     <div id="view-calc" class="view active">
         <div class="header">
-            <div><h1>Kostyuk CRM</h1><p>Конструктор КП</p></div>
+            <div><h1>Productive Magic</h1><p>Конструктор КП</p></div>
         </div>
 
         <div class="group-container" style="margin-bottom: 20px;">
@@ -2157,7 +2160,6 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Сохр�
         }),
 
         digits: (s='') => String(s||'').replace(/\D/g,''),
-        stripMd: (s='') => String(s||'').replace(/[\*\_\`]/g,'').replace(/\u00A0/g,' '),
         linkByLabel: (label) => {
             const l = (DB.links||[]).find(x => (x.label||'').toLowerCase().includes((label||'').toLowerCase()) && (x.url||'').trim());
             return l ? l.url.trim() : '';
@@ -2443,10 +2445,7 @@ Touch.renderTplEditor();
                 return;
             }
 
-            const raw = (E.msg?.value || Touch.buildMessage()).trim();
-
-            // Clean text for WhatsApp/SMS/etc: no **bold** or _italics_ markers
-            const message = Touch.stripMd(raw);
+            const message = (E.msg?.value || Touch.buildMessage()).trim();
 
             if(kind === 'copy'){
                 const ok = await copyTextToClipboard(message);
@@ -2533,137 +2532,174 @@ Touch.renderTplEditor();
 
 Storage.load();
 
-// --- v18 iPhone keyboard + standalone stability ---
-// Fixes: jumping when keyboard opens inside modals (Add to Home Screen / standalone).
+// --- v21 iPhone (Add to Home Screen) keyboard + layout stability ---
+// Goals:
+// 1) STOP iOS standalone from "auto-scrolling the page" when focusing inputs inside modals.
+// 2) Keep tab bar pinned to the bottom (no black gap after closing modals).
+// 3) Keep focused fields visible by scrolling ONLY the modal scroller.
+
 (function(){
   const root = document.documentElement;
+
+  const isIOS = (() => {
+    const ua = navigator.userAgent || '';
+    const iOSDevice = /iP(ad|hone|od)/.test(ua);
+    const iPadOS = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    return iOSDevice || iPadOS;
+  })();
+
+  const isStandalone = (() => {
+    try {
+      return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || !!navigator.standalone;
+    } catch(e) { return !!navigator.standalone; }
+  })();
+
   let lockedScrollY = 0;
+  let touchBlockerAttached = false;
 
   function setHeights(){
     const vv = window.visualViewport;
     const appH = vv ? vv.height : window.innerHeight;
-    const vvTop = vv ? vv.offsetTop : 0;
     root.style.setProperty('--app-height', Math.round(appH) + 'px');
-    root.style.setProperty('--vv-top', Math.round(vvTop) + 'px');
 
-    // Estimate keyboard height (iOS visualViewport)
+    // Estimate keyboard height (best effort). vv.height usually already excludes the keyboard.
     let kb = 0;
     if(vv){
-      kb = Math.max(0, window.innerHeight - (vv.height + vvTop));
+      kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
     }
     root.style.setProperty('--kb', Math.round(kb) + 'px');
   }
 
+  function hardReset(){
+    // iOS often updates visualViewport a tick later; force a few recalcs.
+    setHeights();
+    requestAnimationFrame(setHeights);
+    setTimeout(setHeights, 50);
+    setTimeout(setHeights, 150);
+    setTimeout(setHeights, 350);
+  }
+
+  function scrollGuard(){
+    if(!document.body.classList.contains('modal-lock')) return;
+    // Keep the page pinned (iOS likes to scroll the document on focus anyway).
+    if(window.scrollY !== lockedScrollY){
+      window.scrollTo(0, lockedScrollY);
+    }
+  }
+
+  function touchBlocker(e){
+    // Allow scrolling only inside modal scrollers.
+    const t = e.target;
+    if(!(t instanceof HTMLElement)) { e.preventDefault(); return; }
+    const scroller = t.closest('.modal-scroll');
+    if(scroller) return;
+    e.preventDefault();
+  }
+
   function lockBody(){
-    // Prevent the page itself from scrolling under a bottom-sheet modal (iOS standalone friendly).
     if(document.body.classList.contains('modal-lock')) return;
+
     lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
 
     document.documentElement.classList.add('modal-lock');
     document.body.classList.add('modal-lock');
 
-    // Freeze the document at the current scroll position
-    document.body.style.position = 'fixed';
-    document.body.style.top = (-lockedScrollY) + 'px';
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-    document.body.style.width = '100%';
-    document.body.style.height = '100%';
+    // IMPORTANT: do NOT use body{position:fixed} — it breaks fixed tab bar on iOS standalone.
     document.body.style.overflow = 'hidden';
+    document.body.style.height = '100%';
 
-    // Recompute viewport vars now that we're in 'locked' mode
-    setHeights();
-    requestAnimationFrame(setHeights);
-  
+    // Pin the page immediately.
+    window.scrollTo(0, lockedScrollY);
+
+    if(isIOS && isStandalone){
+      window.addEventListener('scroll', scrollGuard, {passive:true});
+      if(!touchBlockerAttached){
+        document.addEventListener('touchmove', touchBlocker, {passive:false});
+        touchBlockerAttached = true;
+      }
+    }
+
+    hardReset();
   }
 
   function unlockBody(){
     if(!document.body.classList.contains('modal-lock')) return;
 
-    const y = lockedScrollY;
-
     document.documentElement.classList.remove('modal-lock');
     document.body.classList.remove('modal-lock');
 
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
-    document.body.style.width = '';
-    document.body.style.height = '';
     document.body.style.overflow = '';
+    document.body.style.height = '';
 
-    // Restore scroll after styles are reset
-    window.scrollTo(0, y);
-    // iOS standalone often needs a couple passes (keyboard + toolbar animations)
-    setHeights();
-    setTimeout(() => { window.scrollTo(0, y); setHeights(); }, 0);
-    setTimeout(() => { setHeights(); }, 180);
-    setTimeout(() => { setHeights(); }, 360);
+    if(isIOS && isStandalone){
+      window.removeEventListener('scroll', scrollGuard, {passive:true});
+      if(touchBlockerAttached){
+        document.removeEventListener('touchmove', touchBlocker, {passive:false});
+        touchBlockerAttached = false;
+      }
+    }
+
+    // Restore where user was (usually 0 in this app, but safe to keep).
+    window.scrollTo(0, lockedScrollY);
+    hardReset();
   }
 
   // expose for modal open/close hooks
-  window.__iosFix = { setHeights, lockBody, unlockBody };
+  window.__iosFix = { setHeights, lockBody, unlockBody, hardReset };
 
   const vv = window.visualViewport;
   if(vv){
-    vv.addEventListener('resize', setHeights, {passive:true});
-    vv.addEventListener('scroll', setHeights, {passive:true});
+    vv.addEventListener('resize', hardReset, {passive:true});
+    vv.addEventListener('scroll', hardReset, {passive:true});
   }
-  window.addEventListener('resize', setHeights, {passive:true});
-  window.addEventListener('orientationchange', setHeights, {passive:true});
+  window.addEventListener('resize', hardReset, {passive:true});
+  window.addEventListener('orientationchange', hardReset, {passive:true});
   setHeights();
 
-  // Keep focused field visible inside the active modal (without "page jump")
+  // Keep focused field visible INSIDE the active modal (without moving the whole page)
   document.addEventListener('focusin', (e) => {
     const t = e.target;
     if(!(t instanceof HTMLElement)) return;
-    const modal = t.closest && t.closest('.modal.active');
+
+    const modal = t.closest('.modal.active');
     if(!modal) return;
 
-    setHeights();
+    // Clamp page scroll (iOS standalone "help")
+    if(isIOS && isStandalone){
+      requestAnimationFrame(() => window.scrollTo(0, lockedScrollY));
+      setTimeout(() => window.scrollTo(0, lockedScrollY), 50);
+      setTimeout(() => window.scrollTo(0, lockedScrollY), 150);
+    }
 
-    // iOS often tries to scroll the *page* to reveal the caret.
-    // We counter that by scrolling only inside the modal scroller.
-    const run = () => {
+    const scroller = modal.querySelector('.modal-scroll') || modal;
+    // After keyboard settles, scroll scroller so the field is visible.
+    setTimeout(() => {
       try{
-        const card = t.closest('.modal-card') || modal.querySelector('.modal-card');
-        const scroller = (t.closest('.modal-scroll') || (card && card.querySelector('.modal-scroll')));
-        if(!scroller) return;
+        hardReset();
+        const vv2 = window.visualViewport;
+        const visibleH = vv2 ? vv2.height : window.innerHeight;
+        const pad = 16;
+        const rect = t.getBoundingClientRect();
 
-        const vv = window.visualViewport;
-        const safeBottom = parseFloat(getComputedStyle(root).getPropertyValue('--safe-bottom')) || 0;
-
-        // visual viewport bottom (relative to layout viewport coords)
-        const vvBottom = vv ? (vv.offsetTop + vv.height) : window.innerHeight;
-        const vvTop = vv ? vv.offsetTop : 0;
-
-        const sRect = scroller.getBoundingClientRect();
-        const r = t.getBoundingClientRect();
-
-        const pad = 12;
-        const visibleTop = Math.max(sRect.top + pad, vvTop + pad);
-        const visibleBottom = Math.min(sRect.bottom - pad, vvBottom - safeBottom - pad);
-
-        // If the field is below visible area, scroll scroller down.
-        if(r.bottom > visibleBottom){
-          const delta = r.bottom - visibleBottom;
-          scroller.scrollTop += delta;
+        const bottomLimit = visibleH - pad; // vv.height already excludes keyboard
+        if(rect.bottom > bottomLimit){
+          scroller.scrollTop += (rect.bottom - bottomLimit) + 8;
         }
-        // If it's above visible area, scroll up.
-        if(r.top < visibleTop){
-          const delta = visibleTop - r.top;
-          scroller.scrollTop -= delta;
+        if(rect.top < (pad + 72)){
+          scroller.scrollTop -= ((pad + 72) - rect.top) + 8;
         }
-      }catch(_){}
-    };
-
-    // Run a couple times to survive keyboard animation frames
-    setTimeout(run, 0);
-    setTimeout(run, 120);
-    setTimeout(run, 260);
+      }catch(err){}
+    }, 80);
   }, true);
-})();
+
+  // When keyboard closes (focus leaves), re-sync heights to prevent bottom gaps.
+  document.addEventListener('focusout', (e) => {
+    if(!isIOS) return;
+    setTimeout(hardReset, 60);
+    setTimeout(hardReset, 180);
+  }, true);
+
+})();;
 </script>
 </body>
 </html>
