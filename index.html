@@ -248,10 +248,10 @@
         .btn-hist-del { position: absolute; top: 10px; right: 10px; color: var(--danger); opacity: 0.5; font-size: 18px; }
 
         /* Modal */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 600; display: none; align-items: flex-end; }
+        .modal { position: fixed; top: var(--vv-top, 0px); left: 0; width: 100%; height: var(--app-height, 100vh); background: rgba(0,0,0,0.8); z-index: 600; display: none; align-items: flex-end; }
         .modal.active { display: flex; animation: slideUp 0.3s; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-card { background: #1C1C1E; width: 100%; border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: 50px; }
+        .modal-card { background: #1C1C1E; width: 100%; border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: calc(20px + var(--kb, 0px) + var(--safe-bottom, 0px)); max-height: calc(var(--app-height, 100vh) - 10px); display: flex; flex-direction: column; }
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
     
         /* --- v11: missing utility classes (keep existing UI, just make it consistent) --- */
@@ -732,7 +732,8 @@ body{
 :root{
   --tabs-height: 70px;             /* visual height of tab bar (without safe area) */
   --tabs-total: calc(var(--tabs-height) + var(--safe-bottom));
-  --app-height: 100vh;             /* will be set by JS to window.innerHeight for iOS keyboard */
+  --app-height: 100vh;
+  --vv-top: 0px;             /* will be set by JS to window.innerHeight for iOS keyboard */
 }
 
 html, body{
@@ -2156,6 +2157,7 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Сохр�
         }),
 
         digits: (s='') => String(s||'').replace(/\D/g,''),
+        stripMd: (s='') => String(s||'').replace(/[\*\_\`]/g,'').replace(/\u00A0/g,' '),
         linkByLabel: (label) => {
             const l = (DB.links||[]).find(x => (x.label||'').toLowerCase().includes((label||'').toLowerCase()) && (x.url||'').trim());
             return l ? l.url.trim() : '';
@@ -2441,7 +2443,10 @@ Touch.renderTplEditor();
                 return;
             }
 
-            const message = (E.msg?.value || Touch.buildMessage()).trim();
+            const raw = (E.msg?.value || Touch.buildMessage()).trim();
+
+            // Clean text for WhatsApp/SMS/etc: no **bold** or _italics_ markers
+            const message = Touch.stripMd(raw);
 
             if(kind === 'copy'){
                 const ok = await copyTextToClipboard(message);
@@ -2537,12 +2542,14 @@ Storage.load();
   function setHeights(){
     const vv = window.visualViewport;
     const appH = vv ? vv.height : window.innerHeight;
+    const vvTop = vv ? vv.offsetTop : 0;
     root.style.setProperty('--app-height', Math.round(appH) + 'px');
+    root.style.setProperty('--vv-top', Math.round(vvTop) + 'px');
 
-    // Estimate keyboard height (works best on iOS with visualViewport)
+    // Estimate keyboard height (iOS visualViewport)
     let kb = 0;
     if(vv){
-      kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      kb = Math.max(0, window.innerHeight - (vv.height + vvTop));
     }
     root.style.setProperty('--kb', Math.round(kb) + 'px');
   }
@@ -2563,10 +2570,17 @@ Storage.load();
     document.body.style.width = '100%';
     document.body.style.height = '100%';
     document.body.style.overflow = 'hidden';
+
+    // Recompute viewport vars now that we're in 'locked' mode
+    setHeights();
+    requestAnimationFrame(setHeights);
+  
   }
 
   function unlockBody(){
     if(!document.body.classList.contains('modal-lock')) return;
+
+    const y = lockedScrollY;
 
     document.documentElement.classList.remove('modal-lock');
     document.body.classList.remove('modal-lock');
@@ -2579,7 +2593,13 @@ Storage.load();
     document.body.style.height = '';
     document.body.style.overflow = '';
 
-    window.scrollTo(0, lockedScrollY);
+    // Restore scroll after styles are reset
+    window.scrollTo(0, y);
+    // iOS standalone often needs a couple passes (keyboard + toolbar animations)
+    setHeights();
+    setTimeout(() => { window.scrollTo(0, y); setHeights(); }, 0);
+    setTimeout(() => { setHeights(); }, 180);
+    setTimeout(() => { setHeights(); }, 360);
   }
 
   // expose for modal open/close hooks
