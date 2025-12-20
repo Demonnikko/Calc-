@@ -847,9 +847,82 @@ body.modal-lock{
 }
 
 
+
+
+/* --- v22 фундаментальный фикс iOS PWA: убираем window-scroll, вся прокрутка внутри приложения --- */
+:root{
+  --vv-height: 100vh;
+  --vv-top: 0px;
+}
+html, body{
+  height: 100%;
+  overflow: hidden !important;
+}
+body{
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100% !important;
+}
+.app-shell{
+  position: fixed;
+  left: 0;
+  width: 100%;
+  top: var(--vv-top, 0px);
+  height: var(--vv-height, var(--app-height, 100vh));
+  background: var(--bg-body);
+  overflow: hidden;
+}
+
+/* главный скролл приложения (вместо body) */
+.app-scroll{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: var(--tabs-total);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-top: calc(var(--safe-top) + 10px);
+  padding-bottom: 18px;
+}
+
+/* таббар теперь привязан к app-shell (не к window), чтобы не было "черной полосы" */
+.tabs{
+  position: absolute !important;
+  left: 0;
+  right: 0;
+  bottom: 0 !important;
+  width: 100%;
+  z-index: 500;
+}
+
+/* у view больше не должен быть гигантский bottom-padding (его уже дает app-scroll) */
+.view{
+  padding-bottom: 18px !important;
+  min-height: auto !important;
+}
+
+/* модалки всегда живут ровно в видимой области (vv), поэтому их не уносит при клавиатуре */
+.modal{
+  top: var(--vv-top, 0px) !important;
+  height: var(--vv-height, var(--app-height, 100vh)) !important;
+}
+
+/* когда открыта модалка — блокируем основной скролл */
+.app-shell.modal-open .app-scroll{
+  overflow: hidden !important;
+}
+
+/* анти-резинка: не даем тянуть фон, но оставляем скролл внутри app-scroll и modal-scroll */
+.app-shell, .tabs{
+  overscroll-behavior: none;
+}
+
 </style>
 </head>
 <body>
+<div id="appShell" class="app-shell">
+
 
     <!-- Меню -->
     <div class="tabs">
@@ -860,7 +933,9 @@ body.modal-lock{
     </div>
 
     <!-- 1. КАЛЬКУЛЯТОР -->
-    <div id="view-calc" class="view active">
+    
+<div id="appScroll" class="app-scroll">
+<div id="view-calc" class="view active">
         <div class="header">
             <div><h1>Productive Magic</h1><p>Конструктор КП</p></div>
         </div>
@@ -1085,7 +1160,9 @@ body.modal-lock{
     </div>
 
     <!-- MODAL -->
-    <div id="event-modal" class="modal">
+    
+</div>
+<div id="event-modal" class="modal">
         <div class="modal-card">
             <div class="modal-header">
                 <span class="btn-close" onclick="Calendar.closeModal()">Отмена</span>
@@ -2701,5 +2778,5 @@ Storage.load();
 
 })();;
 </script>
-</body>
-</html>
+
+</div>
