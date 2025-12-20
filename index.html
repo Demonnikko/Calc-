@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kostyuk CRM">
+    <meta name="theme-color" content="#000000">
     <title>Kostyuk Event CRM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -1070,7 +1074,20 @@ body{
     <!-- MODAL -->
     <div id="event-modal" class="modal">
         <div class="modal-card">
-            <div class="modal-header"><span class="btn-close" onclick="Calendar.closeModal()">Отмена</span><div style="display:flex; gap:14px; align-items:center;"><span id="btn-modal-delete" style="color: var(--danger); display:none; cursor:pointer;" onclick="Calendar.deleteFromModal()">Удалить</span><span id="btn-modal-save" class="btn-save" onclick="Calendar.saveManualEvent()">Добавить</span></div>
+            <div class="modal-header">
+
+                <span class="btn-close" onclick="Calendar.closeModal()">Отмена</span>
+
+                <div style="display:flex; gap:14px; align-items:center;">
+
+                    <span id="btn-modal-delete" style="color: var(--danger); display:none; cursor:pointer;" onclick="Calendar.deleteFromModal()">Удалить</span>
+
+                    <span id="btn-modal-save" class="btn-save" onclick="Calendar.saveManualEvent()">Добавить</span>
+
+                </div>
+
+            </div>
+
             <div class="modal-scroll">
 <h2 style="font-size:20px; font-weight:700; margin-bottom:15px;">Запись</h2>
             <div class="group-container" style="margin:0;">
@@ -1131,19 +1148,18 @@ body{
             <div class="tpl-header">
                 <span class="btn-close" id="tpl-close">Закрыть</span>
                 <div class="tpl-title">Шаблоны сообщений</div>
-            <div class="modal-scroll">
                 <span class="btn-save" id="tpl-add">Добавить</span>
             </div>
-            <div class="tpl-sub">
-                Настрой свои “быстрые касания”: один тап → готовый текст. Подстановки: <b>{{whenLine}}</b>, <b>{{priceLine}}</b>, <b>{{depositPercent}}</b>, <b>{{portfolioLine}}</b> и др.
+            <div class="modal-scroll">
+                <div class="tpl-sub">
+                    Настрой свои “быстрые касания”: один тап → готовый текст. Подстановки: <b>{{whenLine}}</b>, <b>{{priceLine}}</b>, <b>{{depositPercent}}</b>, <b>{{portfolioLine}}</b> и др.
+                </div>
+                <div class="tpl-list" id="tpl-list"></div>
+                <div class="tpl-tools">
+                    <button class="touch-pill" id="tpl-export" type="button">Экспорт</button>
+                    <button class="touch-pill" id="tpl-import" type="button">Импорт</button>
+                </div>
             </div>
-            <div class="tpl-list" id="tpl-list"></div>
-            <div class="tpl-tools">
-                <button class="touch-pill" id="tpl-export" type="button">Экспорт</button>
-                <button class="touch-pill" id="tpl-import" type="button">Импорт</button>
-            
-            </div>
-</div>
         </div>
     </div>
 
@@ -2494,10 +2510,15 @@ Storage.load();
 // --- v12 iPhone viewport helper: keeps layouts correct when the keyboard opens ---
 (function(){
   function setAppHeight(){
-    document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px');
+    const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+    document.documentElement.style.setProperty('--app-height', h + 'px');
   }
   window.addEventListener('resize', setAppHeight, {passive:true});
   window.addEventListener('orientationchange', setAppHeight, {passive:true});
+  if (window.visualViewport){
+    window.visualViewport.addEventListener('resize', setAppHeight, {passive:true});
+    window.visualViewport.addEventListener('scroll', setAppHeight, {passive:true});
+  }
   setAppHeight();
 })();
 
