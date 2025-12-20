@@ -3,10 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Kostyuk CRM">
-    <meta name="theme-color" content="#000000">
     <title>Kostyuk Event CRM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -773,7 +769,7 @@ body{
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding-bottom: calc(16px + var(--safe-bottom)) !important;
+  padding-bottom: calc(16px + var(--safe-bottom) + var(--kb, 0px)) !important;
 }
 
 .modal-scroll{
@@ -781,7 +777,7 @@ body{
   -webkit-overflow-scrolling: touch;
   flex: 1 1 auto;
   min-height: 0; /* critical for iOS flex scroll */
-  padding-bottom: 12px;
+  padding-bottom: calc(12px + var(--kb, 0px));
 }
 
 .modal-header{
@@ -833,6 +829,10 @@ body{
 .modal-card *{
   scroll-margin-bottom: calc(16px + var(--safe-bottom));
 }
+
+
+
+body.modal-lock{ overscroll-behavior: none; }
 
 </style>
 </head>
@@ -1075,19 +1075,12 @@ body{
     <div id="event-modal" class="modal">
         <div class="modal-card">
             <div class="modal-header">
-
                 <span class="btn-close" onclick="Calendar.closeModal()">Отмена</span>
-
                 <div style="display:flex; gap:14px; align-items:center;">
-
                     <span id="btn-modal-delete" style="color: var(--danger); display:none; cursor:pointer;" onclick="Calendar.deleteFromModal()">Удалить</span>
-
                     <span id="btn-modal-save" class="btn-save" onclick="Calendar.saveManualEvent()">Добавить</span>
-
                 </div>
-
             </div>
-
             <div class="modal-scroll">
 <h2 style="font-size:20px; font-weight:700; margin-bottom:15px;">Запись</h2>
             <div class="group-container" style="margin:0;">
@@ -1145,16 +1138,20 @@ body{
     <div id="tpl-modal" class="modal tpl-modal">
         <div class="modal-card">
             <div class="grabber"></div>
+
             <div class="tpl-header">
                 <span class="btn-close" id="tpl-close">Закрыть</span>
                 <div class="tpl-title">Шаблоны сообщений</div>
                 <span class="btn-save" id="tpl-add">Добавить</span>
             </div>
+
             <div class="modal-scroll">
                 <div class="tpl-sub">
                     Настрой свои “быстрые касания”: один тап → готовый текст. Подстановки: <b>{{whenLine}}</b>, <b>{{priceLine}}</b>, <b>{{depositPercent}}</b>, <b>{{portfolioLine}}</b> и др.
                 </div>
+
                 <div class="tpl-list" id="tpl-list"></div>
+
                 <div class="tpl-tools">
                     <button class="touch-pill" id="tpl-export" type="button">Экспорт</button>
                     <button class="touch-pill" id="tpl-import" type="button">Импорт</button>
@@ -1514,13 +1511,13 @@ body{
             const dateStr = parseISODate(State.date).toLocaleDateString('ru-RU',{weekday:'short', day:'numeric', month:'long'});
             let lines = [`Здравствуйте, ${name}!`];
             lines.push(``);
-            lines.push(`✨ **РАСЧЕТ: ${type.toUpperCase()}** ✨`);
+            lines.push(`✨ РАСЧЕТ: ${type.toUpperCase()} ✨`);
             lines.push(``);
-            lines.push(`📅 **${dateStr}**`);
+            lines.push(`📅 ${dateStr}`);
             const cityText = (el('disp-city')?.innerText || el('inp-city')?.value || '').trim();
-            if(cityText) lines.push(`📍 **${cityText}**`);
+            if(cityText) lines.push(`📍 ${cityText}`);
             lines.push(``);
-            lines.push(`🎩 **Программа:**`);
+            lines.push(`🎩 Программа:`);
             State.cart.forEach(i => lines.push(`• ${i.name} — ${fmt(Math.round(i.price*i.qty*State.final.k))}`));
 
             if(State.discount>0) lines.push(`🎁 Скидка 10%: -${fmt(State.discount)}`);
@@ -1529,17 +1526,17 @@ body{
             if(State.final.man>0) lines.push(`🔹 Доп. расходы: ${fmt(State.final.man)}`);
             if(State.final.taxVal>0) lines.push(`📄 Налог / Документы (6%): ${fmt(State.final.taxVal)}`);
 
-            if(State.bonusList.length>0) { lines.push(``); lines.push(`🎁 **ВАШИ БОНУСЫ:**`); State.bonusList.forEach(b=>lines.push(`✅ ${b}`)); }
+            if(State.bonusList.length>0) { lines.push(``); lines.push(`🎁 ВАШИ БОНУСЫ:`); State.bonusList.forEach(b=>lines.push(`✅ ${b}`)); }
 
             const dep = depPct > 0 ? Math.round(State.final.total * (depPct/100)) : 0;
             lines.push(``);
-            lines.push(`💰 **ИТОГО: ${fmt(State.final.total)}**`);
+            lines.push(`💰 ИТОГО: ${fmt(State.final.total)}`);
             if(depPct > 0) lines.push(`💳 Задаток (${depPct}%): ${fmt(dep)}`);
             lines.push(``);
 
             // Реквизиты (из Настроек)
             if(Array.isArray(DB.payments) && DB.payments.length > 0){
-                lines.push(`📲 **Реквизиты для брони:**`);
+                lines.push(`📲 Реквизиты для брони:`);
                 DB.payments.forEach((p, idx) => {
                     const title = String(p?.title ?? '').trim();
                     const text = String(p?.text ?? '').trim();
@@ -1564,15 +1561,15 @@ body{
                     .filter(l => l.url.length > 0);
 
                 if(list.length > 0){
-                    lines.push(`🔗 **Ссылки:**`);
+                    lines.push(`🔗 Ссылки:`);
                     list.forEach(l => lines.push(`• ${l.label || 'Ссылка'}: ${l.url}`));
                     lines.push(``);
                 }
             }
 
-            lines.push(`⚠️ _Дата и время бронируются за Вами только после внесения задатка._`);
+            lines.push(`⚠️ Дата и время бронируются за Вами только после внесения задатка.`);
 
-            copyTextToClipboard(lines.join('\n')).then((ok)=> {
+            copyTextToClipboard(lines.join('\n').replace(/\u00A0/g,' ').replace(/\*\*/g,'')).then((ok)=> {
                 if(ok){
                     el('toast').innerText = autoSave ? 'Скопировано + сохранено!' : 'Скопировано!';
                     el('toast').classList.add('show');
@@ -1936,7 +1933,10 @@ body{
         openModal: () => {
             Calendar.editingId = null;
             el('event-modal').classList.add('active');
-            // reset fields for ADD mode
+            
+            if(window.__iosFix) window.__iosFix.lockBody();
+            if(window.__iosFix) window.__iosFix.setHeights();
+// reset fields for ADD mode
             el('mod-title').value = '';
             el('mod-phone').value = '';
             el('mod-price').value = '';
@@ -1952,7 +1952,10 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Доба�
         },
         closeModal: () => {
             el('event-modal').classList.remove('active');
-            Calendar.editingId = null;
+            
+            if(window.__iosFix) window.__iosFix.unlockBody();
+            if(window.__iosFix) window.__iosFix.setHeights();
+Calendar.editingId = null;
             const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Добавить';
             const delBtn = el('btn-modal-delete'); if(delBtn) delBtn.style.display = 'none';
         },
@@ -1990,7 +1993,10 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Доба�
             Calendar.editingId = id;
             el('event-modal').classList.add('active');
 
-            el('mod-title').value = ev.title || '';
+            
+            if(window.__iosFix) window.__iosFix.lockBody();
+            if(window.__iosFix) window.__iosFix.setHeights();
+el('mod-title').value = ev.title || '';
             el('mod-date').value = ev.date || isoLocal(Calendar.selectedDate);
             el('mod-time').value = ev.time || '12:00';
             el('mod-phone').value = ev.phone || '';
@@ -2276,13 +2282,19 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Сохр�
             if(!M.modal) return;
             Touch.ensureTemplates();
             M.modal.classList.add('active');
-            Touch.renderTplEditor();
+            
+            if(window.__iosFix) window.__iosFix.lockBody();
+            if(window.__iosFix) window.__iosFix.setHeights();
+Touch.renderTplEditor();
         },
         closeTplModal: () => {
             const M = Touch.tplEls();
             if(!M.modal) return;
             M.modal.classList.remove('active');
-        },
+        
+            if(window.__iosFix) window.__iosFix.unlockBody();
+            if(window.__iosFix) window.__iosFix.setHeights();
+},
 
         newId: () => 'tpl_' + Date.now() + '_' + Math.random().toString(16).slice(2),
         esc: (s='') => String(s||'').replace(/[&<>"']/g, (ch) => ({
@@ -2507,21 +2519,86 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Сохр�
 
 Storage.load();
 
-// --- v12 iPhone viewport helper: keeps layouts correct when the keyboard opens ---
+// --- v18 iPhone keyboard + standalone stability ---
+// Fixes: jumping when keyboard opens inside modals (Add to Home Screen / standalone).
 (function(){
-  function setAppHeight(){
-    const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
-    document.documentElement.style.setProperty('--app-height', h + 'px');
-  }
-  window.addEventListener('resize', setAppHeight, {passive:true});
-  window.addEventListener('orientationchange', setAppHeight, {passive:true});
-  if (window.visualViewport){
-    window.visualViewport.addEventListener('resize', setAppHeight, {passive:true});
-    window.visualViewport.addEventListener('scroll', setAppHeight, {passive:true});
-  }
-  setAppHeight();
-})();
+  const root = document.documentElement;
+  let lockedScrollY = 0;
 
+  function setHeights(){
+    const vv = window.visualViewport;
+    const appH = vv ? vv.height : window.innerHeight;
+    root.style.setProperty('--app-height', Math.round(appH) + 'px');
+
+    // Estimate keyboard height (works best on iOS with visualViewport)
+    let kb = 0;
+    if(vv){
+      kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    }
+    root.style.setProperty('--kb', Math.round(kb) + 'px');
+  }
+
+  function lockBody(){
+    // Prevent the page itself from scrolling under a bottom-sheet modal.
+    if(document.body.classList.contains('modal-lock')) return;
+    lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    document.body.classList.add('modal-lock');
+    document.body.style.position = 'fixed';
+    document.body.style.top = (-lockedScrollY) + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+  }
+
+  function unlockBody(){
+    if(!document.body.classList.contains('modal-lock')) return;
+    document.body.classList.remove('modal-lock');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, lockedScrollY);
+  }
+
+  // expose for modal open/close hooks
+  window.__iosFix = { setHeights, lockBody, unlockBody };
+
+  const vv = window.visualViewport;
+  if(vv){
+    vv.addEventListener('resize', setHeights, {passive:true});
+    vv.addEventListener('scroll', setHeights, {passive:true});
+  }
+  window.addEventListener('resize', setHeights, {passive:true});
+  window.addEventListener('orientationchange', setHeights, {passive:true});
+  setHeights();
+
+  // Keep focused field visible inside the active modal (without "page jump")
+  document.addEventListener('focusin', (e) => {
+    const t = e.target;
+    if(!(t instanceof HTMLElement)) return;
+    const modal = t.closest && t.closest('.modal.active');
+    if(!modal) return;
+
+    setHeights();
+    // After keyboard animation starts
+    setTimeout(() => {
+      try{
+        const vv = window.visualViewport;
+        const vh = vv ? vv.height : window.innerHeight;
+        const kb = parseFloat(getComputedStyle(root).getPropertyValue('--kb')) || 0;
+        const safeBottom = parseFloat(getComputedStyle(root).getPropertyValue('--safe-bottom')) || 0;
+
+        const rect = t.getBoundingClientRect();
+        const visibleBottom = vh - kb - safeBottom - 12;
+        if(rect.bottom > visibleBottom){
+          // Scroll just enough to reveal; scrollIntoView is acceptable here because body is locked.
+          t.scrollIntoView({block:'center', behavior:'smooth'});
+        }
+      }catch(_){}
+    }, 80);
+  }, true);
+})();
 </script>
 </body>
 </html>
