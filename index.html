@@ -3,7 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Productive Magic</title>
+    
+    <!-- PWA / iOS Home Screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Productive Magic">
+    <meta name="theme-color" content="#0b0c10">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180-pm.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="apple-touch-icon-167-pm.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152-pm.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120-pm.png">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32-pm.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192-pm.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512-pm.png">
+<title>Productive Magic</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* --- iOS SYSTEM THEME (PLATINUM) --- */
@@ -38,7 +53,8 @@
 
         /* --- TABS --- */
         .tabs {
-            position: fixed; bottom: 0; left: 0; width: 100%;
+            left: 0; width: 100%;
+            height: var(--tabs-h);
             background: rgba(28, 28, 30, 0.85);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 0.5px solid rgba(255,255,255,0.15);
@@ -46,6 +62,8 @@
             display: flex; justify-content: space-around;
             z-index: 500;
         }
+        body:not(.pwa-fixed) .tabs{ position: fixed; bottom: 0; }
+        body.pwa-fixed #app-shell .tabs{ position: absolute; bottom: 0; }
         .tab-btn {
             flex: 1; padding: 8px 0 2px; text-align: center; color: var(--text-secondary);
             font-size: 10px; font-weight: 500; cursor: pointer; transition: color 0.2s;
@@ -158,7 +176,62 @@
             border: none; cursor: pointer; align-items: center; justify-content: center; gap: 8px;
             transition: transform 0.1s;
         }
-        .btn-main:active { transform: scale(0.97); opacity: 0.9; }
+        
+        .btn-secondary{
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .btn-secondary:active{ transform: scale(0.99); }
+
+        /* Sales modal */
+        #sales-modal .modal-header{
+            position: sticky; top: 0;
+            background: rgba(18,18,18,0.9);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            z-index: 2;
+        }
+        #sales-search{
+            margin: 10px 0 12px 0;
+        }
+        .sales-list{
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .sales-item{
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 14px;
+            padding: 12px;
+            cursor: pointer;
+        }
+        .sales-item.active{
+            border-color: rgba(10,132,255,0.55);
+            box-shadow: 0 0 0 3px rgba(10,132,255,0.16);
+        }
+        .sales-item .title{
+            font-weight: 800;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        .sales-item .hint{
+            font-size: 12px;
+            opacity: 0.72;
+            line-height: 1.25;
+        }
+.btn-main:active { transform: scale(0.97); opacity: 0.9; }
 
         .discount-badge { color: var(--success); font-size: 13px; font-weight: 600; margin-bottom: 8px; display: none; }
         .bonus-banner { 
@@ -862,7 +935,7 @@ body{
 #app-shell{
   position: fixed;
   left: 0;
-  top: var(--vv-top, 0px);
+  top: 0;
   width: 100%;
   height: var(--vv-height, 100vh);
   overflow: hidden;
@@ -1044,8 +1117,44 @@ html.modal-open #app-scroll{
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
                 Сформировать КП
             </button>
+        
+            <button class="btn-secondary" onclick="Sales.open()">
+                🎯 Продажи: скрипты и дожим
+            </button>
+</div>
+    </div>
+
+
+    <!-- SALES MODAL -->
+    <div id="sales-modal" class="modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <span class="btn-close" onclick="Sales.close()">Закрыть</span>
+                <div class="modal-title">Продажи</div>
+                <span class="btn-save" onclick="Touch.openTplModal()">Шаблоны</span>
+            </div>
+
+            <div class="modal-scroll">
+                <div class="tpl-sub" style="margin-top:0;">
+                    Быстрые “умные продажи”: выбери скрипт → подставятся имя/город/дата/цена → копируй и отправляй.
+                    Всё редактируется в “Шаблоны”.
+                </div>
+
+                <input id="sales-search" class="text-input" type="text" placeholder="Поиск скрипта или возражения…">
+
+                <div id="sales-list" class="sales-list"></div>
+
+                <div class="section-title" style="margin: 14px 0 10px 0;">Предпросмотр</div>
+                <textarea id="sales-preview" class="touch-message" rows="6" placeholder="Выбери скрипт выше…"></textarea>
+
+                <div class="tpl-actions" style="padding: 14px 0 8px 0;">
+                    <button class="touch-pill touch-primary" onclick="Sales.copy()" type="button">Скопировать</button>
+                    <button class="touch-pill ghost" onclick="Sales.applyToClipboardPlain()" type="button">Скопировать (чистый текст)</button>
+                </div>
+            </div>
         </div>
     </div>
+
 
     <!-- 2. КАЛЕНДАРЬ -->
     <div id="view-calendar" class="view">
@@ -1641,7 +1750,7 @@ html.modal-open #app-scroll{
 
             lines.push(`⚠️ Дата и время бронируются за Вами только после внесения задатка.`);
 
-            copyTextToClipboard(lines.join('\n').replace(/\u00A0/g,' ').replace(/\*\*/g,'')).then((ok)=> {
+            copyTextToClipboard(lines.join('\n').replace(/\u00A0/g,' ').replace(/[*_`]/g,'')).then((ok)=> {
                 if(ok){
                     el('toast').innerText = autoSave ? 'Скопировано + сохранено!' : 'Скопировано!';
                     el('toast').classList.add('show');
@@ -2026,6 +2135,7 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Доба�
             el('event-modal').classList.remove('active');
             
             if(window.__iosFix) window.__iosFix.unlockBody();
+            if(window.__iosFix && window.__iosFix.onModalClose) window.__iosFix.onModalClose();
             if(window.__iosFix) window.__iosFix.setHeights();
 Calendar.editingId = null;
             const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Добавить';
@@ -2172,7 +2282,98 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Сохр�
 • если гостей много — микрофон (идеально беспроводной).
 Если чего-то нет — скажите, подберём решение под вашу площадку.`
             }
-        ]),
+
+            ,
+            {
+                id: 'sales_sent_kp',
+                label: 'Продажи: после КП (мягко)',
+                body:
+`{{clientHi}}
+
+Я отправил расчет по мероприятию.
+Если всё ок — могу закрепить дату за вами: задаток {{depositPercent}}% фиксирует время.
+
+Хотите, чтобы я забронировал?`
+            },
+            {
+                id: 'sales_ping_2h',
+                label: 'Продажи: пинг через 2–3 часа',
+                body:
+`{{clientHi}}
+
+Подскажите, расчёт посмотрели?
+Если хотите, я быстро подскажу, какой вариант будет лучше под вашу задачу — по эмоциям и по бюджету.`
+            },
+            {
+                id: 'sales_ping_nextday',
+                label: 'Продажи: пинг на следующий день',
+                body:
+`{{clientHi}}
+
+Я держу дату в резерве до вечера (чтобы вы спокойно подумали).
+Если решите фиксировать — просто напишите “Бронируем”, и я пришлю реквизиты на задаток {{depositPercent}}%.`
+            },
+            {
+                id: 'sales_objection_expensive',
+                label: 'Возражение: дорого',
+                body:
+`Понимаю вас 🙌
+
+Давайте сделаем аккуратно: можно оставить “вау”, но поджать бюджет:
+1) сократить длительность (например, 30 вместо 45–60);
+2) убрать 1 блок и оставить самое сильное;
+3) выбрать более компактный формат без потери эмоции.
+
+Что для вас важнее: уложиться в сумму или чтобы было максимально “вау”?`
+            },
+            {
+                id: 'sales_objection_think',
+                label: 'Возражение: надо подумать',
+                body:
+`Конечно, подумайте спокойно 🙂
+
+Чтобы вам легче было принять решение, уточню 1 вопрос:
+что сейчас больше всего смущает — цена, формат или “подойдёт ли гостям”?
+
+Я подстрою предложение так, чтобы вам было комфортно сказать “да”.`
+            },
+            {
+                id: 'sales_objection_compare',
+                label: 'Возражение: сравниваю варианты',
+                body:
+`Это нормально — сравнивать 🙂
+
+Чтобы вы сравнили честно, вот 3 критерия:
+1) гарантии (договор/чек/резерв даты),
+2) отзывы/портфолио,
+3) сценарий под вашу аудиторию (а не “шаблонный номер”).
+
+Если хотите — скину коротко 2–3 сильные фишки именно под ваш формат.`
+            },
+            {
+                id: 'sales_objection_spouse',
+                label: 'Возражение: нужно согласовать',
+                body:
+`Ок 👍
+
+Хотите, я напишу вам 3 строки “для пересылки” — чтобы вы просто отправили супругу/руководству?
+
+Там будет: дата, формат, цена, что входит, и как фиксируется бронь.`
+            },
+            {
+                id: 'sales_booking',
+                label: 'Финал: закрепляем бронь',
+                body:
+`Супер! Тогда фиксируем 🔒
+
+Чтобы закрепить дату, нужен задаток {{depositPercent}}%: {{depositLine}}
+
+{{paymentsBlock}}
+
+Как будет удобно: сейчас или чуть позже сегодня?`
+            }
+
+]),
 
         ensureTemplates: () => {
             if(!Array.isArray(DB.touchTemplates) || DB.touchTemplates.length === 0){
@@ -2365,6 +2566,7 @@ Touch.renderTplEditor();
             M.modal.classList.remove('active');
         
             if(window.__iosFix) window.__iosFix.unlockBody();
+            if(window.__iosFix && window.__iosFix.onModalClose) window.__iosFix.onModalClose();
             if(window.__iosFix) window.__iosFix.setHeights();
 },
 
@@ -2574,6 +2776,224 @@ Touch.renderTplEditor();
         }
     };
 
+
+    // --- SALES HUB (smart follow-up scripts based on editable templates) ---
+    const Sales = {
+        currentId: null,
+        showAll: false,
+
+        isSalesTpl: (t) => {
+            const l = (t?.label || '').toLowerCase();
+            return (l.includes('продаж') || l.includes('возраж') || l.includes('финал'));
+        },
+
+        sanitizePlain: (s='') => String(s||'')
+            .replace(/\u00A0/g,' ')
+            .replace(/[*_`]/g,'')
+            .replace(/[ \t]+\n/g, '\n')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim(),
+
+        getCtx: () => {
+            // Context from Calculator (KP) screen
+            const performer = (el('cfg-magician')?.value || '').trim() || 'Фокусник';
+            const depositPercent = parseInt(el('cfg-deposit')?.value || '30') || 30;
+
+            const client = (el('inp-client')?.value || '').trim();
+            const clientHi = client ? `Здравствуйте, ${client}!` : 'Здравствуйте!';
+            const date = el('inp-date')?.value || '';
+            const city = (el('disp-city')?.innerText || el('inp-city')?.value || '').trim();
+            const type = (el('inp-event-type')?.value || '').trim();
+
+            let total = 0;
+            try {
+                total = (State && State.final && typeof State.final.total === 'number') ? State.final.total : 0;
+            } catch(_) {}
+            if(!total){
+                const t = (el('total-sum')?.innerText || '').replace(/[^\d]/g,'');
+                total = parseInt(t || '0') || 0;
+            }
+
+            const deposit = Math.round(total * (depositPercent/100));
+            const depositLine = deposit ? fmt(deposit) : '';
+
+            // Payments block (from Settings)
+            let paymentsBlock = '';
+            if(Array.isArray(DB.payments) && DB.payments.length > 0){
+                const lines = [];
+                lines.push('📲 Реквизиты:');
+                DB.payments.forEach((p) => {
+                    const title = String(p?.title ?? '').trim();
+                    const text = String(p?.text ?? '').trim();
+                    if(!title && !text) return;
+                    if(title) lines.push(`${title}:`);
+                    if(text){
+                        text.split('\n').forEach(line => {
+                            const ln = String(line ?? '').trim();
+                            if(ln) lines.push(ln);
+                        });
+                    }
+                });
+                paymentsBlock = lines.join('\n');
+            }
+
+            return {
+                performer,
+                clientName: client || 'Клиент',
+                clientHi,
+                date,
+                city,
+                type,
+                total,
+                depositPercent,
+                deposit,
+                depositLine,
+                paymentsBlock
+            };
+        },
+
+        open: () => {
+            const modal = el('sales-modal');
+            if(!modal) return;
+
+            Touch.ensureTemplates();
+
+            Sales.showAll = false;
+            Sales.currentId = null;
+
+            modal.classList.add('active');
+            if(window.__iosFix) window.__iosFix.lockBody();
+            if(window.__iosFix) window.__iosFix.setHeights();
+
+            Sales.render();
+
+            // focus search (helps on iPhone)
+            setTimeout(() => { try{ el('sales-search')?.focus(); }catch(_){} }, 80);
+        },
+
+        close: () => {
+            const modal = el('sales-modal');
+            if(!modal) return;
+            modal.classList.remove('active');
+
+            if(window.__iosFix) window.__iosFix.unlockBody();
+            if(window.__iosFix && window.__iosFix.onModalClose) window.__iosFix.onModalClose();
+            if(window.__iosFix) window.__iosFix.setHeights();
+        },
+
+        select: (id) => {
+            Sales.currentId = id;
+            Sales.renderPreview();
+            Sales.renderListActive();
+        },
+
+        renderListActive: () => {
+            const list = el('sales-list');
+            if(!list) return;
+            list.querySelectorAll('.sales-item').forEach(node => {
+                const id = node.getAttribute('data-id');
+                node.classList.toggle('active', id === Sales.currentId);
+            });
+        },
+
+        renderPreview: () => {
+            const preview = el('sales-preview');
+            if(!preview) return;
+
+            const tpl = Touch.templates().find(t => t.id === Sales.currentId) || null;
+            if(!tpl){ preview.value = ''; return; }
+
+            const ctx = Sales.getCtx();
+            const msg = Touch.applyTokens(tpl.body || '', ctx);
+            preview.value = msg;
+        },
+
+        render: () => {
+            Sales.bindOnce();
+
+            const q = (el('sales-search')?.value || '').trim().toLowerCase();
+            const all = Touch.templates();
+            const pool = Sales.showAll ? all : all.filter(Sales.isSalesTpl);
+
+            const list = pool.filter(t => {
+                if(!q) return true;
+                const l = (t.label || '').toLowerCase();
+                const b = (t.body || '').toLowerCase();
+                return l.includes(q) || b.includes(q);
+            });
+
+            const listEl = el('sales-list');
+            if(listEl){
+                listEl.innerHTML = '';
+                if(list.length === 0){
+                    listEl.innerHTML = `<div class="tpl-sub">Ничего не найдено. Попробуй другой запрос или включи “Показать все”.</div>`;
+                } else {
+                    list.forEach(t => {
+                        const div = document.createElement('div');
+                        div.className = 'sales-item' + (t.id === Sales.currentId ? ' active' : '');
+                        div.setAttribute('data-id', t.id);
+                        div.innerHTML = `
+                            <div class="title">${Touch.esc(t.label)}</div>
+                            <div class="hint">Тап — открыть в предпросмотре. Переменные: {{clientName}}, {{date}}, {{city}}, {{depositPercent}}…</div>
+                        `;
+                        div.onclick = () => Sales.select(t.id);
+                        listEl.appendChild(div);
+                    });
+                }
+            }
+
+            // Default selection (first item)
+            if(!Sales.currentId){
+                const first = list[0];
+                if(first) Sales.currentId = first.id;
+            }
+            Sales.renderPreview();
+            Sales.renderListActive();
+        },
+
+        copy: async () => {
+            const preview = el('sales-preview');
+            const text = (preview?.value || '').trim();
+            if(!text){ Touch.toast('Сначала выбери скрипт'); return; }
+            const ok = await copyTextToClipboard(text);
+            Touch.toast(ok ? 'Скопировано' : 'Не удалось скопировать');
+        },
+
+        applyToClipboardPlain: async () => {
+            const preview = el('sales-preview');
+            const clean = Sales.sanitizePlain(preview?.value || '');
+            if(!clean){ Touch.toast('Сначала выбери скрипт'); return; }
+            const ok = await copyTextToClipboard(clean);
+            Touch.toast(ok ? 'Скопировано (чистый текст)' : 'Не удалось скопировать');
+        },
+
+        _bound: false,
+        bindOnce: () => {
+            if(Sales._bound) return;
+            Sales._bound = true;
+
+            const search = el('sales-search');
+            if(search){
+                search.addEventListener('input', () => Sales.render());
+            }
+
+            // Long-press on title toggles "show all" (no extra UI clutter)
+            const title = document.querySelector('#sales-modal .modal-title');
+            if(title){
+                let t0 = 0;
+                title.addEventListener('touchstart', ()=>{ t0 = Date.now(); }, {passive:true});
+                title.addEventListener('touchend', ()=>{
+                    const dt = Date.now()-t0;
+                    if(dt > 420){
+                        Sales.showAll = !Sales.showAll;
+                        Touch.toast(Sales.showAll ? 'Показать все: ВКЛ' : 'Только продажи: ВКЛ');
+                        Sales.render();
+                    }
+                }, {passive:true});
+            }
+        }
+    };
+
     // --- Make objects available to inline onclick/onchange handlers (iOS/Safari-safe) ---
     try {
         window.switchTab = switchTab;
@@ -2591,143 +3011,170 @@ Touch.renderTplEditor();
 
 Storage.load();
 
-// --- v23 iPhone notch + PWA stable viewport (FUNDAMENTAL FIX) ---
-// Fixes: keyboard jumps in Add-to-Home-Screen, modal text editing jumps, tabbar black gap after closing.
-(function(){
-  const root = document.documentElement;
+// --- iOS PWA (Add to Home Screen) фундаментальный фикс: viewport, клавиатура, прыжки форм (v24) ---
+    (function(){
+        const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+        const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (navigator.standalone === true);
 
-  function ensureShell(){
-    if(document.getElementById('app-shell')) return;
+        // В браузере Safari всё обычно ок — фиксим именно режим “веб‑приложение”.
+        if(!isIOS || !isStandalone) return;
 
-    const shell = document.createElement('div');
-    shell.id = 'app-shell';
+        const root = document.documentElement;
+        const body = document.body;
 
-    const scroll = document.createElement('div');
-    scroll.id = 'app-scroll';
-    shell.appendChild(scroll);
+        function ensureShell(){
+            if(document.getElementById('app-shell')) return;
 
-    // Move main views into the internal scroller (no window scrolling).
-    Array.from(document.querySelectorAll('body > .view')).forEach(v => scroll.appendChild(v));
+            const shell = document.createElement('div');
+            shell.id = 'app-shell';
 
-    // Move overlays into the shell (tabs, modals, toast).
-    const tabs = document.querySelector('body > .tabs');
-    if(tabs) shell.appendChild(tabs);
+            const scroll = document.createElement('div');
+            scroll.id = 'app-scroll';
 
-    Array.from(document.querySelectorAll('body > .modal')).forEach(m => shell.appendChild(m));
+            // move views into scroll
+            document.querySelectorAll('.view').forEach(v => scroll.appendChild(v));
 
-    const toast = document.getElementById('toast');
-    if(toast) shell.appendChild(toast);
+            // move tabs into shell
+            const tabs = document.querySelector('.tabs');
+            if(tabs) shell.appendChild(tabs);
 
-    // Insert shell before the first script tag (keep scripts at the end untouched).
-    const firstScript = document.querySelector('body > script');
-    document.body.insertBefore(shell, firstScript || null);
+            shell.appendChild(scroll);
+            document.body.appendChild(shell);
 
-    // Lock page scroll (PWA iOS keyboard autoscroll bug).
-    document.documentElement.classList.add('pwa-fixed');
-    document.body.classList.add('pwa-fixed');
+            body.classList.add('pwa-fixed');
 
-    // Ensure we are at top (some iOS PWAs keep scrollY).
-    try{ window.scrollTo(0,0); }catch(_){}
-  }
+            // move modals above shell (keep as body children but after shell for proper stacking)
+            document.querySelectorAll('.modal').forEach(m => body.appendChild(m));
+        }
 
-  function setHeights(){
-    const vv = window.visualViewport;
-    const vvHeight = vv ? vv.height : window.innerHeight;
-    const vvTop = vv ? vv.offsetTop : 0;
+        function setHeights(){
+            const vv = window.visualViewport;
+            const h = vv ? vv.height : window.innerHeight;
 
-    root.style.setProperty('--vv-height', Math.round(vvHeight) + 'px');
-    root.style.setProperty('--vv-top', Math.round(vvTop) + 'px');
+            root.style.setProperty('--vv-height', Math.round(h) + 'px');
 
-    // Keyboard height estimate (best-effort)
-    let kb = 0;
-    if(vv){
-      kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-    }
-    root.style.setProperty('--kb', Math.round(kb) + 'px');
+            // keyboard height (rough but reliable for layout)
+            let kb = 0;
+            if(vv) kb = Math.max(0, Math.round(window.innerHeight - vv.height));
+            root.style.setProperty('--kb', kb + 'px');
 
-    // Legacy var used in existing CSS
-    root.style.setProperty('--app-height', Math.round(vvHeight) + 'px');
-  }
+            if(kb > 40) body.classList.add('kb-open'); else body.classList.remove('kb-open');
+        }
 
-  let savedScrollTop = 0;
-  function lockBody(){
-    const sc = document.getElementById('app-scroll');
-    if(sc){
-      savedScrollTop = sc.scrollTop || 0;
-      sc.dataset.savedScrollTop = String(savedScrollTop);
-      sc.style.overflow = 'hidden';
-    }
-    root.classList.add('modal-open');
-  }
+        // Keep window at top — iOS иногда пытается проскроллить “страницу” при фокусе
+        function pinWindowTop(){
+            try { window.scrollTo(0,0); } catch(_) {}
+        }
 
-  function unlockBody(){
-    const sc = document.getElementById('app-scroll');
-    if(sc){
-      sc.style.overflow = '';
-      const st = parseFloat(sc.dataset.savedScrollTop || '0') || 0;
-      sc.scrollTop = st;
-    }
-    root.classList.remove('modal-open');
+        // Ensure focused input/textarea stays visible INSIDE the correct scroller (modal or app-scroll)
+        function ensureVisible(target){
+            if(!target) return;
 
-    // Force a couple recalcs to kill iOS black gaps after keyboard close / modal close.
-    requestAnimationFrame(() => {
-      setHeights();
-      requestAnimationFrame(setHeights);
-    });
-  }
+            const modal = target.closest('.modal.active');
+            const scroller = modal
+                ? (target.closest('.modal-scroll') || modal.querySelector('.modal-scroll'))
+                : document.getElementById('app-scroll');
 
-  // Keep the window at top (safety net)
-  function preventWindowScroll(){
-    try{
-      if(window.scrollY !== 0) window.scrollTo(0,0);
-    }catch(_){}
-  }
+            if(!scroller) return;
 
-  ensureShell();
-  setHeights();
+            const pad = 14;
+            const vv = window.visualViewport;
+            const vvH = vv ? vv.height : window.innerHeight;
 
-  const vv = window.visualViewport;
-  if(vv){
-    vv.addEventListener('resize', setHeights);
-    vv.addEventListener('scroll', setHeights);
-  }
-  window.addEventListener('resize', setHeights);
-  window.addEventListener('orientationchange', () => setTimeout(setHeights, 60));
-  window.addEventListener('scroll', preventWindowScroll, {passive:true});
+            const sRect = scroller.getBoundingClientRect();
+            const tRect = target.getBoundingClientRect();
 
-  // When focusing inputs inside modals, adjust ONLY the modal scroller (never the window).
-  document.addEventListener('focusin', (e) => {
-    const t = e.target;
-    if(!t || !t.matches || !t.matches('input, textarea, select')) return;
+            const visibleTop = Math.max(sRect.top + pad, pad);
+            const visibleBottom = Math.min(sRect.bottom - pad, vvH - pad);
 
-    const modal = t.closest('.modal.active');
-    if(!modal) return;
+            if(tRect.bottom > visibleBottom){
+                scroller.scrollTop += (tRect.bottom - visibleBottom);
+            } else if(tRect.top < visibleTop){
+                scroller.scrollTop -= (visibleTop - tRect.top);
+            }
+        }
 
-    const scroller = t.closest('.modal-scroll') || modal.querySelector('.modal-scroll');
-    if(!scroller) return;
+        // Public API used by modals
+        window.__iosFix = {
+            setHeights,
+            lockBody: () => { root.classList.add('modal-open'); },
+            unlockBody: () => { root.classList.remove('modal-open'); },
+            onModalClose: () => {
+                // iOS любит “додумывать” высоты после закрытия — обновим несколько раз
+                setHeights();
+                setTimeout(setHeights, 80);
+                setTimeout(setHeights, 180);
+                pinWindowTop();
+            }
+        };
 
-    // Defer until keyboard animation starts; do not use scrollIntoView (it triggers window jumps on iOS).
-    setTimeout(() => {
-      try{
-        const r = t.getBoundingClientRect();
-        const s = scroller.getBoundingClientRect();
+        // Init
+        ensureShell();
+        setHeights();
+        pinWindowTop();
 
-        const vv = window.visualViewport;
-        const top = (vv ? vv.offsetTop : 0) + 12;
-        const bottom = (vv ? (vv.offsetTop + vv.height) : window.innerHeight) - 12;
+        // VisualViewport listeners
+        if(window.visualViewport){
+            window.visualViewport.addEventListener('resize', () => { setHeights(); pinWindowTop(); });
+            window.visualViewport.addEventListener('scroll', () => { setHeights(); pinWindowTop(); });
+        }
+        window.addEventListener('orientationchange', () => setTimeout(() => { setHeights(); pinWindowTop(); }, 180));
+        window.addEventListener('resize', () => setTimeout(() => { setHeights(); pinWindowTop(); }, 120));
 
-        const visTop = Math.max(s.top + 12, top);
-        const visBot = Math.min(s.bottom - 12, bottom);
+        // Focus / blur: fight the “jump down” bug
+        document.addEventListener('focusin', (e) => {
+            const t = e.target;
+            if(!t) return;
+            const tag = (t.tagName || '').toUpperCase();
+            const isInput = (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT');
 
-        if(r.bottom > visBot) scroller.scrollTop += (r.bottom - visBot);
-        if(r.top < visTop) scroller.scrollTop -= (visTop - r.top);
-      }catch(_){}
-    }, 80);
-  }, true);
+            if(!isInput) return;
 
-  // Expose for existing Calendar/Templates code
-  window.__iosFix = { setHeights, lockBody, unlockBody };
-})();
+            // run a few times because iOS animates keyboard + does internal scrolling
+            pinWindowTop();
+            setTimeout(() => { setHeights(); ensureVisible(t); pinWindowTop(); }, 0);
+            setTimeout(() => { setHeights(); ensureVisible(t); pinWindowTop(); }, 80);
+            setTimeout(() => { setHeights(); ensureVisible(t); pinWindowTop(); }, 160);
+        }, true);
+
+        document.addEventListener('focusout', () => {
+            setTimeout(() => { setHeights(); pinWindowTop(); }, 60);
+            setTimeout(() => { setHeights(); pinWindowTop(); }, 180);
+        }, true);
+
+        // Prevent accidental window scroll (standalone should behave like app)
+        window.addEventListener('scroll', () => pinWindowTop(), {passive:true});
+    })();
+;
+
+
+    // --- Manifest (Android/desktop) via Blob (single-folder friendly) ---
+    (function(){
+        try{
+            const manifest = {
+                name: "Productive Magic",
+                short_name: "Productive Magic",
+                start_url: ".",
+                scope: ".",
+                display: "standalone",
+                background_color: "#0b0c10",
+                theme_color: "#0b0c10",
+                icons: [
+                    { src: "icon-192-pm.png", sizes: "192x192", type: "image/png" },
+                    { src: "icon-512-pm.png", sizes: "512x512", type: "image/png" }
+                ]
+            };
+            const blob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+            const url = URL.createObjectURL(blob);
+            let link = document.querySelector('link[rel="manifest"]');
+            if(!link){
+                link = document.createElement('link');
+                link.rel = 'manifest';
+                document.head.appendChild(link);
+            }
+            link.href = url;
+        }catch(_){}
+    })();
 
 </script>
 </body>
