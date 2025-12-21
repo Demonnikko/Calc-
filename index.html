@@ -1058,6 +1058,122 @@ body{
 /* Prevent “rubber band” black bars */
 #app-shell, #app-scroll{ overscroll-behavior: none; }
 
+
+/* =========================
+   v31: iPhone-native PWA shell fix
+   - stable safe areas (notch / home indicator)
+   - no “black stripe” under tabbar
+   - modals behave like iOS sheets
+   - prevents background scroll while modal open
+   ========================= */
+:root{
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* Even when env() returns 0 in some PWA states, keep comfortable padding */
+  --safe-bottom-pad: max(var(--safe-bottom), 16px);
+
+  --tabs-height: 62px;
+  --tabs-h: calc(var(--tabs-height) + var(--safe-bottom-pad));
+}
+
+html, body{
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: var(--bg-body) !important;
+}
+
+#app-shell{
+  position: fixed !important;
+  left: 0; right: 0;
+  top: var(--vv-top, 0px) !important;
+  height: var(--vv-height, 100dvh) !important;
+  background: var(--bg-body) !important;
+  overflow: hidden !important;
+}
+
+/* Single scroll container, tabbar never overlays content */
+#app-scroll{
+  position: absolute !important;
+  left: 0; right: 0;
+  top: 0 !important;
+  bottom: var(--tabs-h) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  padding-top: calc(var(--safe-top) + 10px) !important;
+  padding-bottom: 16px !important;
+  scroll-padding-bottom: calc(var(--tabs-h) + 18px) !important;
+}
+
+#app-shell .tabs{
+  position: absolute !important;
+  left: 0; right: 0;
+  bottom: 0 !important;
+  height: var(--tabs-h) !important;
+  padding-bottom: var(--safe-bottom-pad) !important;
+}
+
+/* When a modal is open, do not let the background scroller move */
+#app-shell.modal-open #app-scroll{
+  overflow: hidden !important;
+}
+
+/* Fullscreen modal overlay */
+#app-shell .modal{
+  position: absolute !important;
+  inset: 0 !important;
+  display: none;
+}
+#app-shell .modal.active{ display: block; }
+
+/* iOS-like sheet: takes almost the whole height, header always visible */
+#app-shell .modal .modal-card{
+  position: absolute !important;
+  left: 0; right: 0; bottom: 0;
+  height: calc(var(--vv-height, 100dvh) - var(--safe-top) - 8px) !important;
+  max-height: calc(var(--vv-height, 100dvh) - var(--safe-top) - 8px) !important;
+  border-radius: 22px 22px 0 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 14px 14px calc(14px + var(--safe-bottom-pad)) 14px !important;
+}
+
+/* Keep modal header pinned while scrolling */
+#app-shell .modal .modal-header{
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 3 !important;
+  padding-top: 6px !important;
+  margin-bottom: 12px !important;
+}
+
+/* Modal scroll area takes the remaining space and respects keyboard */
+#app-shell .modal .modal-scroll{
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(14px + var(--kb, 0px)) !important;
+}
+
+/* Emergency close button (in case header gets hidden) */
+.modal-x{
+  position: absolute;
+  top: calc(var(--safe-top) + 8px);
+  left: 12px;
+  z-index: 9999;
+  background: rgba(28, 28, 30, 0.88);
+  border: 1px solid rgba(255,255,255,0.16);
+  color: #fff;
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-size: 18px;
+  line-height: 1;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.modal-x:active{ transform: scale(.98); opacity: .92; }
+
 </style>
 </head>
 <body class="app">
@@ -3008,78 +3124,137 @@ Touch.renderTplEditor();
                     listEl.innerHTML = `<div class="tpl-sub">Ничего не найдено. Попробуй другой запрос или включи “Показать все”.</div>`;
                 } else {
                     list.forEach(t => {
-                        const div = document.createElement('div');
-                        div.className = 'sales-item' + (t.id === Sales.currentId ? ' active' : '');
-                        div.setAttribute('data-id', t.id);
-                        div.innerHTML = `
-                            <div class="title">${Touch.esc(t.label)}</div>
-                            <div class="hint">Тап — открыть в предпросмотре. Переменные: {{clientName}}, {{date}}, {{city}}, {{depositPercent}}…</div>
-                        `;
-                        div.onclick = () => Sales.select(t.id);
-                        listEl.appendChild(div);
-                    });
+                        const div = document.createElement// --- App viewport + keyboard fix (v31, notch + keyboard stable) ---
+    (function(){
+        const root = document.documentElement;
+        const shell = document.getElementById('app-shell');
+        const scroller = document.getElementById('app-scroll');
+
+        function setViewportVars(){
+            const vv = window.visualViewport;
+            const h = vv ? vv.height : window.innerHeight;
+            const top = vv ? vv.offsetTop : 0;
+
+            root.style.setProperty('--vv-height', Math.round(h) + 'px');
+            root.style.setProperty('--vv-top', Math.round(top) + 'px');
+
+            const kb = vv ? Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)) : 0;
+            root.style.setProperty('--kb', kb + 'px');
+            document.body.classList.toggle('kb-open', kb > 60);
+        }
+
+        function findScrollParent(el){
+            let n = el;
+            while(n && n !== document.body){
+                const st = window.getComputedStyle(n);
+                const oy = st.overflowY;
+                if((oy === 'auto' || oy === 'scroll') && n.scrollHeight > n.clientHeight + 4){
+                    return n;
                 }
+                n = n.parentElement;
             }
+            return scroller || document.body;
+        }
 
-            // Default selection (first item)
-            if(!Sales.currentId){
-                const first = list[0];
-                if(first) Sales.currentId = first.id;
-            }
-            Sales.renderPreview();
-            Sales.renderListActive();
-        },
+        function ensureVisible(el){
+            if(!el) return;
+            const tag = (el.tagName || '').toUpperCase();
+            if(tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') return;
 
-        copy: async () => {
-            const preview = el('sales-preview');
-            const text = (preview?.value || '').trim();
-            if(!text){ Touch.toast('Сначала выбери скрипт'); return; }
-            const ok = await copyTextToClipboard(text);
-            Touch.toast(ok ? 'Скопировано' : 'Не удалось скопировать');
-        },
+            const s = findScrollParent(el);
+            if(!s || !s.getBoundingClientRect) return;
 
-        applyToClipboardPlain: async () => {
-            const preview = el('sales-preview');
-            const clean = Sales.sanitizePlain(preview?.value || '');
-            if(!clean){ Touch.toast('Сначала выбери скрипт'); return; }
-            const ok = await copyTextToClipboard(clean);
-            Touch.toast(ok ? 'Скопировано (чистый текст)' : 'Не удалось скопировать');
-        },
+            const pad = 14;
+            const vv = window.visualViewport;
+            const vvTop = vv ? vv.offsetTop : 0;
+            const vvH = vv ? vv.height : window.innerHeight;
+            const vvBottom = vvTop + vvH;
 
-        _bound: false,
-        bindOnce: () => {
-            if(Sales._bound) return;
-            Sales._bound = true;
+            const sRect = s.getBoundingClientRect();
+            const eRect = el.getBoundingClientRect();
 
-            const search = el('sales-search');
-            if(search){
-                search.addEventListener('input', () => Sales.render());
-            }
+            const visibleTop = Math.max(sRect.top + pad, vvTop + pad);
+            const visibleBottom = Math.min(sRect.bottom - pad, vvBottom - pad);
 
-            // Long-press on title toggles "show all" (no extra UI clutter)
-            const title = document.querySelector('#sales-modal .modal-title');
-            if(title){
-                let t0 = 0;
-                title.addEventListener('touchstart', ()=>{ t0 = Date.now(); }, {passive:true});
-                title.addEventListener('touchend', ()=>{
-                    const dt = Date.now()-t0;
-                    if(dt > 420){
-                        Sales.showAll = !Sales.showAll;
-                        Touch.toast(Sales.showAll ? 'Показать все: ВКЛ' : 'Только продажи: ВКЛ');
-                        Sales.render();
-                    }
-                }, {passive:true});
+            if(eRect.bottom > visibleBottom){
+                s.scrollTop += (eRect.bottom - visibleBottom);
+            } else if(eRect.top < visibleTop){
+                s.scrollTop -= (visibleTop - eRect.top);
             }
         }
-    };
 
-    // --- Make objects available to inline onclick/onchange handlers (iOS/Safari-safe) ---
-    try {
-        window.switchTab = switchTab;
-        window.App = App;
-        window.Storage = Storage;
-        window.History = History;
-        window.Admin = Admin;
+        // Modal lock: prevent background scroll shifting when keyboard opens
+        (function(){
+            let savedScrollTop = 0;
+            function anyModalOpen(){
+                return !!document.querySelector('#app-shell .modal.active');
+            }
+            function syncLock(){
+                if(!scroller || !shell) return;
+                if(anyModalOpen()){
+                    if(!shell.classList.contains('modal-open')){
+                        savedScrollTop = scroller.scrollTop;
+                        shell.classList.add('modal-open');
+                        scroller.scrollTop = savedScrollTop;
+                    }
+                }else{
+                    if(shell.classList.contains('modal-open')){
+                        shell.classList.remove('modal-open');
+                        scroller.scrollTop = savedScrollTop;
+                    }
+                }
+            }
+            const obs = new MutationObserver(syncLock);
+            document.querySelectorAll('#app-shell .modal').forEach(m => {
+                obs.observe(m, {attributes:true, attributeFilter:['class']});
+            });
+            syncLock();
+        })();
+
+        // Emergency “X” close button for each modal
+        (function(){
+            const map = {
+                'sales-modal': () => (window.Sales && Sales.close && Sales.close()),
+                'event-modal': () => (window.Calendar && Calendar.closeModal && Calendar.closeModal()),
+                'tpl-modal': () => (window.Touch && Touch.closeTplModal && Touch.closeTplModal()),
+            };
+            Object.keys(map).forEach(id => {
+                const m = document.getElementById(id);
+                if(!m) return;
+                if(m.querySelector('.modal-x')) return;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'modal-x';
+                btn.innerText = '×';
+                btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); map[id](); });
+                m.appendChild(btn);
+            });
+        })();
+
+        setViewportVars();
+
+        const vv = window.visualViewport;
+        if(vv){
+            vv.addEventListener('resize', setViewportVars, {passive:true});
+            vv.addEventListener('scroll', setViewportVars, {passive:true});
+        }
+        window.addEventListener('resize', setViewportVars, {passive:true});
+        window.addEventListener('orientationchange', () => setTimeout(setViewportVars, 250), {passive:true});
+
+        let raf = 0;
+        document.addEventListener('focusin', (e) => {
+            const t = e.target;
+            if(!t) return;
+            cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(() => { setViewportVars(); ensureVisible(t); });
+            setTimeout(() => { setViewportVars(); ensureVisible(t); }, 160);
+        }, true);
+
+        document.addEventListener('focusout', () => {
+            setTimeout(setViewportVars, 80);
+        }, true);
+    })();
+dmin = Admin;
         window.Calendar = Calendar;
         if (typeof Touch !== 'undefined') window.Touch = Touch;
         if (typeof HolidayCfg !== 'undefined') window.HolidayCfg = HolidayCfg;
