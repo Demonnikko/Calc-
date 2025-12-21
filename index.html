@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <!-- PWA / iOS Home Screen -->
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="black" name="apple-mobile-web-app-status-bar-style"/>
 <meta content="Productive Magic" name="apple-mobile-web-app-title"/>
 <meta content="#0b0c10" name="theme-color"/>
 <link href="apple-touch-icon-180-pm.png" rel="apple-touch-icon" sizes="180x180"/>
@@ -1040,6 +1040,96 @@ html, body{
 }
 #app-shell .modal-card{
   max-height: calc(var(--vv-height, 100vh) - var(--kb) - 18px) !important;
+}
+
+
+/* =========================
+   FINAL LAYOUT OVERRIDES v35
+   Цель: идеальная safe-area, стабильный таббар, без чёрных полос и без прыжков
+   ========================= */
+
+html, body{
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--bg-body);
+}
+
+/* App shell fills the screen, tabs live INSIDE layout (not overlay) */
+#app-shell{
+  position: fixed !important;
+  inset: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  background: var(--bg-body) !important;
+  z-index: 1;
+}
+
+#app-scroll{
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 14px !important;
+  z-index: 1;
+}
+
+/* Header must always respect the notch and stay on top while scrolling */
+.header{
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 50 !important;
+  background: var(--bg-body) !important;
+  padding-top: calc(var(--safe-top) + 14px) !important;
+  padding-bottom: 12px !important;
+}
+
+/* Tabs: stable height + safe bottom, always clickable */
+#app-shell .tabs{
+  position: relative !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  flex: 0 0 auto !important;
+  height: var(--tabs-total) !important;
+  padding-bottom: var(--safe-bottom) !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+/* Make sure nothing can cover the tab bar */
+.view, .modal{
+  pointer-events: auto;
+}
+.modal{
+  z-index: 10000;
+}
+
+/* Modals: no flying to the bottom when keyboard appears */
+.modal-card{
+  max-height: calc(100dvh - var(--safe-top) - 12px) !important;
+  padding-bottom: calc(22px + var(--safe-bottom) + var(--kb, 0px)) !important;
+}
+.modal-scroll{
+  padding-bottom: calc(12px + var(--kb, 0px)) !important;
+}
+
+/* iOS text inputs: stop zoom + reduce layout shift */
+input, textarea, select{
+  font-size: 16px; /* prevents iOS auto-zoom */
+}
+
+/* Prevent accidental window scrolling */
+body{
+  position: fixed;
+  width: 100%;
 }
 
 </style>
@@ -3002,119 +3092,46 @@ Touch.renderTplEditor();
 Storage.load();
 
 // --- iOS PWA (Add to Home Screen) фундаментальный фикс: viewport, клавиатура, прыжки форм (v24) ---
+    
+    // --- iOS / PWA фундаментальный фикс: safe-area, клавиатура, прыжки ввода (v35) ---
     (function(){
-        const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-        const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (navigator.standalone === true);
-
-        // В браузере Safari всё обычно ок — фиксим именно режим “веб‑приложение”.
-        if(!isIOS || !isStandalone) return;
-
         const root = document.documentElement;
-        const body = document.body;
+        const shell = document.getElementById('app-shell');
+        const appScroll = document.getElementById('app-scroll');
 
-        function ensureShell(){
-            // If shell exists (v34+), just make sure DOM order is correct.
-            const body = document.body;
-            let shell = document.getElementById('app-shell');
-            let scroll = document.getElementById('app-scroll');
-
-            if(!shell){
-                shell = document.createElement('div');
-                shell.id = 'app-shell';
-                body.insertBefore(shell, body.firstChild);
-            }
-            if(!scroll){
-                scroll = document.createElement('div');
-                scroll.id = 'app-scroll';
-                shell.appendChild(scroll);
-            }
-
-            // Move views into scroll (id starts with view-)
-            document.querySelectorAll('.view').forEach(v => {
-                if(v.parentElement !== scroll) scroll.appendChild(v);
-            });
-
-            // Tabs should be inside shell
-            const tabs = document.querySelector('.tabs');
-            if(tabs && tabs.parentElement !== shell) shell.appendChild(tabs);
-
-            // Toast inside shell
-            const toast = document.getElementById('toast');
-            if(toast && toast.parentElement !== shell) shell.appendChild(toast);
-
-            // Keep modals at body level or inside shell? We keep them where they are; CSS pins them.
-            // Critical: disable window scrolling
-            body.classList.add('pwa-fixed');
-        }
-function setHeights(){
+        function setVars(){
             const vv = window.visualViewport;
-            const innerH = window.innerHeight;
-
-            // Cache safe-area insets (works in Safari + PWA)
-            if(!window.__safeInsets){
-                const probe = document.createElement('div');
-                probe.style.cssText = 'position:fixed;inset:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);pointer-events:none;visibility:hidden;';
-                document.body.appendChild(probe);
-                const cs = getComputedStyle(probe);
-                window.__safeInsets = {
-                    top: parseFloat(cs.paddingTop) || 0,
-                    right: parseFloat(cs.paddingRight) || 0,
-                    bottom: parseFloat(cs.paddingBottom) || 0,
-                    left: parseFloat(cs.paddingLeft) || 0,
-                };
-                probe.remove();
-            }
-            const safeB = window.__safeInsets.bottom || 0;
-
-            // Shell height: cover the bottom safe area to avoid "black bar" in standalone
-            const shellH = Math.round(innerH + safeB);
-            root.style.setProperty('--vv-height', shellH + 'px');
-
-            // visualViewport offsetTop (rare but exists)
-            const offTop = (vv && typeof vv.offsetTop === 'number') ? vv.offsetTop : 0;
-            root.style.setProperty('--vv-offset', Math.round(offTop) + 'px');
-
-            // keyboard height (only affects modal max-height, not window scrolling)
             let kb = 0;
             if(vv){
-                kb = Math.max(0, Math.round(innerH - vv.height - offTop));
+                // keyboard / bottom UI height approximation
+                kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
             }
             root.style.setProperty('--kb', kb + 'px');
-
-            if(kb > 40) body.classList.add('kb-open'); else body.classList.remove('kb-open');
-        }
-root.style.setProperty('--kb', kb + 'px');
-
-            if(kb > 40) body.classList.add('kb-open'); else body.classList.remove('kb-open');
         }
 
-        // Keep window at top — iOS иногда пытается проскроллить “страницу” при фокусе
-        function pinWindowTop(){
-            // NO-OP in v34: forcing window.scrollTo() causes jumps on iOS PWA.
-        }
-catch(_) {}
+        function getTabsHeight(){
+            const tabs = shell ? shell.querySelector('.tabs') : document.querySelector('.tabs');
+            if(!tabs) return 0;
+            const r = tabs.getBoundingClientRect();
+            return Math.max(0, r.height);
         }
 
-        // Ensure focused input/textarea stays visible INSIDE the correct scroller (modal or app-scroll)
         function ensureVisible(target){
-            if(!target) return;
+            if(!target || !(target instanceof HTMLElement)) return;
 
-            const modal = target.closest('.modal.active');
-            const scroller = modal
-                ? (target.closest('.modal-scroll') || modal.querySelector('.modal-scroll'))
-                : document.getElementById('app-scroll');
-
+            // Scroll inside closest scrollable, never the window
+            const scroller = target.closest('.modal-scroll') || appScroll;
             if(!scroller) return;
 
-            const pad = 14;
-            const vv = window.visualViewport;
-            const vvH = vv ? vv.height : window.innerHeight;
-
-            const sRect = scroller.getBoundingClientRect();
             const tRect = target.getBoundingClientRect();
+            const sRect = scroller.getBoundingClientRect();
 
-            const visibleTop = Math.max(sRect.top + pad, pad);
-            const visibleBottom = Math.min(sRect.bottom - pad, vvH - pad);
+            const tabsH = getTabsHeight();
+            const kb = parseFloat(getComputedStyle(root).getPropertyValue('--kb')) || 0;
+
+            // Visible window inside scroller
+            const visibleTop = sRect.top + 12;
+            const visibleBottom = sRect.bottom - tabsH - kb - 12;
 
             if(tRect.bottom > visibleBottom){
                 scroller.scrollTop += (tRect.bottom - visibleBottom);
@@ -3123,62 +3140,44 @@ catch(_) {}
             }
         }
 
-        // Public API used by modals
-        window.__iosFix = {
-            setHeights,
-            lockBody: () => { root.classList.add('modal-open'); },
-            unlockBody: () => { root.classList.remove('modal-open'); },
-            onModalClose: () => {
-                // iOS любит “додумывать” высоты после закрытия — обновим несколько раз
-                setHeights();
-                setTimeout(setHeights, 80);
-                setTimeout(setHeights, 180);
-}
-        };
-
-        // Init
-        ensureShell();
-        setHeights();
-// VisualViewport listeners
-        if(window.visualViewport){
-            window.visualViewport.addEventListener('resize', () => { setHeights();
-});
-            window.visualViewport.addEventListener('scroll', () => { setHeights();
-});
-        }
-        window.addEventListener('orientationchange', () => setTimeout(() => { setHeights();
-}, 180));
-        window.addEventListener('resize', () => setTimeout(() => { setHeights();
-}, 120));
-
-        // Focus / blur: fight the “jump down” bug
+        // Focus handlers: iOS animates keyboard + offsets, so run a few times
         document.addEventListener('focusin', (e) => {
             const t = e.target;
             if(!t) return;
             const tag = (t.tagName || '').toUpperCase();
-            const isInput = (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT');
+            if(tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') return;
 
-            if(!isInput) return;
-
-            // run a few times because iOS animates keyboard + does internal scrolling
-setTimeout(() => { setHeights(); ensureVisible(t);
-}, 0);
-            setTimeout(() => { setHeights(); ensureVisible(t);
-}, 80);
-            setTimeout(() => { setHeights(); ensureVisible(t);
-}, 160);
+            setTimeout(() => { setVars(); ensureVisible(t); }, 0);
+            setTimeout(() => { setVars(); ensureVisible(t); }, 120);
+            setTimeout(() => { setVars(); ensureVisible(t); }, 240);
         }, true);
 
         document.addEventListener('focusout', () => {
-            setTimeout(() => { setHeights();
-}, 60);
-            setTimeout(() => { setHeights();
-}, 180);
+            setTimeout(setVars, 80);
+            setTimeout(setVars, 220);
         }, true);
 
-        // Prevent accidental window scroll (standalone should behave like app)
-        window.addEventListener('scroll', () => pinWindowTop(), {passive:true});
+        // VisualViewport listeners
+        if(window.visualViewport){
+            window.visualViewport.addEventListener('resize', () => setVars());
+            window.visualViewport.addEventListener('scroll', () => setVars());
+        }
+        window.addEventListener('orientationchange', () => setTimeout(setVars, 220));
+        window.addEventListener('resize', () => setTimeout(setVars, 120));
+
+        // Public API used by modals (keep compatibility)
+        window.__iosFix = {
+            setHeights: setVars,
+            lockBody: () => { document.body.classList.add('modal-open'); },
+            unlockBody: () => { document.body.classList.remove('modal-open'); },
+            onModalClose: () => { setVars(); setTimeout(setVars, 140); setTimeout(setVars, 260); }
+        };
+
+        // Init
+        setVars();
     })();
+; 
+;
 ;
 
 
