@@ -983,19 +983,89 @@ html.modal-open #app-scroll{
   overflow: hidden;
 }
 
+
+/* --- v29: APP-SHELL (no “site” feel, no iOS jump) --- */
+:root{
+  --tabs-height: 66px;
+  --tabs-h: calc(var(--tabs-height) + var(--safe-bottom));
+  --tabs-total: var(--tabs-h);
+}
+html, body{
+  height: 100% !important;
+  overflow: hidden !important;
+  background: var(--bg-body);
+}
+body{
+  margin: 0 !important;
+  padding: 0 !important;
+  -webkit-text-size-adjust: 100%;
+}
+/* App viewport tied to visualViewport vars from JS */
+#app-shell{
+  position: fixed;
+  left: 0; right: 0;
+  top: var(--vv-top, 0px);
+  height: var(--vv-height, 100vh);
+  overflow: hidden;
+  background: var(--bg-body);
+}
+/* Main scroll area (only this scrolls) */
+#app-scroll{
+  position: absolute;
+  left: 0; right: 0;
+  top: 0;
+  bottom: var(--tabs-h);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-top: calc(var(--safe-top) + 8px);
+  padding-bottom: 18px;
+  scroll-padding-bottom: calc(var(--tabs-h) + 16px);
+}
+/* Tabs always pinned inside the shell */
+#app-shell .tabs{
+  position: absolute !important;
+  left: 0; right: 0;
+  bottom: 0 !important;
+}
+/* Views shouldn’t add huge bottom padding (shell already accounts for it) */
+#app-shell .view{
+  padding-bottom: 24px !important;
+  min-height: auto !important;
+}
+/* Modals live inside shell; they must cover shell viewport */
+#app-shell .modal{
+  position: absolute !important;
+  inset: 0 !important;
+}
+/* Modal sheet: stable height + internal scrolling */
+#app-shell .modal-card{
+  max-height: calc(var(--vv-height, 100vh) - 10px);
+}
+#app-shell .modal-scroll{
+  -webkit-overflow-scrolling: touch;
+}
+/* Make tabbar feel native */
+#app-shell .tabs{
+  height: var(--tabs-h) !important;
+  padding-bottom: var(--safe-bottom) !important;
+}
+#app-shell .tab-btn{
+  font-size: 11px;
+  padding: 10px 0 6px;
+  line-height: 1.05;
+}
+#app-shell .tab-btn svg{ width: 24px; height: 24px; }
+/* Prevent “rubber band” black bars */
+#app-shell, #app-scroll{ overscroll-behavior: none; }
+
 </style>
 </head>
-<body>
+<body class="app">
+<div id="app-shell">
 
-    <!-- Меню -->
-    <div class="tabs">
-        <div class="tab-btn active" data-tab="calc" onclick="switchTab('calc', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>Калькулятор</div>
-        <div class="tab-btn" data-tab="calendar" onclick="switchTab('calendar', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Календарь</div>
-        <div class="tab-btn" data-tab="history" onclick="switchTab('history', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>История</div>
-        <div class="tab-btn" data-tab="settings" onclick="switchTab('settings', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>Настройки</div>
-    </div>
+  <div id="app-scroll">
 
-    <!-- 1. КАЛЬКУЛЯТОР -->
+<!-- 1. КАЛЬКУЛЯТОР -->
     <div id="view-calc" class="view active">
         <div class="header">
             <div><h1>Productive Magic</h1><p>Конструктор КП</p></div>
@@ -1128,39 +1198,7 @@ html.modal-open #app-scroll{
 </div>
     </div>
 
-
-    <!-- SALES MODAL -->
-    <div id="sales-modal" class="modal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <span class="btn-close" onclick="Sales.close()">Закрыть</span>
-                <div class="modal-title">Продажи</div>
-                <span class="btn-save" onclick="Touch.openTplModal()">Шаблоны</span>
-            </div>
-
-            <div class="modal-scroll">
-                <div class="tpl-sub" style="margin-top:0;">
-                    Быстрые “умные продажи”: выбери скрипт → подставятся имя/город/дата/цена → копируй и отправляй.
-                    Всё редактируется в “Шаблоны”.
-                </div>
-
-                <input id="sales-search" class="text-input" type="text" placeholder="Поиск скрипта или возражения…">
-
-                <div id="sales-list" class="sales-list"></div>
-
-                <div class="section-title" style="margin: 14px 0 10px 0;">Предпросмотр</div>
-                <textarea id="sales-preview" class="touch-message" rows="6" placeholder="Выбери скрипт выше…"></textarea>
-
-                <div class="tpl-actions" style="padding: 14px 0 8px 0;">
-                    <button class="touch-pill touch-primary" onclick="Sales.copy()" type="button">Скопировать</button>
-                    <button class="touch-pill ghost" onclick="Sales.applyToClipboardPlain()" type="button">Скопировать (чистый текст)</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- 2. КАЛЕНДАРЬ -->
+<!-- 2. КАЛЕНДАРЬ -->
     <div id="view-calendar" class="view">
         <div class="header"><h1>Календарь</h1><div class="header-btn-add" onclick="Calendar.openModal()">+</div></div>
         <div class="calendar-header">
@@ -1256,7 +1294,46 @@ html.modal-open #app-scroll{
 <div class="btn-reset" onclick="Admin.resetAll()">⚠️ Сброс к заводским настройкам</div>
     </div>
 
-    <!-- MODAL -->
+  </div>
+
+<div class="tabs">
+        <div class="tab-btn active" data-tab="calc" onclick="switchTab('calc', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>Калькулятор</div>
+        <div class="tab-btn" data-tab="calendar" onclick="switchTab('calendar', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Календарь</div>
+        <div class="tab-btn" data-tab="history" onclick="switchTab('history', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>История</div>
+        <div class="tab-btn" data-tab="settings" onclick="switchTab('settings', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>Настройки</div>
+    </div>
+
+<!-- SALES MODAL -->
+    <div id="sales-modal" class="modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <span class="btn-close" onclick="Sales.close()">Закрыть</span>
+                <div class="modal-title">Продажи</div>
+                <span class="btn-save" onclick="Touch.openTplModal()">Шаблоны</span>
+            </div>
+
+            <div class="modal-scroll">
+                <div class="tpl-sub" style="margin-top:0;">
+                    Быстрые “умные продажи”: выбери скрипт → подставятся имя/город/дата/цена → копируй и отправляй.
+                    Всё редактируется в “Шаблоны”.
+                </div>
+
+                <input id="sales-search" class="text-input" type="text" placeholder="Поиск скрипта или возражения…">
+
+                <div id="sales-list" class="sales-list"></div>
+
+                <div class="section-title" style="margin: 14px 0 10px 0;">Предпросмотр</div>
+                <textarea id="sales-preview" class="touch-message" rows="6" placeholder="Выбери скрипт выше…"></textarea>
+
+                <div class="tpl-actions" style="padding: 14px 0 8px 0;">
+                    <button class="touch-pill touch-primary" onclick="Sales.copy()" type="button">Скопировать</button>
+                    <button class="touch-pill ghost" onclick="Sales.applyToClipboardPlain()" type="button">Скопировать (чистый текст)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- MODAL -->
     <div id="event-modal" class="modal">
         <div class="modal-card">
             <div class="modal-header">
@@ -1318,8 +1395,7 @@ html.modal-open #app-scroll{
         </div>
     </div>
 
-    
-    <!-- TOUCH TEMPLATES MANAGER -->
+<!-- TOUCH TEMPLATES MANAGER -->
     <div id="tpl-modal" class="modal tpl-modal">
         <div class="modal-card">
             <div class="grabber"></div>
@@ -1347,6 +1423,7 @@ html.modal-open #app-scroll{
 
 <div id="toast" class="toast">Скопировано!</div>
 
+</div>
 <script>
     // --- DB INIT (FULL RESTORED v10) ---
     const DEFAULT_DB = {
@@ -3014,147 +3091,80 @@ Touch.renderTplEditor();
 Storage.load();
 
 // --- iOS PWA (Add to Home Screen) фундаментальный фикс: viewport, клавиатура, прыжки форм (v24) ---
+    
+    // --- App viewport + keyboard fix (v30, stable) ---
     (function(){
-        const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-        const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (navigator.standalone === true);
-
-        // В браузере Safari всё обычно ок — фиксим именно режим “веб‑приложение”.
-        if(!isIOS || !isStandalone) return;
-
         const root = document.documentElement;
-        const body = document.body;
+        const scroller = document.getElementById('app-scroll');
 
-        function ensureShell(){
-            if(document.getElementById('app-shell')) return;
-
-            const shell = document.createElement('div');
-            shell.id = 'app-shell';
-
-            const scroll = document.createElement('div');
-            scroll.id = 'app-scroll';
-
-            // move views into scroll
-            document.querySelectorAll('.view').forEach(v => scroll.appendChild(v));
-
-            // move tabs into shell
-            const tabs = document.querySelector('.tabs');
-            if(tabs) shell.appendChild(tabs);
-
-            shell.appendChild(scroll);
-            document.body.appendChild(shell);
-
-            body.classList.add('pwa-fixed');
-
-            // move modals above shell (keep as body children but after shell for proper stacking)
-            document.querySelectorAll('.modal').forEach(m => body.appendChild(m));
-        }
-
-        function setHeights(){
+        function setViewportVars(){
             const vv = window.visualViewport;
             const h = vv ? vv.height : window.innerHeight;
             const top = vv ? vv.offsetTop : 0;
 
-            // Tie layout to the *visual* viewport (iOS keyboard safe)
             root.style.setProperty('--vv-height', Math.round(h) + 'px');
             root.style.setProperty('--vv-top', Math.round(top) + 'px');
 
-            // Back-compat for older CSS bits that still use --app-height
-            root.style.setProperty('--app-height', Math.round(h) + 'px');
-
-            // keyboard height (rough but practical for padding in modals)
-            let kb = 0;
-            if(vv){
-                // subtract offsetTop too (iOS can shift the visual viewport)
-                kb = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
-            }
+            const kb = vv ? Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)) : 0;
             root.style.setProperty('--kb', kb + 'px');
-
-            if(kb > 40) body.classList.add('kb-open'); else body.classList.remove('kb-open');
+            document.body.classList.toggle('kb-open', kb > 40);
         }
 
-        // No-op now: we avoid fighting iOS internal scroll (it causes the "jump down" bug)
-        function pinWindowTop(){}
+        function getScrollerFor(el){
+            const modal = el && el.closest ? el.closest('.modal.active') : null;
+            if(modal){
+                return el.closest('.modal-scroll') || modal.querySelector('.modal-scroll') || modal;
+            }
+            return scroller || document.body;
+        }
 
-        // Ensure focused input/textarea stays visible INSIDE the correct scroller (modal or app-scroll)
-        function ensureVisible(target){
-            if(!target) return;
-
-            const modal = target.closest('.modal.active');
-            const scroller = modal
-                ? (target.closest('.modal-scroll') || modal.querySelector('.modal-scroll'))
-                : document.getElementById('app-scroll');
-
-            if(!scroller) return;
+        function ensureVisible(el){
+            if(!el) return;
+            const s = getScrollerFor(el);
+            if(!s || !s.getBoundingClientRect) return;
 
             const pad = 14;
             const vv = window.visualViewport;
-
             const vvTop = vv ? vv.offsetTop : 0;
             const vvH = vv ? vv.height : window.innerHeight;
             const vvBottom = vvTop + vvH;
 
-            const sRect = scroller.getBoundingClientRect();
-            const tRect = target.getBoundingClientRect();
+            const sRect = s.getBoundingClientRect();
+            const eRect = el.getBoundingClientRect();
 
             const visibleTop = Math.max(sRect.top + pad, vvTop + pad);
             const visibleBottom = Math.min(sRect.bottom - pad, vvBottom - pad);
 
-            if(tRect.bottom > visibleBottom){
-                scroller.scrollTop += (tRect.bottom - visibleBottom);
-            } else if(tRect.top < visibleTop){
-                scroller.scrollTop -= (visibleTop - tRect.top);
+            if(eRect.bottom > visibleBottom){
+                s.scrollTop += (eRect.bottom - visibleBottom);
+            } else if(eRect.top < visibleTop){
+                s.scrollTop -= (visibleTop - eRect.top);
             }
         }
 
-        // Public API used by modals
-        window.__iosFix = {
-            setHeights,
-            lockBody: () => { root.classList.add('modal-open'); },
-            unlockBody: () => { root.classList.remove('modal-open'); },
-            onModalClose: () => {
-                // iOS любит “додумывать” высоты после закрытия — обновим несколько раз
-                setHeights();
-                setTimeout(setHeights, 80);
-                setTimeout(setHeights, 180);
-                }
-        };
+        setViewportVars();
 
-        // Init
-        ensureShell();
-        setHeights();
-        // VisualViewport listeners
-        if(window.visualViewport){
-            window.visualViewport.addEventListener('resize', () => { setHeights(); });
-            window.visualViewport.addEventListener('scroll', () => { setHeights(); });
+        const vv = window.visualViewport;
+        if(vv){
+            vv.addEventListener('resize', setViewportVars, {passive:true});
+            vv.addEventListener('scroll', setViewportVars, {passive:true});
         }
-        window.addEventListener('orientationchange', () => setTimeout(() => { setHeights(); }, 180));
-        window.addEventListener('resize', () => setTimeout(() => { setHeights(); }, 120));
+        window.addEventListener('resize', setViewportVars, {passive:true});
+        window.addEventListener('orientationchange', () => setTimeout(setViewportVars, 250), {passive:true});
 
-        // Focus / blur: fight the “jump down” bug
+        let raf = 0;
         document.addEventListener('focusin', (e) => {
             const t = e.target;
             if(!t) return;
             const tag = (t.tagName || '').toUpperCase();
-            const isInput = (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT');
-            if(!isInput) return;
+            if(tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') return;
 
-            // run a few times because iOS animates keyboard + does internal scrolling
-            setTimeout(() => { setHeights(); ensureVisible(t); }, 0);
-            setTimeout(() => { setHeights(); ensureVisible(t); }, 80);
-            setTimeout(() => { setHeights(); ensureVisible(t); }, 160);
+            cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(() => { setViewportVars(); ensureVisible(t); });
+            setTimeout(() => { setViewportVars(); ensureVisible(t); }, 140);
         }, true);
-
-        document.addEventListener('focusout', () => {
-            setTimeout(() => { setHeights(); }, 60);
-            setTimeout(() => { setHeights(); }, 180);
-        }, true);
-
-        // Track visual viewport changes (keyboard / address bar animations)
-        if(window.visualViewport){
-            window.visualViewport.addEventListener('resize', () => { setHeights(); }, {passive:true});
-            window.visualViewport.addEventListener('scroll', () => { setHeights(); }, {passive:true});
-        }
     })();
+
 ;
 
 
