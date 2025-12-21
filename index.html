@@ -19,8 +19,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192-pm.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512-pm.png">
 <title>Productive Magic</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
+<style>
         /* --- iOS SYSTEM THEME (PLATINUM) --- */
         :root {
             color-scheme: dark;
@@ -109,7 +108,7 @@
         .chevron { color: #555; width: 14px; height: 14px; opacity: 0.5; }
 
         .native-control { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            position: absolute; top: var(--vv-top, 0px); left: 0; width: 100%; height: 100%; 
             opacity: 0; cursor: pointer; font-size: 16px; z-index: 10;
         }
         
@@ -935,7 +934,7 @@ body{
 #app-shell{
   position: fixed;
   left: 0;
-  top: 0;
+  top: var(--vv-top, 0px);
   width: 100%;
   height: var(--vv-height, 100vh);
   overflow: hidden;
@@ -949,6 +948,7 @@ body{
   bottom: var(--tabs-total);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  padding-top: calc(var(--safe-top, 0px) + 10px);
   padding-bottom: 16px;
 }
 
@@ -1690,9 +1690,7 @@ html.modal-open #app-scroll{
 
             // CLEAN COPY (текст для клиента)
             const dateStr = parseISODate(State.date).toLocaleDateString('ru-RU',{weekday:'short', day:'numeric', month:'long'});
-            let lines = [`Здравствуйте, ${name}!`];
-            lines.push(``);
-            lines.push(`✨ РАСЧЕТ: ${type.toUpperCase()} ✨`);
+            let lines = [`✨ РАСЧЕТ: ${type.toUpperCase()} ✨`];
             lines.push(``);
             lines.push(`📅 ${dateStr}`);
             const cityText = (el('disp-city')?.innerText || el('inp-city')?.value || '').trim();
@@ -3050,21 +3048,28 @@ Storage.load();
         function setHeights(){
             const vv = window.visualViewport;
             const h = vv ? vv.height : window.innerHeight;
+            const top = vv ? vv.offsetTop : 0;
 
+            // Tie layout to the *visual* viewport (iOS keyboard safe)
             root.style.setProperty('--vv-height', Math.round(h) + 'px');
+            root.style.setProperty('--vv-top', Math.round(top) + 'px');
 
-            // keyboard height (rough but reliable for layout)
+            // Back-compat for older CSS bits that still use --app-height
+            root.style.setProperty('--app-height', Math.round(h) + 'px');
+
+            // keyboard height (rough but practical for padding in modals)
             let kb = 0;
-            if(vv) kb = Math.max(0, Math.round(window.innerHeight - vv.height));
+            if(vv){
+                // subtract offsetTop too (iOS can shift the visual viewport)
+                kb = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+            }
             root.style.setProperty('--kb', kb + 'px');
 
             if(kb > 40) body.classList.add('kb-open'); else body.classList.remove('kb-open');
         }
 
-        // Keep window at top — iOS иногда пытается проскроллить “страницу” при фокусе
-        function pinWindowTop(){
-            try { window.scrollTo(0,0); } catch(_) {}
-        }
+        // No-op now: we avoid fighting iOS internal scroll (it causes the "jump down" bug)
+        function pinWindowTop(){}
 
         // Ensure focused input/textarea stays visible INSIDE the correct scroller (modal or app-scroll)
         function ensureVisible(target){
@@ -3079,19 +3084,23 @@ Storage.load();
 
             const pad = 14;
             const vv = window.visualViewport;
+
+            const vvTop = vv ? vv.offsetTop : 0;
             const vvH = vv ? vv.height : window.innerHeight;
+            const vvBottom = vvTop + vvH;
 
             const sRect = scroller.getBoundingClientRect();
             const tRect = target.getBoundingClientRect();
 
-            const visibleTop = Math.max(sRect.top + pad, pad);
-            const visibleBottom = Math.min(sRect.bottom - pad, vvH - pad);
+            const visibleTop = Math.max(sRect.top + pad, vvTop + pad);
+            const visibleBottom = Math.min(sRect.bottom - pad, vvBottom - pad);
 
             if(tRect.bottom > visibleBottom){
                 scroller.scrollTop += (tRect.bottom - visibleBottom);
             } else if(tRect.top < visibleTop){
                 scroller.scrollTop -= (visibleTop - tRect.top);
             }
+        }
         }
 
         // Public API used by modals
@@ -3104,22 +3113,19 @@ Storage.load();
                 setHeights();
                 setTimeout(setHeights, 80);
                 setTimeout(setHeights, 180);
-                pinWindowTop();
-            }
+                }
         };
 
         // Init
         ensureShell();
         setHeights();
-        pinWindowTop();
-
         // VisualViewport listeners
         if(window.visualViewport){
-            window.visualViewport.addEventListener('resize', () => { setHeights(); pinWindowTop(); });
-            window.visualViewport.addEventListener('scroll', () => { setHeights(); pinWindowTop(); });
+            window.visualViewport.addEventListener('resize', () => { setHeights(); });
+            window.visualViewport.addEventListener('scroll', () => { setHeights(); });
         }
-        window.addEventListener('orientationchange', () => setTimeout(() => { setHeights(); pinWindowTop(); }, 180));
-        window.addEventListener('resize', () => setTimeout(() => { setHeights(); pinWindowTop(); }, 120));
+        window.addEventListener('orientationchange', () => setTimeout(() => { setHeights(); }, 180));
+        window.addEventListener('resize', () => setTimeout(() => { setHeights(); }, 120));
 
         // Focus / blur: fight the “jump down” bug
         document.addEventListener('focusin', (e) => {
@@ -3127,25 +3133,27 @@ Storage.load();
             if(!t) return;
             const tag = (t.tagName || '').toUpperCase();
             const isInput = (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT');
-
             if(!isInput) return;
 
             // run a few times because iOS animates keyboard + does internal scrolling
-            pinWindowTop();
-            setTimeout(() => { setHeights(); ensureVisible(t); pinWindowTop(); }, 0);
-            setTimeout(() => { setHeights(); ensureVisible(t); pinWindowTop(); }, 80);
-            setTimeout(() => { setHeights(); ensureVisible(t); pinWindowTop(); }, 160);
+            setTimeout(() => { setHeights(); ensureVisible(t); }, 0);
+            setTimeout(() => { setHeights(); ensureVisible(t); }, 80);
+            setTimeout(() => { setHeights(); ensureVisible(t); }, 160);
         }, true);
 
         document.addEventListener('focusout', () => {
-            setTimeout(() => { setHeights(); pinWindowTop(); }, 60);
-            setTimeout(() => { setHeights(); pinWindowTop(); }, 180);
+            setTimeout(() => { setHeights(); }, 60);
+            setTimeout(() => { setHeights(); }, 180);
         }, true);
 
-        // Prevent accidental window scroll (standalone should behave like app)
-        window.addEventListener('scroll', () => pinWindowTop(), {passive:true});
+        // Track visual viewport changes (keyboard / address bar animations)
+        if(window.visualViewport){
+            window.visualViewport.addEventListener('resize', () => { setHeights(); }, {passive:true});
+            window.visualViewport.addEventListener('scroll', () => { setHeights(); }, {passive:true});
+        }
     })();
 ;
+
 
 
     // --- Manifest (Android/desktop) via Blob (single-folder friendly) ---
