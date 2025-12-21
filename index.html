@@ -36,6 +36,10 @@
             --separator: #38383A;
             --safe-top: env(safe-area-inset-top);
             --safe-bottom: env(safe-area-inset-bottom);
+        
+            --tabs-height: 72px; /* visual bar height */
+            --tabs-h: calc(var(--tabs-height) + var(--safe-bottom));
+            --tabs-total: var(--tabs-h);
         }
 
         body {
@@ -44,7 +48,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
             margin: 0; padding: 0;
             padding-top: calc(var(--safe-top) + 10px);
-            padding-bottom: calc(var(--safe-bottom) + 90px);
+            padding-bottom: var(--tabs-h);
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             -webkit-font-smoothing: antialiased;
@@ -829,7 +833,7 @@ body{
   /* IMPORTANT: keep content above fixed tab bar */
   padding-bottom: calc(var(--tabs-total) + 18px) !important;
   min-height: calc(var(--app-height) - var(--tabs-total) - var(--safe-top) - 10px);
-  scroll-padding-bottom: var(--tabs-total);
+  scroll-padding-bottom: var(--tabs-h);
 }
 
 /* Avoid iOS “black gap” caused by large padding and short tab bar */
@@ -945,7 +949,7 @@ body{
   position: absolute;
   left: 0; right: 0;
   top: 0;
-  bottom: var(--tabs-total);
+  bottom: var(--tabs-h);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding-top: calc(var(--safe-top, 0px) + 10px);
@@ -3100,7 +3104,6 @@ Storage.load();
             } else if(tRect.top < visibleTop){
                 scroller.scrollTop -= (visibleTop - tRect.top);
             }
-        }
         }
 
         // Public API used by modals
