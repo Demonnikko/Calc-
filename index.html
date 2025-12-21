@@ -19,7 +19,8 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192-pm.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512-pm.png">
 <title>Productive Magic</title>
-<style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
         /* --- iOS SYSTEM THEME (PLATINUM) --- */
         :root {
             color-scheme: dark;
@@ -36,10 +37,6 @@
             --separator: #38383A;
             --safe-top: env(safe-area-inset-top);
             --safe-bottom: env(safe-area-inset-bottom);
-        
-            --tabs-height: 72px; /* visual bar height */
-            --tabs-h: calc(var(--tabs-height) + var(--safe-bottom));
-            --tabs-total: var(--tabs-h);
         }
 
         body {
@@ -48,7 +45,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
             margin: 0; padding: 0;
             padding-top: calc(var(--safe-top) + 10px);
-            padding-bottom: var(--tabs-h);
+            padding-bottom: calc(var(--safe-bottom) + 90px);
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             -webkit-font-smoothing: antialiased;
@@ -112,7 +109,7 @@
         .chevron { color: #555; width: 14px; height: 14px; opacity: 0.5; }
 
         .native-control { 
-            position: absolute; top: var(--vv-top, 0px); left: 0; width: 100%; height: 100%; 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             opacity: 0; cursor: pointer; font-size: 16px; z-index: 10;
         }
         
@@ -806,7 +803,7 @@ body{
 
 /* --- v12 iPhone adaptive fixes (safe-area + no dead space + scrollable modals) --- */
 :root{
-  --tabs-height: 70px;             /* visual height of tab bar (without safe area) */
+  --tabs-height: 62px;             /* visual height of tab bar (without safe area) */
   --tabs-total: calc(var(--tabs-height) + var(--safe-bottom));
   --app-height: 100vh;             /* will be set by JS to window.innerHeight for iOS keyboard */
 }
@@ -833,7 +830,7 @@ body{
   /* IMPORTANT: keep content above fixed tab bar */
   padding-bottom: calc(var(--tabs-total) + 18px) !important;
   min-height: calc(var(--app-height) - var(--tabs-total) - var(--safe-top) - 10px);
-  scroll-padding-bottom: var(--tabs-h);
+  scroll-padding-bottom: var(--tabs-total);
 }
 
 /* Avoid iOS “black gap” caused by large padding and short tab bar */
@@ -938,7 +935,7 @@ body{
 #app-shell{
   position: fixed;
   left: 0;
-  top: var(--vv-top, 0px);
+  top: 0;
   width: 100%;
   height: var(--vv-height, 100vh);
   overflow: hidden;
@@ -949,10 +946,9 @@ body{
   position: absolute;
   left: 0; right: 0;
   top: 0;
-  bottom: var(--tabs-h);
+  bottom: var(--tabs-total);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-top: calc(var(--safe-top, 0px) + 10px);
   padding-bottom: 16px;
 }
 
@@ -983,205 +979,19 @@ html.modal-open #app-scroll{
   overflow: hidden;
 }
 
-
-/* --- v29: APP-SHELL (no “site” feel, no iOS jump) --- */
-:root{
-  --tabs-height: 66px;
-  --tabs-h: calc(var(--tabs-height) + var(--safe-bottom));
-  --tabs-total: var(--tabs-h);
-}
-html, body{
-  height: 100% !important;
-  overflow: hidden !important;
-  background: var(--bg-body);
-}
-body{
-  margin: 0 !important;
-  padding: 0 !important;
-  -webkit-text-size-adjust: 100%;
-}
-/* App viewport tied to visualViewport vars from JS */
-#app-shell{
-  position: fixed;
-  left: 0; right: 0;
-  top: var(--vv-top, 0px);
-  height: var(--vv-height, 100vh);
-  overflow: hidden;
-  background: var(--bg-body);
-}
-/* Main scroll area (only this scrolls) */
-#app-scroll{
-  position: absolute;
-  left: 0; right: 0;
-  top: 0;
-  bottom: var(--tabs-h);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-top: calc(var(--safe-top) + 8px);
-  padding-bottom: 18px;
-  scroll-padding-bottom: calc(var(--tabs-h) + 16px);
-}
-/* Tabs always pinned inside the shell */
-#app-shell .tabs{
-  position: absolute !important;
-  left: 0; right: 0;
-  bottom: 0 !important;
-}
-/* Views shouldn’t add huge bottom padding (shell already accounts for it) */
-#app-shell .view{
-  padding-bottom: 24px !important;
-  min-height: auto !important;
-}
-/* Modals live inside shell; they must cover shell viewport */
-#app-shell .modal{
-  position: absolute !important;
-  inset: 0 !important;
-}
-/* Modal sheet: stable height + internal scrolling */
-#app-shell .modal-card{
-  max-height: calc(var(--vv-height, 100vh) - 10px);
-}
-#app-shell .modal-scroll{
-  -webkit-overflow-scrolling: touch;
-}
-/* Make tabbar feel native */
-#app-shell .tabs{
-  height: var(--tabs-h) !important;
-  padding-bottom: var(--safe-bottom) !important;
-}
-#app-shell .tab-btn{
-  font-size: 11px;
-  padding: 10px 0 6px;
-  line-height: 1.05;
-}
-#app-shell .tab-btn svg{ width: 24px; height: 24px; }
-/* Prevent “rubber band” black bars */
-#app-shell, #app-scroll{ overscroll-behavior: none; }
-
-
-/* =========================
-   v31: iPhone-native PWA shell fix
-   - stable safe areas (notch / home indicator)
-   - no “black stripe” under tabbar
-   - modals behave like iOS sheets
-   - prevents background scroll while modal open
-   ========================= */
-:root{
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  /* Even when env() returns 0 in some PWA states, keep comfortable padding */
-  --safe-bottom-pad: max(var(--safe-bottom), 16px);
-
-  --tabs-height: 62px;
-  --tabs-h: calc(var(--tabs-height) + var(--safe-bottom-pad));
-}
-
-html, body{
-  height: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  background: var(--bg-body) !important;
-}
-
-#app-shell{
-  position: fixed !important;
-  left: 0; right: 0;
-  top: var(--vv-top, 0px) !important;
-  height: var(--vv-height, 100dvh) !important;
-  background: var(--bg-body) !important;
-  overflow: hidden !important;
-}
-
-/* Single scroll container, tabbar never overlays content */
-#app-scroll{
-  position: absolute !important;
-  left: 0; right: 0;
-  top: 0 !important;
-  bottom: var(--tabs-h) !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch;
-  padding-top: calc(var(--safe-top) + 10px) !important;
-  padding-bottom: 16px !important;
-  scroll-padding-bottom: calc(var(--tabs-h) + 18px) !important;
-}
-
-#app-shell .tabs{
-  position: absolute !important;
-  left: 0; right: 0;
-  bottom: 0 !important;
-  height: var(--tabs-h) !important;
-  padding-bottom: var(--safe-bottom-pad) !important;
-}
-
-/* When a modal is open, do not let the background scroller move */
-#app-shell.modal-open #app-scroll{
-  overflow: hidden !important;
-}
-
-/* Fullscreen modal overlay */
-#app-shell .modal{
-  position: absolute !important;
-  inset: 0 !important;
-  display: none;
-}
-#app-shell .modal.active{ display: block; }
-
-/* iOS-like sheet: takes almost the whole height, header always visible */
-#app-shell .modal .modal-card{
-  position: absolute !important;
-  left: 0; right: 0; bottom: 0;
-  height: calc(var(--vv-height, 100dvh) - var(--safe-top) - 8px) !important;
-  max-height: calc(var(--vv-height, 100dvh) - var(--safe-top) - 8px) !important;
-  border-radius: 22px 22px 0 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  padding: 14px 14px calc(14px + var(--safe-bottom-pad)) 14px !important;
-}
-
-/* Keep modal header pinned while scrolling */
-#app-shell .modal .modal-header{
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 3 !important;
-  padding-top: 6px !important;
-  margin-bottom: 12px !important;
-}
-
-/* Modal scroll area takes the remaining space and respects keyboard */
-#app-shell .modal .modal-scroll{
-  flex: 1 1 auto !important;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(14px + var(--kb, 0px)) !important;
-}
-
-/* Emergency close button (in case header gets hidden) */
-.modal-x{
-  position: absolute;
-  top: calc(var(--safe-top) + 8px);
-  left: 12px;
-  z-index: 9999;
-  background: rgba(28, 28, 30, 0.88);
-  border: 1px solid rgba(255,255,255,0.16);
-  color: #fff;
-  border-radius: 999px;
-  padding: 10px 12px;
-  font-size: 18px;
-  line-height: 1;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-.modal-x:active{ transform: scale(.98); opacity: .92; }
-
 </style>
 </head>
-<body class="app">
-<div id="app-shell">
+<body>
 
-  <div id="app-scroll">
+    <!-- Меню -->
+    <div class="tabs">
+        <div class="tab-btn active" data-tab="calc" onclick="switchTab('calc', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>Калькулятор</div>
+        <div class="tab-btn" data-tab="calendar" onclick="switchTab('calendar', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Календарь</div>
+        <div class="tab-btn" data-tab="history" onclick="switchTab('history', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>История</div>
+        <div class="tab-btn" data-tab="settings" onclick="switchTab('settings', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>Настройки</div>
+    </div>
 
-<!-- 1. КАЛЬКУЛЯТОР -->
+    <!-- 1. КАЛЬКУЛЯТОР -->
     <div id="view-calc" class="view active">
         <div class="header">
             <div><h1>Productive Magic</h1><p>Конструктор КП</p></div>
@@ -1314,7 +1124,39 @@ html, body{
 </div>
     </div>
 
-<!-- 2. КАЛЕНДАРЬ -->
+
+    <!-- SALES MODAL -->
+    <div id="sales-modal" class="modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <span class="btn-close" onclick="Sales.close()">Закрыть</span>
+                <div class="modal-title">Продажи</div>
+                <span class="btn-save" onclick="Touch.openTplModal()">Шаблоны</span>
+            </div>
+
+            <div class="modal-scroll">
+                <div class="tpl-sub" style="margin-top:0;">
+                    Быстрые “умные продажи”: выбери скрипт → подставятся имя/город/дата/цена → копируй и отправляй.
+                    Всё редактируется в “Шаблоны”.
+                </div>
+
+                <input id="sales-search" class="text-input" type="text" placeholder="Поиск скрипта или возражения…">
+
+                <div id="sales-list" class="sales-list"></div>
+
+                <div class="section-title" style="margin: 14px 0 10px 0;">Предпросмотр</div>
+                <textarea id="sales-preview" class="touch-message" rows="6" placeholder="Выбери скрипт выше…"></textarea>
+
+                <div class="tpl-actions" style="padding: 14px 0 8px 0;">
+                    <button class="touch-pill touch-primary" onclick="Sales.copy()" type="button">Скопировать</button>
+                    <button class="touch-pill ghost" onclick="Sales.applyToClipboardPlain()" type="button">Скопировать (чистый текст)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 2. КАЛЕНДАРЬ -->
     <div id="view-calendar" class="view">
         <div class="header"><h1>Календарь</h1><div class="header-btn-add" onclick="Calendar.openModal()">+</div></div>
         <div class="calendar-header">
@@ -1410,46 +1252,7 @@ html, body{
 <div class="btn-reset" onclick="Admin.resetAll()">⚠️ Сброс к заводским настройкам</div>
     </div>
 
-  </div>
-
-<div class="tabs">
-        <div class="tab-btn active" data-tab="calc" onclick="switchTab('calc', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>Калькулятор</div>
-        <div class="tab-btn" data-tab="calendar" onclick="switchTab('calendar', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Календарь</div>
-        <div class="tab-btn" data-tab="history" onclick="switchTab('history', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>История</div>
-        <div class="tab-btn" data-tab="settings" onclick="switchTab('settings', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>Настройки</div>
-    </div>
-
-<!-- SALES MODAL -->
-    <div id="sales-modal" class="modal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <span class="btn-close" onclick="Sales.close()">Закрыть</span>
-                <div class="modal-title">Продажи</div>
-                <span class="btn-save" onclick="Touch.openTplModal()">Шаблоны</span>
-            </div>
-
-            <div class="modal-scroll">
-                <div class="tpl-sub" style="margin-top:0;">
-                    Быстрые “умные продажи”: выбери скрипт → подставятся имя/город/дата/цена → копируй и отправляй.
-                    Всё редактируется в “Шаблоны”.
-                </div>
-
-                <input id="sales-search" class="text-input" type="text" placeholder="Поиск скрипта или возражения…">
-
-                <div id="sales-list" class="sales-list"></div>
-
-                <div class="section-title" style="margin: 14px 0 10px 0;">Предпросмотр</div>
-                <textarea id="sales-preview" class="touch-message" rows="6" placeholder="Выбери скрипт выше…"></textarea>
-
-                <div class="tpl-actions" style="padding: 14px 0 8px 0;">
-                    <button class="touch-pill touch-primary" onclick="Sales.copy()" type="button">Скопировать</button>
-                    <button class="touch-pill ghost" onclick="Sales.applyToClipboardPlain()" type="button">Скопировать (чистый текст)</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-<!-- MODAL -->
+    <!-- MODAL -->
     <div id="event-modal" class="modal">
         <div class="modal-card">
             <div class="modal-header">
@@ -1511,7 +1314,8 @@ html, body{
         </div>
     </div>
 
-<!-- TOUCH TEMPLATES MANAGER -->
+    
+    <!-- TOUCH TEMPLATES MANAGER -->
     <div id="tpl-modal" class="modal tpl-modal">
         <div class="modal-card">
             <div class="grabber"></div>
@@ -1539,7 +1343,6 @@ html, body{
 
 <div id="toast" class="toast">Скопировано!</div>
 
-</div>
 <script>
     // --- DB INIT (FULL RESTORED v10) ---
     const DEFAULT_DB = {
@@ -3124,138 +2927,80 @@ Touch.renderTplEditor();
                     listEl.innerHTML = `<div class="tpl-sub">Ничего не найдено. Попробуй другой запрос или включи “Показать все”.</div>`;
                 } else {
                     list.forEach(t => {
-                        const div = document.createElement// --- App viewport + keyboard fix (v31, notch + keyboard stable) ---
-    (function(){
-        const root = document.documentElement;
-        const shell = document.getElementById('app-shell');
-        const scroller = document.getElementById('app-scroll');
-
-        function setViewportVars(){
-            const vv = window.visualViewport;
-            const h = vv ? vv.height : window.innerHeight;
-            const top = vv ? vv.offsetTop : 0;
-
-            root.style.setProperty('--vv-height', Math.round(h) + 'px');
-            root.style.setProperty('--vv-top', Math.round(top) + 'px');
-
-            const kb = vv ? Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)) : 0;
-            root.style.setProperty('--kb', kb + 'px');
-            document.body.classList.toggle('kb-open', kb > 60);
-        }
-
-        function findScrollParent(el){
-            let n = el;
-            while(n && n !== document.body){
-                const st = window.getComputedStyle(n);
-                const oy = st.overflowY;
-                if((oy === 'auto' || oy === 'scroll') && n.scrollHeight > n.clientHeight + 4){
-                    return n;
-                }
-                n = n.parentElement;
-            }
-            return scroller || document.body;
-        }
-
-        function ensureVisible(el){
-            if(!el) return;
-            const tag = (el.tagName || '').toUpperCase();
-            if(tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') return;
-
-            const s = findScrollParent(el);
-            if(!s || !s.getBoundingClientRect) return;
-
-            const pad = 14;
-            const vv = window.visualViewport;
-            const vvTop = vv ? vv.offsetTop : 0;
-            const vvH = vv ? vv.height : window.innerHeight;
-            const vvBottom = vvTop + vvH;
-
-            const sRect = s.getBoundingClientRect();
-            const eRect = el.getBoundingClientRect();
-
-            const visibleTop = Math.max(sRect.top + pad, vvTop + pad);
-            const visibleBottom = Math.min(sRect.bottom - pad, vvBottom - pad);
-
-            if(eRect.bottom > visibleBottom){
-                s.scrollTop += (eRect.bottom - visibleBottom);
-            } else if(eRect.top < visibleTop){
-                s.scrollTop -= (visibleTop - eRect.top);
-            }
-        }
-
-        // Modal lock: prevent background scroll shifting when keyboard opens
-        (function(){
-            let savedScrollTop = 0;
-            function anyModalOpen(){
-                return !!document.querySelector('#app-shell .modal.active');
-            }
-            function syncLock(){
-                if(!scroller || !shell) return;
-                if(anyModalOpen()){
-                    if(!shell.classList.contains('modal-open')){
-                        savedScrollTop = scroller.scrollTop;
-                        shell.classList.add('modal-open');
-                        scroller.scrollTop = savedScrollTop;
-                    }
-                }else{
-                    if(shell.classList.contains('modal-open')){
-                        shell.classList.remove('modal-open');
-                        scroller.scrollTop = savedScrollTop;
-                    }
+                        const div = document.createElement('div');
+                        div.className = 'sales-item' + (t.id === Sales.currentId ? ' active' : '');
+                        div.setAttribute('data-id', t.id);
+                        div.innerHTML = `
+                            <div class="title">${Touch.esc(t.label)}</div>
+                            <div class="hint">Тап — открыть в предпросмотре. Переменные: {{clientName}}, {{date}}, {{city}}, {{depositPercent}}…</div>
+                        `;
+                        div.onclick = () => Sales.select(t.id);
+                        listEl.appendChild(div);
+                    });
                 }
             }
-            const obs = new MutationObserver(syncLock);
-            document.querySelectorAll('#app-shell .modal').forEach(m => {
-                obs.observe(m, {attributes:true, attributeFilter:['class']});
-            });
-            syncLock();
-        })();
 
-        // Emergency “X” close button for each modal
-        (function(){
-            const map = {
-                'sales-modal': () => (window.Sales && Sales.close && Sales.close()),
-                'event-modal': () => (window.Calendar && Calendar.closeModal && Calendar.closeModal()),
-                'tpl-modal': () => (window.Touch && Touch.closeTplModal && Touch.closeTplModal()),
-            };
-            Object.keys(map).forEach(id => {
-                const m = document.getElementById(id);
-                if(!m) return;
-                if(m.querySelector('.modal-x')) return;
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'modal-x';
-                btn.innerText = '×';
-                btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); map[id](); });
-                m.appendChild(btn);
-            });
-        })();
+            // Default selection (first item)
+            if(!Sales.currentId){
+                const first = list[0];
+                if(first) Sales.currentId = first.id;
+            }
+            Sales.renderPreview();
+            Sales.renderListActive();
+        },
 
-        setViewportVars();
+        copy: async () => {
+            const preview = el('sales-preview');
+            const text = (preview?.value || '').trim();
+            if(!text){ Touch.toast('Сначала выбери скрипт'); return; }
+            const ok = await copyTextToClipboard(text);
+            Touch.toast(ok ? 'Скопировано' : 'Не удалось скопировать');
+        },
 
-        const vv = window.visualViewport;
-        if(vv){
-            vv.addEventListener('resize', setViewportVars, {passive:true});
-            vv.addEventListener('scroll', setViewportVars, {passive:true});
+        applyToClipboardPlain: async () => {
+            const preview = el('sales-preview');
+            const clean = Sales.sanitizePlain(preview?.value || '');
+            if(!clean){ Touch.toast('Сначала выбери скрипт'); return; }
+            const ok = await copyTextToClipboard(clean);
+            Touch.toast(ok ? 'Скопировано (чистый текст)' : 'Не удалось скопировать');
+        },
+
+        _bound: false,
+        bindOnce: () => {
+            if(Sales._bound) return;
+            Sales._bound = true;
+
+            const search = el('sales-search');
+            if(search){
+                search.addEventListener('input', () => Sales.render());
+            }
+
+            // Long-press on title toggles "show all" (no extra UI clutter)
+            const title = document.querySelector('#sales-modal .modal-title');
+            if(title){
+                let t0 = 0;
+                title.addEventListener('touchstart', ()=>{ t0 = Date.now(); }, {passive:true});
+                title.addEventListener('touchend', ()=>{
+                    const dt = Date.now()-t0;
+                    if(dt > 420){
+                        Sales.showAll = !Sales.showAll;
+                        Touch.toast(Sales.showAll ? 'Показать все: ВКЛ' : 'Только продажи: ВКЛ');
+                        Sales.render();
+                    }
+                }, {passive:true});
+            }
         }
-        window.addEventListener('resize', setViewportVars, {passive:true});
-        window.addEventListener('orientationchange', () => setTimeout(setViewportVars, 250), {passive:true});
+    };
 
-        let raf = 0;
-        document.addEventListener('focusin', (e) => {
-            const t = e.target;
-            if(!t) return;
-            cancelAnimationFrame(raf);
-            raf = requestAnimationFrame(() => { setViewportVars(); ensureVisible(t); });
-            setTimeout(() => { setViewportVars(); ensureVisible(t); }, 160);
-        }, true);
-
-        document.addEventListener('focusout', () => {
-            setTimeout(setViewportVars, 80);
-        }, true);
-    })();
-dmin = Admin;
+    // --- Make objects available to inline onclick/onchange handlers (iOS/Safari-safe) ---
+    try {
+        window.switchTab = switchTab;
+        window.App = App;
+        window.Storage = Storage;
+        window.History = History;
+        window.Admin = Admin;
         window.Calendar = Calendar;
+        window.Sales = Sales;
         if (typeof Touch !== 'undefined') window.Touch = Touch;
         if (typeof HolidayCfg !== 'undefined') window.HolidayCfg = HolidayCfg;
     } catch(e) {
@@ -3266,82 +3011,145 @@ dmin = Admin;
 Storage.load();
 
 // --- iOS PWA (Add to Home Screen) фундаментальный фикс: viewport, клавиатура, прыжки форм (v24) ---
-    
-    // --- App viewport + keyboard fix (v30, stable) ---
     (function(){
+        const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+        const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (navigator.standalone === true);
+
+        // В браузере Safari всё обычно ок — фиксим именно режим “веб‑приложение”.
+        if(!isIOS || !isStandalone) return;
+
         const root = document.documentElement;
-        const scroller = document.getElementById('app-scroll');
+        const body = document.body;
 
-        function setViewportVars(){
+        function ensureShell(){
+            if(document.getElementById('app-shell')) return;
+
+            const shell = document.createElement('div');
+            shell.id = 'app-shell';
+
+            const scroll = document.createElement('div');
+            scroll.id = 'app-scroll';
+
+            // move views into scroll
+            document.querySelectorAll('.view').forEach(v => scroll.appendChild(v));
+
+            // move tabs into shell
+            const tabs = document.querySelector('.tabs');
+            if(tabs) shell.appendChild(tabs);
+
+            shell.appendChild(scroll);
+            document.body.appendChild(shell);
+
+            body.classList.add('pwa-fixed');
+
+            // move modals above shell (keep as body children but after shell for proper stacking)
+            document.querySelectorAll('.modal').forEach(m => body.appendChild(m));
+        }
+
+        function setHeights(){
             const vv = window.visualViewport;
-            const h = vv ? vv.height : window.innerHeight;
-            const top = vv ? vv.offsetTop : 0;
+            const innerH = window.innerHeight;
 
-            root.style.setProperty('--vv-height', Math.round(h) + 'px');
-            root.style.setProperty('--vv-top', Math.round(top) + 'px');
+            // ВАЖНО: высота оболочки = window.innerHeight (а не vv.height),
+            // иначе в standalone/PWA появляется “чёрная полоса” и ломается таббар.
+            root.style.setProperty('--vv-height', Math.round(innerH) + 'px');
 
-            const kb = vv ? Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)) : 0;
-            root.style.setProperty('--kb', kb + 'px');
-            document.body.classList.toggle('kb-open', kb > 40);
-        }
-
-        function getScrollerFor(el){
-            const modal = el && el.closest ? el.closest('.modal.active') : null;
-            if(modal){
-                return el.closest('.modal-scroll') || modal.querySelector('.modal-scroll') || modal;
+            // keyboard height (stable for layout)
+            let kb = 0;
+            if(vv){
+                const offTop = (typeof vv.offsetTop === 'number') ? vv.offsetTop : 0;
+                kb = Math.max(0, Math.round(innerH - vv.height - offTop));
             }
-            return scroller || document.body;
+            root.style.setProperty('--kb', kb + 'px');
+
+            if(kb > 40) body.classList.add('kb-open'); else body.classList.remove('kb-open');
         }
 
-        function ensureVisible(el){
-            if(!el) return;
-            const s = getScrollerFor(el);
-            if(!s || !s.getBoundingClientRect) return;
+        // Keep window at top — iOS иногда пытается проскроллить “страницу” при фокусе
+        function pinWindowTop(){
+            try { window.scrollTo(0,0); } catch(_) {}
+        }
+
+        // Ensure focused input/textarea stays visible INSIDE the correct scroller (modal or app-scroll)
+        function ensureVisible(target){
+            if(!target) return;
+
+            const modal = target.closest('.modal.active');
+            const scroller = modal
+                ? (target.closest('.modal-scroll') || modal.querySelector('.modal-scroll'))
+                : document.getElementById('app-scroll');
+
+            if(!scroller) return;
 
             const pad = 14;
             const vv = window.visualViewport;
-            const vvTop = vv ? vv.offsetTop : 0;
             const vvH = vv ? vv.height : window.innerHeight;
-            const vvBottom = vvTop + vvH;
 
-            const sRect = s.getBoundingClientRect();
-            const eRect = el.getBoundingClientRect();
+            const sRect = scroller.getBoundingClientRect();
+            const tRect = target.getBoundingClientRect();
 
-            const visibleTop = Math.max(sRect.top + pad, vvTop + pad);
-            const visibleBottom = Math.min(sRect.bottom - pad, vvBottom - pad);
+            const visibleTop = Math.max(sRect.top + pad, pad);
+            const visibleBottom = Math.min(sRect.bottom - pad, vvH - pad);
 
-            if(eRect.bottom > visibleBottom){
-                s.scrollTop += (eRect.bottom - visibleBottom);
-            } else if(eRect.top < visibleTop){
-                s.scrollTop -= (visibleTop - eRect.top);
+            if(tRect.bottom > visibleBottom){
+                scroller.scrollTop += (tRect.bottom - visibleBottom);
+            } else if(tRect.top < visibleTop){
+                scroller.scrollTop -= (visibleTop - tRect.top);
             }
         }
 
-        setViewportVars();
+        // Public API used by modals
+        window.__iosFix = {
+            setHeights,
+            lockBody: () => { root.classList.add('modal-open'); },
+            unlockBody: () => { root.classList.remove('modal-open'); },
+            onModalClose: () => {
+                // iOS любит “додумывать” высоты после закрытия — обновим несколько раз
+                setHeights();
+                setTimeout(setHeights, 80);
+                setTimeout(setHeights, 180);
+                pinWindowTop();
+            }
+        };
 
-        const vv = window.visualViewport;
-        if(vv){
-            vv.addEventListener('resize', setViewportVars, {passive:true});
-            vv.addEventListener('scroll', setViewportVars, {passive:true});
+        // Init
+        ensureShell();
+        setHeights();
+        pinWindowTop();
+
+        // VisualViewport listeners
+        if(window.visualViewport){
+            window.visualViewport.addEventListener('resize', () => { setHeights(); pinWindowTop(); });
+            window.visualViewport.addEventListener('scroll', () => { setHeights(); pinWindowTop(); });
         }
-        window.addEventListener('resize', setViewportVars, {passive:true});
-        window.addEventListener('orientationchange', () => setTimeout(setViewportVars, 250), {passive:true});
+        window.addEventListener('orientationchange', () => setTimeout(() => { setHeights(); pinWindowTop(); }, 180));
+        window.addEventListener('resize', () => setTimeout(() => { setHeights(); pinWindowTop(); }, 120));
 
-        let raf = 0;
+        // Focus / blur: fight the “jump down” bug
         document.addEventListener('focusin', (e) => {
             const t = e.target;
             if(!t) return;
             const tag = (t.tagName || '').toUpperCase();
-            if(tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') return;
+            const isInput = (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT');
 
-            cancelAnimationFrame(raf);
-            raf = requestAnimationFrame(() => { setViewportVars(); ensureVisible(t); });
-            setTimeout(() => { setViewportVars(); ensureVisible(t); }, 140);
+            if(!isInput) return;
+
+            // run a few times because iOS animates keyboard + does internal scrolling
+            pinWindowTop();
+            setTimeout(() => { setHeights(); ensureVisible(t); pinWindowTop(); }, 0);
+            setTimeout(() => { setHeights(); ensureVisible(t); pinWindowTop(); }, 80);
+            setTimeout(() => { setHeights(); ensureVisible(t); pinWindowTop(); }, 160);
         }, true);
+
+        document.addEventListener('focusout', () => {
+            setTimeout(() => { setHeights(); pinWindowTop(); }, 60);
+            setTimeout(() => { setHeights(); pinWindowTop(); }, 180);
+        }, true);
+
+        // Prevent accidental window scroll (standalone should behave like app)
+        window.addEventListener('scroll', () => pinWindowTop(), {passive:true});
     })();
-
 ;
-
 
 
     // --- Manifest (Android/desktop) via Blob (single-folder friendly) ---
