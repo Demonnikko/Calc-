@@ -1,25 +1,25 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-        <!-- PWA / iOS Add to Home Screen -->
-    <meta name="theme-color" content="#000000">
-    <meta name="color-scheme" content="dark">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Kostyuk CRM">
-    <meta name="format-detection" content="telephone=no">
-    <link rel="manifest" href="manifest.webmanifest">
-
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="icons/apple-touch-icon-120.png">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<!-- PWA / iOS Add to Home Screen -->
+<meta content="#000000" name="theme-color"/>
+<meta content="dark" name="color-scheme"/>
+<meta content="yes" name="mobile-web-app-capable"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Kostyuk CRM" name="apple-mobile-web-app-title"/>
+<meta content="telephone=no" name="format-detection"/>
+<link href="manifest.webmanifest" rel="manifest"/>
+<!-- Icons -->
+<link href="icons/icon-192.png" rel="icon" sizes="192x192" type="image/png"/>
+<link href="icons/icon-512.png" rel="icon" sizes="512x512" type="image/png"/>
+<link href="icons/apple-touch-icon-180.png" rel="apple-touch-icon" sizes="180x180"/>
+<link href="icons/apple-touch-icon-167.png" rel="apple-touch-icon" sizes="167x167"/>
+<link href="icons/apple-touch-icon-152.png" rel="apple-touch-icon" sizes="152x152"/>
+<link href="icons/apple-touch-icon-120.png" rel="apple-touch-icon" sizes="120x120"/>
 <title>Kostyuk Event CRM</title>
 <style>
         /* --- iOS SYSTEM THEME (PLATINUM) --- */
@@ -37,7 +37,9 @@
             --success: #30D158;
             --separator: #38383A;
             --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
+              --safe-left: env(safe-area-inset-left);
+  --safe-right: env(safe-area-inset-right);
+--safe-bottom: env(safe-area-inset-bottom);
         }
 
         body {
@@ -51,8 +53,11 @@
         }
 
         /* --- TABS --- */
-        .tabs {
-            position: absolute; left: 0; right: 0; bottom: 0;
+        .tabs{
+  position: absolute;
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+ left: 0; right: 0; bottom: 0;
             height: var(--tabs-total);
             background: rgba(28, 28, 30, 0.85);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -75,7 +80,9 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --- HEADER --- */
-        .header { padding: 10px 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header{
+  padding: 10px calc(16px + var(--safe-right)) 20px calc(16px + var(--safe-left));
+display: flex; justify-content: space-between; align-items: center; }
         .header h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
         .header p { font-size: 13px; color: var(--text-secondary); margin-top: 2px; font-weight: 500; }
         .header-btn-add { font-size: 28px; color: var(--accent); cursor: pointer; padding: 5px; line-height: 1; }
@@ -267,7 +274,12 @@
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 600; display: none; align-items: flex-end; }
         .modal.active { display: flex; animation: slideUp 0.3s; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-card { background: #1C1C1E; width: 100%; border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: 50px; }
+        .modal-card{
+  display: flex;
+  flex-direction: column;
+  max-height: calc(var(--vvh, 100vh) - var(--safe-top) - 12px);
+  min-height: 0;
+ background: #1C1C1E; width: 100%; border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: 50px; }
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
     
         /* --- v11: missing utility classes (keep existing UI, just make it consistent) --- */
@@ -689,7 +701,13 @@ body{
   margin: 0 14px 10px;
   line-height: 1.25;
 }
-.tpl-list{ padding: 0 14px; display:flex; flex-direction:column; gap: 12px; }
+.tpl-list{
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1 1 auto;
+  min-height: 0;
+ padding: 0 14px; display:flex; flex-direction:column; gap: 12px;  padding-bottom: calc(12px + var(--kb, 0px));
+}
 .tpl-item{
   background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.10);
@@ -817,252 +835,207 @@ html.modal-open #app-scroll{
   overflow: hidden;
 }
 
+
+/* === iPhone ergonomics: minimum tap targets === */
+@media (pointer: coarse){
+  button, .btn, .touch-btn, .touch-pill{
+    min-height: 44px;
+  }
+  .touch-btn{ font-size: 13px; padding: 12px 10px; }
+  .touch-pill{ padding: 12px 14px; }
+  .tab{ min-height: 44px; }
+}
 </style>
 </head>
 <body>
-  <div id="app-shell">
-    <div id="app-scroll">
-
-
-    <!-- Меню -->
-    
-
-    <!-- 1. КАЛЬКУЛЯТОР -->
-    <div id="view-calc" class="view active">
-        <div class="header">
-            <div><h1>Kostyuk CRM</h1><p>Конструктор КП</p></div>
-        </div>
-
-        <div class="group-container" style="margin-bottom: 20px;">
-            <div class="input-row">
-                <div class="label">Имя клиента</div>
-                <input type="text" id="inp-client" class="text-input" placeholder="Иван">
-            </div>
-            <div class="input-row">
-                <div class="label">Телефон</div>
-                <input type="tel" id="inp-phone" class="text-input" placeholder="8 9..." >
-            </div>
-            <div class="input-row">
-                <div class="label">Статус</div>
-                <div class="value-wrapper"><div id="disp-status" class="value-display">Интерес</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
-                <select id="inp-status" class="native-control" onchange="App.updateStatus()">
-                    <option value="new" selected>Интерес (Спросил)</option>
-                    <option value="think">Думает</option>
-                    <option value="deposit">Бронь (Оплачено)</option>
-                    <option value="cancel">Отказ</option>
-                </select>
-            </div>
-            <div class="input-row">
-                <div class="label">Событие</div>
-                <div class="value-wrapper"><div id="disp-event-type" class="value-display">Не выбрано</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
-                <select id="inp-event-type" class="native-control" onchange="App.updateEventType()">
-                    <option value="" disabled selected>Тип</option><option value="Свадьба">Свадьба</option><option value="Корпоратив">Корпоратив</option><option value="Юбилей">Юбилей</option><option value="День Рождения">День Рождения</option><option value="Детский праздник">Детский праздник</option><option value="Вечеринка">Вечеринка</option><option value="Выпускной">Выпускной</option><option value="Частное">Частное</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="section-title">Логистика</div>
-        <div class="group-container">
-            <div class="input-row" style="flex-direction:column; align-items:stretch;">
-                <div style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
-                    <div class="label flex items-center">Дата <span id="badge-holiday" class="badge"></span></div>
-                    <div class="value-wrapper"><div id="disp-date" class="value-display">Сегодня</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
-                </div>
-                <div id="conflict-msg" class="conflict-alert"></div>
-                <input type="date" id="inp-date" class="native-control" onchange="App.updateDate()">
-            </div>
-            <div class="input-row">
-                <div class="label">Время</div>
-                <input type="time" id="inp-time" class="text-input" value="18:00">
-            </div>
-            <div class="input-row">
-                <div class="label">Регион</div>
-                <div class="value-wrapper"><div id="disp-region" class="value-display">Не выбран</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
-                <select id="inp-region" class="native-control" onchange="App.updateRegion()"></select>
-            </div>
-            <div class="input-row">
-                <div class="label">Город</div>
-                <div class="value-wrapper"><div id="disp-city" class="value-display">...</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
-                <select id="inp-city" class="native-control" disabled onchange="App.updateCity()"></select>
-            </div>
-        </div>
-
-        <div class="section-title">Услуги</div>
-        <div class="group-container">
-            <div class="input-row">
-                <div class="label">Категория</div>
-                <div class="value-wrapper"><div id="disp-cat" class="value-display">Не выбрана</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
-                <select id="inp-cat" class="native-control" onchange="App.updateCat()"></select>
-            </div>
-            <div class="input-row">
-                <div class="label">Услуга</div>
-                <div class="value-wrapper"><div id="disp-svc" class="value-display">...</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
-                <select id="inp-svc" class="native-control" disabled></select>
-            </div>
-            <div class="service-adder">
-                <div class="qty-control">
-                    <div class="qty-btn" onclick="App.changeQty(-1)">-</div>
-                    <div class="qty-val" id="svc-qty">1</div>
-                    <div class="qty-btn" onclick="App.changeQty(1)">+</div>
-                </div>
-                <div class="btn-add-service" onclick="App.addService()">+ Добавить услугу</div>
-            </div>
-        </div>
-
-        <div id="cart-list" class="cart-list"></div>
-
-        <div class="section-title">Доп. расходы / Гости</div>
-        <div class="group-container">
-            <div style="display:flex; padding:12px 16px; gap:10px; border-bottom:0.5px solid var(--separator);">
-                <input type="text" id="inp-manual-name" class="edit-input" placeholder="Название допа (напр. Аренда)" oninput="App.calc()">
-                <input type="number" id="inp-manual-price" class="edit-input" style="width:90px; text-align:right;" placeholder="₽" oninput="App.calc()">
-            </div>
-            <div class="input-row">
-                <div class="label">Гости</div>
-                <div class="value-wrapper"><div id="disp-guests" class="value-display">До 50 (0₽)</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
-                <select id="inp-guests" class="native-control" onchange="App.updateGuests()">
-                    <option value="0">До 50 человек (0₽)</option>
-                    <option value="5000">51–100 человек (+5 000₽)</option>
-                    <option value="10000">101–200 человек (+10 000₽)</option>
-                    <option value="custom">Более 200 (Слайдер)</option>
-                </select>
-            </div>
-        </div>
-        <div id="slider-wrap" class="slider-wrap" style="display:none; margin:10px 16px; background:var(--bg-card); padding:16px; border-radius:12px;">
-            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; color:#888;"><span>ТОЧНОЕ ЧИСЛО</span><span id="slider-val" style="color:#fff;">250</span></div>
-            <input type="range" id="inp-slider" min="201" max="500" value="250" step="5" oninput="App.calc()" style="width:100%;">
-        </div>
-
-        <!-- ИТОГ -->
-        <div class="total-panel">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:15px; border-bottom:1px solid #333;">
-                <span style="font-size:15px; color:#fff;">Работа по договору (+6%)</span>
-                <label class="switch">
-                    <input type="checkbox" id="inp-tax" onchange="App.calc()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div id="bonus-alert" class="bonus-banner"></div>
-            <div id="discount-badge" class="discount-badge">✅ Скидка 10% за объем</div>
-            
-            <div class="total-label">Итоговая смета</div>
-            <div id="total-sum" class="total-sum">0 ₽</div>
-            
-            <button class="btn-main" onclick="App.copy()">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+<div id="app-shell">
+<div id="app-scroll">
+<!-- Меню -->
+<!-- 1. КАЛЬКУЛЯТОР -->
+<div class="view active" id="view-calc">
+<div class="header">
+<div><h1>Kostyuk CRM</h1><p>Конструктор КП</p></div>
+</div>
+<div class="group-container" style="margin-bottom: 20px;">
+<div class="input-row">
+<div class="label">Имя клиента</div>
+<input class="text-input" id="inp-client" placeholder="Иван" type="text"/>
+</div>
+<div class="input-row">
+<div class="label">Телефон</div>
+<input class="text-input" id="inp-phone" placeholder="8 9..." type="tel"/>
+</div>
+<div class="input-row">
+<div class="label">Статус</div>
+<div class="value-wrapper"><div class="value-display" id="disp-status">Интерес</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
+<select class="native-control" id="inp-status" onchange="App.updateStatus()">
+<option selected="" value="new">Интерес (Спросил)</option>
+<option value="think">Думает</option>
+<option value="deposit">Бронь (Оплачено)</option>
+<option value="cancel">Отказ</option>
+</select>
+</div>
+<div class="input-row">
+<div class="label">Событие</div>
+<div class="value-wrapper"><div class="value-display" id="disp-event-type">Не выбрано</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
+<select class="native-control" id="inp-event-type" onchange="App.updateEventType()">
+<option disabled="" selected="" value="">Тип</option><option value="Свадьба">Свадьба</option><option value="Корпоратив">Корпоратив</option><option value="Юбилей">Юбилей</option><option value="День Рождения">День Рождения</option><option value="Детский праздник">Детский праздник</option><option value="Вечеринка">Вечеринка</option><option value="Выпускной">Выпускной</option><option value="Частное">Частное</option>
+</select>
+</div>
+</div>
+<div class="section-title">Логистика</div>
+<div class="group-container">
+<div class="input-row" style="flex-direction:column; align-items:stretch;">
+<div style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
+<div class="label flex items-center">Дата <span class="badge" id="badge-holiday"></span></div>
+<div class="value-wrapper"><div class="value-display" id="disp-date">Сегодня</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
+</div>
+<input class="native-control" id="inp-date" onchange="App.updateDate()" type="date"/>
+</div>
+<div class="input-row">
+<div class="label">Время</div>
+<input class="text-input" id="inp-time" type="time" value="18:00"/>
+</div>
+<div class="input-row">
+<div class="label">Регион</div>
+<div class="value-wrapper"><div class="value-display" id="disp-region">Не выбран</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
+<select class="native-control" id="inp-region" onchange="App.updateRegion()"></select>
+</div>
+<div class="input-row">
+<div class="label">Город</div>
+<div class="value-wrapper"><div class="value-display" id="disp-city">...</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
+<select class="native-control" disabled="" id="inp-city" onchange="App.updateCity()"></select>
+</div>
+</div>
+<div class="section-title">Услуги</div>
+<div class="group-container">
+<div class="input-row">
+<div class="label">Категория</div>
+<div class="value-wrapper"><div class="value-display" id="disp-cat">Не выбрана</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
+<select class="native-control" id="inp-cat" onchange="App.updateCat()"></select>
+</div>
+<div class="input-row">
+<div class="label">Услуга</div>
+<div class="value-wrapper"><div class="value-display" id="disp-svc">...</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
+<select class="native-control" disabled="" id="inp-svc"></select>
+</div>
+<div class="service-adder">
+<div class="qty-control">
+<div class="qty-btn" onclick="App.changeQty(-1)">-</div>
+<div class="qty-val" id="svc-qty">1</div>
+<div class="qty-btn" onclick="App.changeQty(1)">+</div>
+</div>
+<div class="btn-add-service" onclick="App.addService()">+ Добавить услугу</div>
+</div>
+</div>
+<div class="cart-list" id="cart-list"></div>
+<div class="section-title">Доп. расходы / Гости</div>
+<div class="group-container">
+<div style="display:flex; padding:12px 16px; gap:10px; border-bottom:0.5px solid var(--separator);">
+<input class="edit-input" id="inp-manual-name" oninput="App.calc()" placeholder="Название допа (напр. Аренда)" type="text"/>
+<input class="edit-input" id="inp-manual-price" oninput="App.calc()" placeholder="₽" style="width:90px; text-align:right;" type="number"/>
+</div>
+<div class="input-row">
+<div class="label">Гости</div>
+<div class="value-wrapper"><div class="value-display" id="disp-guests">До 50 (0₽)</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
+<select class="native-control" id="inp-guests" onchange="App.updateGuests()">
+<option value="0">До 50 человек (0₽)</option>
+<option value="5000">51–100 человек (+5 000₽)</option>
+<option value="10000">101–200 человек (+10 000₽)</option>
+<option value="custom">Более 200 (Слайдер)</option>
+</select>
+</div>
+</div>
+<div class="slider-wrap" id="slider-wrap" style="display:none; margin:10px 16px; background:var(--bg-card); padding:16px; border-radius:12px;">
+<div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; color:#888;"><span>ТОЧНОЕ ЧИСЛО</span><span id="slider-val" style="color:#fff;">250</span></div>
+<input id="inp-slider" max="500" min="201" oninput="App.calc()" step="5" style="width:100%;" type="range" value="250"/>
+</div>
+<!-- ИТОГ -->
+<div class="total-panel">
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:15px; border-bottom:1px solid #333;">
+<span style="font-size:15px; color:#fff;">Работа по договору (+6%)</span>
+<label class="switch">
+<input id="inp-tax" onchange="App.calc()" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="bonus-banner" id="bonus-alert"></div>
+<div class="discount-badge" id="discount-badge">✅ Скидка 10% за объем</div>
+<div class="total-label">Итоговая смета</div>
+<div class="total-sum" id="total-sum">0 ₽</div>
+<button class="btn-main" onclick="App.copy()">
+<svg fill="none" height="20" stroke="currentColor" viewbox="0 0 24 24" width="20"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
                 Сформировать КП
             </button>
-        </div>
-    </div>
+</div>
+</div>
+<!-- 2. КАЛЕНДАРЬ -->
 
-    <!-- 2. КАЛЕНДАРЬ -->
-    <div id="view-calendar" class="view">
-        <div class="header"><h1>Календарь</h1><div class="header-btn-add" onclick="Calendar.openModal()">+</div></div>
-        <div class="calendar-header">
-            <div class="month-nav" onclick="Calendar.prevMonth()">‹</div><div class="current-month" id="cal-month-title"></div><div class="month-nav" onclick="Calendar.nextMonth()">›</div>
-        </div>
-        <div class="weekdays"><div class="weekday">Пн</div><div class="weekday">Вт</div><div class="weekday">Ср</div><div class="weekday">Чт</div><div class="weekday">Пт</div><div class="weekday">Сб</div><div class="weekday">Вс</div></div>
-        <div id="calendar-grid" class="calendar-grid"></div>
-        <div class="events-container"><div id="selected-date-title" class="selected-date-title">События</div><div id="events-list"></div></div>
-    </div>
+<!-- removed view-calendar -->
 
-    <!-- 3. ИСТОРИЯ -->
-    <div id="view-history" class="view">
-        <div class="header"><h1>История</h1><p>База расчетов</p></div>
-        <div id="history-list" class="history-list"></div>
-    </div>
+<!-- 3. ИСТОРИЯ -->
 
-    <!-- 4. НАСТРОЙКИ (FIXED) -->
-    <div id="view-settings" class="view">
-        <div class="header"><h1>Настройки</h1></div>
-        
-        <div class="section-title">Логистика (Города)</div>
-        <div id="settings-travel-list" style="margin: 0 16px;"></div>
-        <div style="margin: 10px 16px;"><div class="btn-add" onclick="Admin.addRegion()">+ Добавить Регион</div></div>
+<!-- removed view-history -->
 
-        <div class="section-title">Услуги</div>
-        <div id="settings-services-list" style="margin: 0 16px;"></div>
-        <div style="margin: 10px 16px;"><div class="btn-add" onclick="Admin.addCategory()">+ Добавить Категорию</div></div>
-
-        
-        <div class="section-title">КП: реквизиты и ссылки</div>
-
-        <div class="settings-block" style="margin: 0 16px;">
-            <div class="settings-header" onclick="Admin.toggleSection(this)">
-                <span>Реквизиты для брони</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content open">
-                <div id="settings-payments-list"></div>
-                <div class="btn-add" onclick="Admin.addPayment()">+ Добавить реквизиты</div>
-            </div>
-        </div>
-
-        <div class="settings-block" style="margin: 0 16px;">
-            <div class="settings-header" onclick="Admin.toggleSection(this)">
-                <span>Ссылки (портфолио / соцсети / отзывы)</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content open">
-                <div id="settings-links-list"></div>
-                <div class="btn-add" onclick="Admin.addLink()">+ Добавить ссылку</div>
-            </div>
-        </div>
-
-
-        <div class="section-title">Профиль фокусника</div>
-        <div class="settings-block" style="margin: 0 16px;">
-            <div class="input-row"><div class="label">Имя артиста</div><input id="cfg-performer" class="text-input" placeholder="Напр. Дмитрий Костюк"></div>
-            <div class="input-row"><div class="label">Задаток (%)</div><input id="cfg-deposit" type="number" class="text-input" placeholder="30"></div>
-            <div class="input-row" style="align-items:center;">
-                <div class="label">Автосохранение при КП</div>
-                <label class="switch" title="Если включено — при формировании КП автоматически создаётся/обновляется запись в календаре и в истории (без дублей).">
-                    <input type="checkbox" id="cfg-autosave">
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
-
-
-        <div class="section-title">Праздничные коэффициенты</div>
-        <div class="settings-block" style="margin: 0 16px;">
-            <div class="settings-header" onclick="Admin.toggleSection(this)">
-                <span>Праздники (гибкая настройка)</span>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="settings-content open">
-                <div style="padding: 12px 16px; font-size: 12px; color: var(--text-secondary); line-height:1.3;">
+<!-- 4. НАСТРОЙКИ (FIXED) -->
+<div class="view" id="view-settings">
+<div class="header"><h1>Настройки</h1></div>
+<div class="section-title">Логистика (Города)</div>
+<div id="settings-travel-list" style="margin: 0 16px;"></div>
+<div style="margin: 10px 16px;"><div class="btn-add" onclick="Admin.addRegion()">+ Добавить Регион</div></div>
+<div class="section-title">Услуги</div>
+<div id="settings-services-list" style="margin: 0 16px;"></div>
+<div style="margin: 10px 16px;"><div class="btn-add" onclick="Admin.addCategory()">+ Добавить Категорию</div></div>
+<div class="section-title">КП: реквизиты и ссылки</div>
+<div class="settings-block" style="margin: 0 16px;">
+<div class="settings-header" onclick="Admin.toggleSection(this)">
+<span>Реквизиты для брони</span>
+<span class="toggle-icon">▼</span>
+</div>
+<div class="settings-content open">
+<div id="settings-payments-list"></div>
+<div class="btn-add" onclick="Admin.addPayment()">+ Добавить реквизиты</div>
+</div>
+</div>
+<div class="settings-block" style="margin: 0 16px;">
+<div class="settings-header" onclick="Admin.toggleSection(this)">
+<span>Ссылки (портфолио / соцсети / отзывы)</span>
+<span class="toggle-icon">▼</span>
+</div>
+<div class="settings-content open">
+<div id="settings-links-list"></div>
+<div class="btn-add" onclick="Admin.addLink()">+ Добавить ссылку</div>
+</div>
+</div>
+<div class="section-title">Профиль фокусника</div>
+<div class="settings-block" style="margin: 0 16px;">
+<div class="input-row"><div class="label">Имя артиста</div><input class="text-input" id="cfg-performer" placeholder="Напр. Дмитрий Костюк"/></div>
+<div class="input-row"><div class="label">Задаток (%)</div><input class="text-input" id="cfg-deposit" placeholder="30" type="number"/></div>
+<!-- removed autosave setting -->
+<div class="section-title">Праздничные коэффициенты</div>
+<div class="settings-block" style="margin: 0 16px;">
+<div class="settings-header" onclick="Admin.toggleSection(this)">
+<span>Праздники (гибкая настройка)</span>
+<span class="toggle-icon">▼</span>
+</div>
+<div class="settings-content open">
+<div style="padding: 12px 16px; font-size: 12px; color: var(--text-secondary); line-height:1.3;">
                     Формат дат: <b>ММ-ДД</b> (например, 12-31). Коэффициент умножает итоговую смету в выбранные даты/периоды.
                 </div>
-
-                <div class="section-title" style="margin: 8px 16px 8px;">Точные даты</div>
-                <div id="settings-holidays-list"></div>
-                <div class="btn-add" onclick="HolidayCfg.addHoliday()">+ Добавить дату</div>
-
-                <div class="section-title" style="margin: 16px 16px 8px;">Периоды</div>
-                <div id="settings-holidayranges-list"></div>
-                <div class="btn-add" onclick="HolidayCfg.addRange()">+ Добавить период</div>
-            </div>
-        </div>
-
-
-<div class="btn-add" style="margin: 10px 16px 0;" onclick="if(typeof Touch!=='undefined') Touch.openTplModal()">⚙️ Настроить шаблоны сообщений</div>
-
+<div class="section-title" style="margin: 8px 16px 8px;">Точные даты</div>
+<div id="settings-holidays-list"></div>
+<div class="btn-add" onclick="HolidayCfg.addHoliday()">+ Добавить дату</div>
+<div class="section-title" style="margin: 16px 16px 8px;">Периоды</div>
+<div id="settings-holidayranges-list"></div>
+<div class="btn-add" onclick="HolidayCfg.addRange()">+ Добавить период</div>
+</div>
+</div>
+<!-- removed templates settings button -->
 <div class="btn-reset" onclick="Admin.resetAll()">⚠️ Сброс к заводским настройкам</div>
-    </div>
-
-    <!-- MODAL -->
-    
-
-
-    
-    <!-- TOUCH TEMPLATES MANAGER -->
-    
-
-
-<div id="toast" class="toast">Скопировано!</div>
-
+</div>
+<!-- MODAL -->
+<!-- TOUCH TEMPLATES MANAGER -->
+<div class="toast" id="toast">Скопировано!</div>
 <script>
     // --- DB INIT (FULL RESTORED v10) ---
     const DEFAULT_DB = {
@@ -1088,10 +1061,7 @@ html.modal-open #app-scroll{
         ],
         links: [
             { label: "Портфолио", url: "" }
-        ],
-
-        events: [], history: []
-    };
+        ]};
 
     let DB = {};
 
@@ -1155,10 +1125,7 @@ html.modal-open #app-scroll{
         // Prefer explicit element; fallback to data-tab; last resort: global event (old inline handlers)
         const btn = btnEl || document.querySelector(`.tab-btn[data-tab="${tab}"]`) || (typeof event !== 'undefined' ? event.currentTarget : null);
         if(btn && btn.classList) btn.classList.add('active');
-
-        if(tab === 'calendar') Calendar.render();
-        if(tab === 'history') History.render();
-    };
+};
 
     // --- STORAGE ---
     const Storage = {
@@ -1172,9 +1139,7 @@ html.modal-open #app-scroll{
             }
 
             // Forward-compatible defaults (older saves won't have new fields)
-            if(!DB.events) DB.events = [];
-            if(!DB.history) DB.history = [];
-            if(!Array.isArray(DB.payments)) DB.payments = JSON.parse(JSON.stringify(DEFAULT_DB.payments || []));
+if(!Array.isArray(DB.payments)) DB.payments = JSON.parse(JSON.stringify(DEFAULT_DB.payments || []));
             if(!Array.isArray(DB.links)) DB.links = JSON.parse(JSON.stringify(DEFAULT_DB.links || []));
 
             Admin.render();
@@ -1197,24 +1162,18 @@ html.modal-open #app-scroll{
             const cSel = el('inp-cat'); cSel.innerHTML='<option disabled selected>Выберите</option>';
             for(let c in DB.services) cSel.add(new Option(c, c));
             App.updateDate();
-            if(typeof Touch !== 'undefined') Touch.init();
-
-            // Профиль фокусника (персонализация быстрых ответов)
-            if(typeof Touch !== 'undefined' && Touch.ensureCfg) Touch.ensureCfg();
-            const p = el('cfg-performer');
+// Профиль фокусника (персонализация быстрых ответов)
+const p = el('cfg-performer');
             if(p){
                 p.value = (DB.touchCfg && DB.touchCfg.performer) ? DB.touchCfg.performer : '';
-                p.oninput = () => { if(!DB.touchCfg) DB.touchCfg = Touch.cfgDefaults(); DB.touchCfg.performer = p.value.trim() || 'Фокусник'; Storage.save(); };
+                p.oninput = () => { if(!DB.touchCfg) DB.touchCfg = { performer: 'Фокусник', depositPercent: 30 }; DB.touchCfg.performer = p.value.trim() || 'Фокусник'; Storage.save(); };
             }
             const d = el('cfg-deposit');
             if(d){
                 d.value = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ? DB.touchCfg.depositPercent : 30;
-                d.oninput = () => { if(!DB.touchCfg) DB.touchCfg = Touch.cfgDefaults(); DB.touchCfg.depositPercent = Math.max(0, Math.min(100, parseInt(d.value||'30')||30)); Storage.save(); };
+                d.oninput = () => { if(!DB.touchCfg) DB.touchCfg = { performer: 'Фокусник', depositPercent: 30 }; DB.touchCfg.depositPercent = Math.max(0, Math.min(100, parseInt(d.value||'30')||30)); Storage.save(); };
             }
-            const a = el('cfg-autosave');
-            if(a){
-                a.checked = !!(DB.touchCfg && DB.touchCfg.autosaveOnCopy);
-                a.onchange = () => { if(!DB.touchCfg) DB.touchCfg = Touch.cfgDefaults(); DB.touchCfg.autosaveOnCopy = !!a.checked; Storage.save(); };
+            /* autosave removed */
             }
         },
         updateDate: () => {
@@ -1240,18 +1199,10 @@ html.modal-open #app-scroll{
                 }
             }
             State.holidayK = k;
-            // keep calendar in sync with выбранная дата
-            Calendar.selectedDate = parseISODate(State.date);
-            el('badge-holiday').style.display = k > 1 ? 'inline-block' : 'none';
+el('badge-holiday').style.display = k > 1 ? 'inline-block' : 'none';
             el('badge-holiday').innerText = `x${k}`;
-            App.checkConflicts(); App.calc();
-        },
-        checkConflicts: () => {
-            const dStr = State.date;
-            const cnt = DB.history.filter(h => (h.eventDateIso||'') === dStr && h.status !== 'cancel').length;
-            const alert = el('conflict-msg');
-            if(cnt > 0) { alert.style.display='block'; alert.innerText=`⚠️ Занято: ${cnt} заказ(а)`; }
-            else { alert.style.display='none'; }
+App.calc();
+        }
         },
         updateRegion: () => {
             const r = el('inp-region').value; el('disp-region').innerText=r; el('disp-region').classList.add('filled');
@@ -1334,81 +1285,9 @@ html.modal-open #app-scroll{
             const name = el('inp-client').value.trim() || 'Клиент';
             const type = el('inp-event-type').value || 'Событие';
             const phone = el('inp-phone').value || '';
-            const time = el('inp-time').value || '18:00';
-            const status = el('inp-status').value || 'new';
+const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ? DB.touchCfg.depositPercent : 30;
 
-            const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ? DB.touchCfg.depositPercent : 30;
-            const autoSave = !!(DB.touchCfg && DB.touchCfg.autosaveOnCopy);
-
-            // (опционально) Автосохранение: создаём/обновляем запись в календаре и истории БЕЗ дублей
-            if(autoSave){
-                const cityLabel = (el('disp-city')?.innerText || el('inp-city')?.value || '').trim();
-                const eventTitle = `${type} - ${name}`;
-
-                const notesLines = [];
-                if(phone) notesLines.push(`Тел: ${phone}`);
-                if(type) notesLines.push(`Тип: ${type}`);
-                if(State.cart?.length) notesLines.push(`Услуги: ${State.cart.map(c=>c.name).join(', ')}`);
-                notesLines.push(`Итого: ${fmt(State.final.total)}`);
-                if(depPct > 0) notesLines.push(`Задаток: ${depPct}% (${fmt(Math.round(State.final.total*(depPct/100)))})`);
-                const notes = notesLines.join('\n');
-
-                const eventObj = {
-                    id: Date.now(),
-                    title: eventTitle,
-                    date: State.date,
-                    time: time,
-                    phone: phone,
-                    price: State.final.total,
-                    type: type,
-                    details: State.cart.map(c=>c.name).join(', '),
-                    notes
-                };
-
-                const existingEv = DB.events.find(e =>
-                    e.date === State.date &&
-                    e.time === time &&
-                    ((phone && e.phone === phone) || (!phone && e.title === eventTitle))
-                );
-
-                if(existingEv){
-                    Object.assign(existingEv, eventObj, { id: existingEv.id });
-                } else {
-                    DB.events.push(eventObj);
-                }
-
-                // History upsert (добавляем phone как поле — не ломает старые записи)
-                const rec = {
-                    id: Date.now(),
-                    name: name || 'Клиент',
-                    phone: phone || '',
-                    total: State.final.total,
-                    date: new Date().toLocaleDateString('ru-RU'),
-                    eventDate: parseISODate(State.date).toLocaleDateString('ru-RU'),
-                    eventDateIso: State.date,
-                    loc: cityLabel || '',
-                    services: State.cart.map(c=>c.name).join(', '),
-                    status: status
-                };
-
-                const existingH = DB.history.find(h =>
-                    (h.eventDateIso||'') === State.date &&
-                    (h.name||'') === rec.name &&
-                    ((phone && (h.phone||'') === phone) || !phone) &&
-                    (h.status||'') !== 'cancel'
-                );
-
-                if(existingH){
-                    Object.assign(existingH, rec, { id: existingH.id });
-                } else {
-                    DB.history.unshift(rec);
-                    if(DB.history.length > 50) DB.history.pop();
-                }
-
-                Storage.save();
-            }
-
-            // CLEAN COPY (текст для клиента)
+// CLEAN COPY (текст для клиента)
             const dateStr = parseISODate(State.date).toLocaleDateString('ru-RU',{weekday:'short', day:'numeric', month:'long'});
             let lines = [`Здравствуйте, ${name}!`];
             lines.push(``);
@@ -1483,25 +1362,9 @@ html.modal-open #app-scroll{
     };
 
     // --- HISTORY ---
-    const History = {
-        add: (name, total, date, loc, status) => {
-            const rec = { id: Date.now(), name: name||'Клиент', total, date: new Date().toLocaleDateString('ru-RU'), eventDate: parseISODate(date).toLocaleDateString('ru-RU'), eventDateIso: date, loc, services: State.cart.map(c=>c.name).join(', '), status: status || 'new' };
-            DB.history.unshift(rec); if(DB.history.length>50) DB.history.pop(); Storage.save();
-        },
-        delete: (id) => { DB.history = DB.history.filter(h => h.id !== id); Storage.save(); History.render(); },
-        setStatus: (id, st) => { const r = DB.history.find(h => h.id===id); if(r){ r.status=st; Storage.save(); History.render(); } },
-        render: () => {
-            const div = el('history-list'); if(!DB.history||DB.history.length===0) { div.innerHTML = '<div style="text-align:center; color:#555; margin-top:40px;">История пуста</div>'; return; }
-            div.innerHTML = '';
-            DB.history.forEach(h => {
-                let badge = '<span class="status-badge sb-new">СПРОСИЛ</span>';
-                if(h.status === 'think') badge = '<span class="status-badge sb-think">ДУМАЕТ</span>';
-                if(h.status === 'deposit') badge = '<span class="status-badge sb-deposit">БРОНЬ</span>';
-                if(h.status === 'cancel') badge = '<span class="status-badge sb-cancel">ОТКАЗ</span>';
-                div.innerHTML += `<div class="history-item status-${h.status}"><div class="hist-top"><span class="hist-name">${esc(h.name)}</span><span class="hist-date">${h.date}</span></div><div class="hist-bot"><div class="hist-det">${badge} <b>${h.eventDate}</b><br>${esc(h.loc)}<br>${esc(h.services)}</div><div class="hist-price">${fmt(h.total)}</div></div><div class="btn-delete-hist" onclick="History.delete(${h.id})">×</div><div style="margin-top:10px; display:flex; gap:10px;"><button onclick="History.setStatus(${h.id}, 'deposit')" style="flex:1; background:#333; color:#30D158; border:1px solid #30D158; border-radius:6px; padding:6px; font-size:12px;">Оплачено</button><button onclick="History.setStatus(${h.id}, 'cancel')" style="flex:1; background:#333; color:#FF453A; border:1px solid #FF453A; border-radius:6px; padding:6px; font-size:12px;">Отказ</button></div></div>`;
-            });
-        }
-    };
+    
+/* removed const History */
+
 
     // --- ADMIN (FLEXIBLE) ---
     const Admin = {
@@ -1779,617 +1642,17 @@ html.modal-open #app-scroll{
 
 
 // --- CALENDAR ---
-    const Calendar = {
-        displayedDate: new Date(), selectedDate: new Date(),
-        editingId: null,
-        render: () => {
-            const y = Calendar.displayedDate.getFullYear(), m = Calendar.displayedDate.getMonth();
-            const months = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
-            el('cal-month-title').innerText = `${months[m]} ${y}`;
-            const firstDay = new Date(y, m, 1).getDay(); const daysInMonth = new Date(y, m+1, 0).getDate();
-            const grid = el('calendar-grid'); grid.innerHTML = '';
-            let start = firstDay === 0 ? 6 : firstDay - 1;
-            for(let i=0; i<start; i++) grid.innerHTML += `<div></div>`;
-            for(let d=1; d<=daysInMonth; d++) {
-                const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const events = DB.events.filter(e => e.date === dateStr);
-                let dotHtml = events.length > 0 ? `<div class="day-dots"><div class="dot active"></div></div>` : '';
-                const isToday = isoLocal() === dateStr;
-                const isSel = isoLocal(Calendar.selectedDate) === dateStr;
-                grid.innerHTML += `<div class="day-cell ${isToday?'today':''} ${isSel?'selected':''}" onclick="Calendar.selectDay('${dateStr}')">${d}${dotHtml}</div>`;
-            }
-            Calendar.renderEventsList();
-        },
-        selectDay: (dStr) => { Calendar.selectedDate = parseISODate(dStr); Calendar.render(); },
-        renderEventsList: () => {
-            const dStr = isoLocal(Calendar.selectedDate);
-            const events = DB.events.filter(e => e.date === dStr).sort((a,b) => a.time.localeCompare(b.time));
-            el('selected-date-title').innerText = parseISODate(dStr).toLocaleDateString('ru-RU', {weekday:'long', day:'numeric', month:'long'});
-            const list = el('events-list'); list.innerHTML = '';
-            if(events.length === 0) { list.innerHTML = '<div style="padding:20px; text-align:center; color:#555;">Нет событий</div>'; return; }
-            events.forEach(ev => {
-                const rawNotes = String(ev.notes || '').trim();
-                const firstLine = rawNotes ? rawNotes.split(/\r?\n/)[0].trim() : '';
-                const notesShort = firstLine.length > 42 ? (firstLine.slice(0, 42) + '…') : firstLine;
+    
+/* removed const Calendar */
 
-                const parts = [];
-                if(ev.phone) parts.push(ev.phone);
-                if(ev.type) parts.push(ev.type);
-                if(notesShort) parts.push('📝 ' + notesShort);
-                const sub = parts.join(' • ');
-
-                list.innerHTML += `<div class="event-item" onclick="Calendar.openEdit(${ev.id})">
-                    <div class="event-time">${ev.time}</div>
-                    <div class="event-details" style="border-left:3px solid var(--accent);">
-                        <div class="event-title">${esc(ev.title)}</div>
-                        <div class="event-sub">${esc(sub)}</div>
-                    </div>
-                    <div class="event-price">${fmt(ev.price)}</div>
-                    <div style="margin-left:10px; color:#FF453A; cursor:pointer;" onclick="event.stopPropagation(); Calendar.delEvent(${ev.id})">×</div>
-                </div>`;
-            });
-        },
-        prevMonth: () => { Calendar.displayedDate.setMonth(Calendar.displayedDate.getMonth()-1); Calendar.render(); },
-        nextMonth: () => { Calendar.displayedDate.setMonth(Calendar.displayedDate.getMonth()+1); Calendar.render(); },
-        openModal: () => {
-            Calendar.editingId = null;
-            el('event-modal').classList.add('active');
-            // reset fields for ADD mode
-            el('mod-title').value = '';
-            el('mod-phone').value = '';
-            el('mod-price').value = '';
-            if(el('mod-notes')) el('mod-notes').value = '';
-            el('mod-time').value = '12:00';
-            if(el('mod-type')) el('mod-type').value = 'Свадьба';
-            el('mod-date').value = isoLocal(Calendar.selectedDate);
-
-            
-            if(typeof Touch !== 'undefined') Touch.prepareFromModal();
-const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Добавить';
-            const delBtn = el('btn-modal-delete'); if(delBtn) delBtn.style.display = 'none';
-        },
-        closeModal: () => {
-            el('event-modal').classList.remove('active');
-            Calendar.editingId = null;
-            const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Добавить';
-            const delBtn = el('btn-modal-delete'); if(delBtn) delBtn.style.display = 'none';
-        },
-        saveManualEvent: () => {
-            const payload = {
-                title: el('mod-title').value || 'Событие',
-                date: el('mod-date').value,
-                time: el('mod-time').value || '12:00',
-                phone: el('mod-phone').value,
-                type: el('mod-type') ? el('mod-type').value : '',
-                price: parseInt(el('mod-price').value) || 0
-            ,
-                notes: (el('mod-notes') ? el('mod-notes').value : '').trim()};
-
-            if(Calendar.editingId !== null){
-                const idx = DB.events.findIndex(e => e.id === Calendar.editingId);
-                if(idx !== -1){
-                    DB.events[idx] = { ...DB.events[idx], ...payload, id: Calendar.editingId };
-                } else {
-                    // fallback: if somehow missing, create new
-                    DB.events.push({ id: Date.now(), ...payload });
-                }
-            } else {
-                DB.events.push({ id: Date.now(), ...payload });
-            }
-
-            Storage.save();
-            Calendar.closeModal();
-            Calendar.render();
-        },
-        openEdit: (id) => {
-            const ev = DB.events.find(e => e.id === id);
-            if(!ev) return;
-
-            Calendar.editingId = id;
-            el('event-modal').classList.add('active');
-
-            el('mod-title').value = ev.title || '';
-            el('mod-date').value = ev.date || isoLocal(Calendar.selectedDate);
-            el('mod-time').value = ev.time || '12:00';
-            el('mod-phone').value = ev.phone || '';
-            if(el('mod-type')) el('mod-type').value = ev.type || 'Другое';
-            el('mod-price').value = (ev.price ?? 0);
-
-            
-            if(el('mod-notes')) el('mod-notes').value = (ev.notes || '');
-            if(typeof Touch !== 'undefined') Touch.prepareFromModal();
-const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Сохранить';
-            const delBtn = el('btn-modal-delete'); if(delBtn) delBtn.style.display = 'inline';
-        },
-        deleteFromModal: () => {
-            if(Calendar.editingId === null) return;
-            const id = Calendar.editingId;
-            if(!confirm('Удалить?')) return;
-            DB.events = DB.events.filter(e => e.id !== id);
-            Storage.save();
-            Calendar.closeModal();
-            Calendar.render();
-        },
-        delEvent: (id) => { if(confirm('Удалить?')) { DB.events = DB.events.filter(e=>e.id!==id); Storage.save(); Calendar.render(); } }
-    };
 
     
 
 
-    // --- TOUCH: быстрые ответы и касания с клиентом (для фокусника) ---
-    const Touch = {
-        activeTemplate: 'fast',
-        auto: true,
-
-        cfgDefaults: () => ({
-            performer: 'Фокусник',
-            depositPercent: 30,
-            autosaveOnCopy: false
-        }),
-        ensureCfg: () => {
-            if(!DB.touchCfg) DB.touchCfg = Touch.cfgDefaults();
-            if(typeof DB.touchCfg.performer !== 'string') DB.touchCfg.performer = 'Фокусник';
-            if(typeof DB.touchCfg.depositPercent !== 'number') DB.touchCfg.depositPercent = 30;
-            if(typeof DB.touchCfg.autosaveOnCopy !== 'boolean') DB.touchCfg.autosaveOnCopy = false;
-        },
-
-        // --- Templates (editable, saved in DB) ---
-        defaultTemplates: () => ([
-            {
-                id: 'fast',
-                label: 'Быстрый ответ',
-                body:
-`Здравствуйте! Я {{performer}}.
-{{whenLine}}
-{{typeLine}}
-{{priceLine}}
-
-Чтобы точно сказать “да” и сделать шоу идеально, коротко уточню:
-1) Адрес/площадка (дом/кафе/зал)?
-2) Сколько гостей и возраст (если детский)?
-3) По времени: во сколько начало и сколько минут вы хотите?
-4) Есть ли микрофон/колонка? (если нет — решаем)
-
-{{portfolioLine}}
-{{reviewsLine}}`
-            },
-            {
-                id: 'faq',
-                label: 'Ответы разом',
-                body:
-`Здравствуйте! Я {{performer}}. Отвечу на частые вопросы, чтобы сэкономить вам время 👇
-
-⏱ Длительность: обычно 45–60 минут (можно 30/90 — под запрос).
-🎭 Формат: интерактив, гости участвуют, без “детского сада” и без занудства.
-📍 Площадка: нужно 2×3 м свободного места + розетка рядом.
-🎤 Звук: идеально — 1 микрофон. Если нет — подстроюсь, скажу как лучше.
-{{priceFaqLine}}
-💳 Бронь: задаток {{depositPercent}}% фиксирует дату, остальное — в день мероприятия.
-🕒 Приезжаю заранее: обычно за 30–40 минут.
-
-{{portfolioLine}}
-{{reviewsLine}}
-
-Если скажете адрес, дату/время и формат — я в ответ пришлю точный план и закреплю бронь.`
-            },
-            {
-                id: 'deposit',
-                label: 'Про задаток',
-                body:
-`Чтобы забронировать дату — задаток {{depositPercent}}%.
-Это фиксирует время за вами, я уже никому на эту дату не отвечаю “да”.
-Остаток — в день мероприятия.
-
-Если удобно — скину реквизиты/ссылку на оплату.`
-            },
-            {
-                id: 'tech',
-                label: 'Тех. условия',
-                body:
-`По технике всё просто:
-• 2×3 м свободного места (чтобы гости всё видели);
-• розетка 220V рядом;
-• если гостей много — микрофон (идеально беспроводной).
-Если чего-то нет — скажите, подберём решение под вашу площадку.`
-            }
-        ]),
-
-        ensureTemplates: () => {
-            if(!Array.isArray(DB.touchTemplates) || DB.touchTemplates.length === 0){
-                DB.touchTemplates = Touch.defaultTemplates();
-                Storage.save();
-            } else {
-                // minimal migration / normalization
-                DB.touchTemplates = DB.touchTemplates
-                    .map(t => ({
-                        id: (t && t.id) ? String(t.id) : ('tpl_' + Date.now() + '_' + Math.random().toString(16).slice(2)),
-                        label: (t && t.label) ? String(t.label).slice(0, 60) : 'Шаблон',
-                        body: (t && (t.body || t.text)) ? String(t.body || t.text) : ''
-                    }))
-                    .filter(t => t.label.trim() && t.body.trim());
-                if(DB.touchTemplates.length === 0){
-                    DB.touchTemplates = Touch.defaultTemplates();
-                }
-            }
-            if(!DB.touchActiveTemplate) DB.touchActiveTemplate = DB.touchTemplates[0].id;
-            Touch.activeTemplate = DB.touchActiveTemplate;
-        },
-
-        templates: () => { Touch.ensureTemplates(); return DB.touchTemplates; },
-
-        // FAQ chips remain hardcoded (fast inserts)
-        faq: () => ([
-            { label: '⏱ Длительность', text: () => '⏱ Длительность: обычно 45–60 минут. Можно короче/дольше — под формат.' },
-            { label: '💳 Задаток', text: (c) => `💳 Бронь: задаток ${c.depositPercent}%, остаток — в день мероприятия.` },
-            { label: '📍 Площадка', text: () => '📍 Площадка: нужно 2×3 м свободного места + розетка рядом.' },
-            { label: '🎤 Микрофон', text: () => '🎤 Если гостей много — желательно 1 микрофон. Если нет — подстроюсь.' },
-            { label: '🕒 Приезд', text: () => '🕒 Приезжаю заранее: обычно за 30–40 минут до начала.' },
-            { label: '🎭 Формат', text: () => '🎭 Формат: интерактив — гости участвуют, всё живо и динамично.' },
-        ]),
-
-        els: () => ({
-            templates: el('touch-templates'),
-            faq: el('touch-faq'),
-            msg: el('touch-message'),
-            btnCopy: el('touch-copy'),
-            btnShare: el('touch-share'),
-            btnGen: el('touch-regenerate'),
-            btnManage: el('touch-manage'),
-            btnVars: el('touch-vars'),
-        }),
-
-        digits: (s='') => String(s||'').replace(/\D/g,''),
-        linkByLabel: (label) => {
-            const l = (DB.links||[]).find(x => (x.label||'').toLowerCase().includes((label||'').toLowerCase()) && (x.url||'').trim());
-            return l ? l.url.trim() : '';
-        },
-
-        ctxFromModal: () => {
-            Touch.ensureCfg();
-            const title = (el('mod-title')?.value || '').trim() || 'Выступление';
-            const date = el('mod-date')?.value || '';
-            const time = el('mod-time')?.value || '';
-            const phone = (el('mod-phone')?.value || '').trim();
-            const type = el('mod-type')?.value || '';
-            const price = parseInt(el('mod-price')?.value || '0') || 0;
-            const notes = (el('mod-notes')?.value || '').trim();
-            const performer = DB.touchCfg.performer || 'Фокусник';
-            const depositPercent = (DB.touchCfg.depositPercent ?? 30);
-
-            const portfolio = Touch.linkByLabel('портф') || Touch.linkByLabel('portfolio') || (DB.links?.[0]?.url || '').trim();
-            const reviews = Touch.linkByLabel('отзыв') || Touch.linkByLabel('review') || '';
-
-            const when = [date, time].filter(Boolean).join(' ');
-            const whenLine = when ? `По дате: ${when} — уточню и сразу зафиксирую время.` : '';
-            const typeLine = type ? `Формат: ${type}.` : '';
-            const priceLine = price ? `Стоимость: ${fmt(price)} (всё “под ключ”, без сюрпризов).` : '';
-            const priceFaqLine = price ? `💰 Стоимость: ${fmt(price)} (включая подготовку и реквизит).` : '';
-            const portfolioLine = portfolio ? `Портфолио: ${portfolio}` : '';
-            const reviewsLine = reviews ? `Отзывы: ${reviews}` : '';
-
-            return {
-                title, clientName: title, date, time, when, phone, type, price, notes,
-                performer, depositPercent, portfolio, reviews,
-                whenLine, typeLine, priceLine, priceFaqLine, portfolioLine, reviewsLine
-            };
-        },
-
-        applyTokens: (body, ctx) => {
-            const out = String(body||'').replace(/\{\{(\w+)\}\}/g, (m,k) => {
-                const v = (ctx && Object.prototype.hasOwnProperty.call(ctx, k)) ? ctx[k] : '';
-                return (v === undefined || v === null) ? '' : String(v);
-            });
-            return out
-                .replace(/[ \t]+\n/g, '\n')
-                .replace(/\n{3,}/g, '\n\n')
-                .replace(/\n\s+\n/g, '\n\n')
-                .trim();
-        },
-
-        buildMessage: () => {
-            const c = Touch.ctxFromModal();
-            const t = Touch.templates().find(x => x.id === Touch.activeTemplate) || Touch.templates()[0];
-            return Touch.applyTokens(t.body || '', c);
-        },
-
-        render: () => {
-            const E = Touch.els();
-            if(!E.templates || !E.faq || !E.msg) return;
-
-            Touch.ensureTemplates();
-
-            // templates chips
-            E.templates.innerHTML = '';
-            Touch.templates().forEach(t => {
-                const b = document.createElement('button');
-                b.type = 'button';
-                b.className = 'touch-chip' + (t.id === Touch.activeTemplate ? ' active' : '');
-                b.textContent = t.label;
-                b.onclick = () => {
-                    Touch.activeTemplate = t.id;
-                    DB.touchActiveTemplate = t.id;
-                    Storage.save();
-                    Touch.auto = true;
-                    Touch.refresh(true);
-                    Touch.render(); // update chip active state
-                };
-                E.templates.appendChild(b);
-            });
-
-            // faq chips
-            E.faq.innerHTML = '';
-            Touch.faq().forEach(f => {
-                const b = document.createElement('button');
-                b.type = 'button';
-                b.textContent = f.label;
-                b.onclick = () => {
-                    const c = Touch.ctxFromModal();
-                    const add = (typeof f.text === 'function' ? f.text(c) : String(f.text||'')).trim();
-                    if(!add) return;
-                    const cur = (E.msg.value || '').trim();
-                    E.msg.value = (cur ? (cur + '\n\n' + add) : add);
-                    Touch.auto = false;
-                };
-                E.faq.appendChild(b);
-            });
-
-            // message edits turn off auto
-            E.msg.oninput = () => { Touch.auto = false; };
-        },
-
-        refresh: (force=false) => {
-            const E = Touch.els();
-            if(!E.msg) return;
-            if(!Touch.auto && !force) return;
-            E.msg.value = Touch.buildMessage();
-        },
-
-        toast: (txt='Скопировано!') => {
-            const t = el('toast');
-            if(!t) return;
-            t.textContent = txt;
-            t.classList.add('show');
-            setTimeout(()=>t.classList.remove('show'), 1700);
-        },
-
-        shareText: async (text) => {
-            if(navigator.share) {
-                try { await navigator.share({ text }); return true; } catch(e) {}
-            }
-            return false;
-        },
-
-        // --- Template manager modal ---
-        tplEls: () => ({
-            modal: el('tpl-modal'),
-            list: el('tpl-list'),
-            close: el('tpl-close'),
-            add: el('tpl-add'),
-            exportBtn: el('tpl-export'),
-            importBtn: el('tpl-import'),
-        }),
-
-        openTplModal: () => {
-            const M = Touch.tplEls();
-            if(!M.modal) return;
-            Touch.ensureTemplates();
-            M.modal.classList.add('active');
-            Touch.renderTplEditor();
-        },
-        closeTplModal: () => {
-            const M = Touch.tplEls();
-            if(!M.modal) return;
-            M.modal.classList.remove('active');
-        },
-
-        newId: () => 'tpl_' + Date.now() + '_' + Math.random().toString(16).slice(2),
-        esc: (s='') => String(s||'').replace(/[&<>"']/g, (ch) => ({
-            '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-        }[ch])),
-
-        renderTplEditor: () => {
-            const M = Touch.tplEls();
-            if(!M.list) return;
-            Touch.ensureTemplates();
-
-            M.list.innerHTML = '';
-            DB.touchTemplates.forEach((t, idx) => {
-                const wrap = document.createElement('div');
-                wrap.className = 'tpl-item';
-
-                const labelId = `tpl-label-${idx}`;
-                const bodyId = `tpl-body-${idx}`;
-
-                wrap.innerHTML = `
-                    <div class="tpl-row">
-                        <input id="${labelId}" class="text-input" placeholder="Название шаблона" value="${Touch.esc(t.label)}">
-                    </div>
-                    <textarea id="${bodyId}" class="tpl-area" placeholder="Текст шаблона… (можно вставлять {{whenLine}}, {{priceLine}}, {{depositPercent}} и т.д.)">${Touch.esc(t.body)}</textarea>
-                    <div class="tpl-actions">
-                        <button class="touch-pill touch-primary" data-act="save" data-idx="${idx}" type="button">Сохранить</button>
-                        <button class="touch-pill ghost" data-act="dup" data-idx="${idx}" type="button">Дублировать</button>
-                        <button class="touch-pill danger" data-act="del" data-idx="${idx}" type="button">Удалить</button>
-                    </div>
-                `;
-
-                M.list.appendChild(wrap);
-            });
-
-            // bind actions
-            M.list.querySelectorAll('button[data-act]').forEach(btn => {
-                btn.onclick = () => {
-                    const act = btn.getAttribute('data-act');
-                    const i = parseInt(btn.getAttribute('data-idx')||'0');
-                    if(Number.isNaN(i) || !DB.touchTemplates[i]) return;
-
-                    if(act === 'save'){
-                        const l = (el(`tpl-label-${i}`)?.value || '').trim();
-                        const b = (el(`tpl-body-${i}`)?.value || '').trim();
-                        if(!l || !b){ Touch.toast('Название и текст обязательны'); return; }
-                        DB.touchTemplates[i].label = l.slice(0,60);
-                        DB.touchTemplates[i].body = b;
-                        Storage.save();
-                        Touch.render();
-                        Touch.toast('Сохранено');
-                        return;
-                    }
-                    if(act === 'dup'){
-                        const base = DB.touchTemplates[i];
-                        const copy = { id: Touch.newId(), label: (base.label + ' (копия)').slice(0,60), body: base.body };
-                        DB.touchTemplates.splice(i+1, 0, copy);
-                        Storage.save();
-                        Touch.renderTplEditor();
-                        Touch.render();
-                        Touch.toast('Сделано');
-                        return;
-                    }
-                    if(act === 'del'){
-                        if(DB.touchTemplates.length <= 1){ Touch.toast('Нужен хотя бы 1 шаблон'); return; }
-                        if(!confirm('Удалить шаблон?')) return;
-                        const removed = DB.touchTemplates.splice(i,1)[0];
-                        if(DB.touchActiveTemplate === removed.id){
-                            DB.touchActiveTemplate = DB.touchTemplates[0].id;
-                            Touch.activeTemplate = DB.touchActiveTemplate;
-                        }
-                        Storage.save();
-                        Touch.renderTplEditor();
-                        Touch.render();
-                        Touch.refresh(true);
-                        Touch.toast('Удалено');
-                        return;
-                    }
-                };
-            });
-        },
-
-        exportTemplates: async () => {
-            Touch.ensureTemplates();
-            const payload = JSON.stringify(DB.touchTemplates, null, 2);
-            const ok = await copyTextToClipboard(payload);
-            Touch.toast(ok ? 'Экспорт скопирован' : 'Не удалось');
-        },
-
-        importTemplates: () => {
-            const raw = prompt('Вставь JSON (массив шаблонов). Пример: [{ "label":"...", "body":"..." }]');
-            if(!raw) return;
-            try{
-                const parsed = JSON.parse(raw);
-                if(!Array.isArray(parsed)) throw new Error('not array');
-                const cleaned = parsed.map(t => ({
-                    id: (t && t.id) ? String(t.id) : Touch.newId(),
-                    label: (t && t.label) ? String(t.label).slice(0,60) : '',
-                    body: (t && (t.body || t.text)) ? String(t.body || t.text) : ''
-                })).filter(t => t.label.trim() && t.body.trim());
-                if(cleaned.length === 0) { Touch.toast('Пусто'); return; }
-                DB.touchTemplates = cleaned;
-                DB.touchActiveTemplate = DB.touchTemplates[0].id;
-                Touch.activeTemplate = DB.touchActiveTemplate;
-                Storage.save();
-                Touch.renderTplEditor();
-                Touch.render();
-                Touch.refresh(true);
-                Touch.toast('Импортировано');
-            }catch(e){
-                Touch.toast('JSON не распознан');
-            }
-        },
-
-        varsHelpText: () => (
-`Поля для шаблонов (копируй/вставляй):
-{{performer}}
-{{clientName}}
-{{whenLine}}
-{{typeLine}}
-{{priceLine}}
-{{priceFaqLine}}
-{{depositPercent}}
-{{portfolioLine}}
-{{reviewsLine}}
-{{notes}}`
-        ),
-
-        act: async (kind) => {
-            const E = Touch.els();
-
-            if(kind === 'manage'){ Touch.openTplModal(); return; }
-            if(kind === 'vars'){
-                const ok = await copyTextToClipboard(Touch.varsHelpText());
-                Touch.toast(ok ? 'Поля скопированы' : 'Не удалось');
-                return;
-            }
-
-            const message = (E.msg?.value || Touch.buildMessage()).trim();
-
-            if(kind === 'copy'){
-                const ok = await copyTextToClipboard(message);
-                Touch.toast(ok ? 'Скопировано' : 'Не удалось');
-                return;
-            }
-            if(kind === 'share'){
-                const ok = await Touch.shareText(message);
-                if(!ok){
-                    const ok2 = await copyTextToClipboard(message);
-                    Touch.toast(ok2 ? 'Скопировано' : 'Не удалось');
-                }
-                return;
-            }
-            if(kind === 'gen'){
-                Touch.auto = true;
-                Touch.refresh(true);
-                Touch.toast('Готово');
-                return;
-            }
-        },
-
-        bind: () => {
-            const E = Touch.els();
-            E.btnCopy && (E.btnCopy.onclick = () => Touch.act('copy'));
-            E.btnShare && (E.btnShare.onclick = () => Touch.act('share'));
-            E.btnGen && (E.btnGen.onclick = () => Touch.act('gen'));
-            E.btnManage && (E.btnManage.onclick = () => Touch.act('manage'));
-            E.btnVars && (E.btnVars.onclick = () => Touch.act('vars'));
-
-            const M = Touch.tplEls();
-            M.close && (M.close.onclick = () => Touch.closeTplModal());
-            M.add && (M.add.onclick = () => {
-                Touch.ensureTemplates();
-                DB.touchTemplates.unshift({ id: Touch.newId(), label: 'Новый шаблон', body: 'Здравствуйте! Я {{performer}}.' });
-                DB.touchActiveTemplate = DB.touchTemplates[0].id;
-                Touch.activeTemplate = DB.touchActiveTemplate;
-                Storage.save();
-                Touch.renderTplEditor();
-                Touch.render();
-                Touch.refresh(true);
-                Touch.toast('Добавлено');
-            });
-            M.exportBtn && (M.exportBtn.onclick = () => Touch.exportTemplates());
-            M.importBtn && (M.importBtn.onclick = () => Touch.importTemplates());
-
-            // tap backdrop to close (like sheet)
-            if(M.modal){
-                M.modal.addEventListener('click', (e) => {
-                    if(e.target === M.modal) Touch.closeTplModal();
-                });
-            }
-        },
-
-        init: () => {
-            Touch.ensureCfg();
-            Touch.ensureTemplates();
-            Touch.render();
-            Touch.bind();
-        },
-
-        prepareFromModal: () => {
-            Touch.ensureCfg();
-            Touch.ensureTemplates();
-            Touch.render();
-            Touch.refresh(true);
-        }
-    };
+    
+/* removed Touch module */
 Storage.load();
 </script>
-
 <script>
   // PWA: register Service Worker (works only on https:// or localhost)
   if ('serviceWorker' in navigator) {
@@ -2398,90 +1661,18 @@ Storage.load();
     });
   }
 </script>
-
-    </div>
-<div id="event-modal" class="modal">
-        <div class="modal-card">
-            <div class="modal-header"><span class="btn-close" onclick="Calendar.closeModal()">Отмена</span><div style="display:flex; gap:14px; align-items:center;"><span id="btn-modal-delete" style="color: var(--danger); display:none; cursor:pointer;" onclick="Calendar.deleteFromModal()">Удалить</span><span id="btn-modal-save" class="btn-save" onclick="Calendar.saveManualEvent()">Добавить</span></div></div>
-            <div class="modal-scroll">
-
-            <h2 style="font-size:20px; font-weight:700; margin-bottom:15px;">Запись</h2>
-            <div class="group-container" style="margin:0;">
-                <div class="input-row"><div class="label">Название</div><input id="mod-title" class="text-input" placeholder="Иван"></div>
-                <div class="input-row"><div class="label">Дата</div><input type="date" id="mod-date" class="native-control-inline"></div>
-                <div class="input-row"><div class="label">Время</div><input type="time" id="mod-time" class="native-control-inline"></div>
-                <div class="input-row"><div class="label">Телефон</div><input id="mod-phone" class="text-input" placeholder="89..."></div>
-                <div class="input-row">
-                    <div class="label">Категория</div>
-                    <select id="mod-type" class="native-control-inline">
-                        <option value="Свадьба">Свадьба</option><option value="Корпоратив">Корпоратив</option><option value="Детский">Детский</option><option value="Другое">Другое</option>
-                    </select>
-                </div>
-                <div class="input-row"><div class="label">Сумма</div><input type="number" id="mod-price" class="text-input" placeholder="0"></div>
-                <div class="input-row" style="flex-direction:column; align-items:stretch;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
-                        <div class="label">Заметки</div>
-                        <div class="value-wrapper"><div class="value-display" style="opacity:.6;">(для себя)</div></div>
-                    </div>
-                    <textarea id="mod-notes" class="notes-area" placeholder="Адрес, тайминг, требования площадки, пожелания клиента..." rows="4">
-</textarea>
-                </div>
-
-                <!-- TOUCH: быстрый контакт с клиентом (для фокусника) -->
-                <div class="section-title" style="margin-top:18px;">🎩 Клиент — быстрые ответы</div>
-                <div class="touch-card">
-                    <div class="touch-actions">
-                        <button class="touch-btn" id="touch-manage" type="button">⚙️ Шаблоны</button>
-                        <button class="touch-btn" id="touch-vars" type="button">✨ Поля</button>
-                    </div>
-
-                    <div class="touch-chips" id="touch-templates"></div>
-
-                    <textarea id="touch-message" class="touch-message" placeholder="Сообщение клиенту…"></textarea>
-
-                    <div class="touch-toolbar">
-                        <button class="touch-pill" id="touch-copy" type="button">Скопировать</button>
-                        <button class="touch-pill" id="touch-share" type="button">Поделиться</button>
-                        <button class="touch-pill touch-primary" id="touch-regenerate" type="button">↻ Собрать</button>
-                    </div>
-
-                    <div class="touch-faq-title">Частые ответы (вставка в сообщение)</div>
-                    <div class="touch-faq" id="touch-faq"></div>
-
-                    <div class="touch-hint">Один тап по шаблону → “Собрать” → “Поделиться” (выбираешь мессенджер). Никакой магии… кроме твоей.</div>
-                </div>
-
-            </div>
-        
-            </div>
 </div>
-    </div>
-<div id="tpl-modal" class="modal tpl-modal">
-        <div class="modal-card">
-            <div class="grabber"></div>
-            <div class="tpl-header">
-                <span class="btn-close" id="tpl-close">Закрыть</span>
-                <div class="tpl-title">Шаблоны сообщений</div>
-                <span class="btn-save" id="tpl-add">Добавить</span>
-            </div>
-            <div class="tpl-sub">
-                Настрой свои “быстрые касания”: один тап → готовый текст. Подстановки: <b>{{whenLine}}</b>, <b>{{priceLine}}</b>, <b>{{depositPercent}}</b>, <b>{{portfolioLine}}</b> и др.
-            </div>
-            <div class="tpl-list" id="tpl-list"></div>
-            <div class="tpl-tools">
-                <button class="touch-pill" id="tpl-export" type="button">Экспорт</button>
-                <button class="touch-pill" id="tpl-import" type="button">Импорт</button>
-            </div>
-        </div>
-    </div>
-<div class="tabs">
-        <div class="tab-btn active" data-tab="calc" onclick="switchTab('calc', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>Калькулятор</div>
-        <div class="tab-btn" data-tab="calendar" onclick="switchTab('calendar', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Календарь</div>
-        <div class="tab-btn" data-tab="history" onclick="switchTab('history', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>История</div>
-        <div class="tab-btn" data-tab="settings" onclick="switchTab('settings', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>Настройки</div>
-    </div>
-  </div>
 
+<!-- removed event-modal -->
+
+
+<!-- removed tpl-modal -->
+
+<div class="tabs">
+<div class="tab-btn active" data-tab="calc" onclick="switchTab('calc', this)"><svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>Калькулятор</div>
+<div class="tab-btn" data-tab="settings" onclick="switchTab('settings', this)"><svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>Настройки</div>
+</div>
+</div>
 <script>
 /* === v36 viewport stabilizer (iOS / PWA) === */
 (function(){
@@ -2527,6 +1718,5 @@ Storage.load();
   }
 })();
 </script>
-
 </body>
 </html>
