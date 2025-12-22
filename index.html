@@ -1,24 +1,28 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-<!-- PWA / iOS Home Screen -->
-<meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="black" name="apple-mobile-web-app-status-bar-style"/>
-<meta content="Productive Magic" name="apple-mobile-web-app-title"/>
-<meta content="#0b0c10" name="theme-color"/>
-<link href="apple-touch-icon-180-pm.png" rel="apple-touch-icon" sizes="180x180"/>
-<link href="apple-touch-icon-167-pm.png" rel="apple-touch-icon" sizes="167x167"/>
-<link href="apple-touch-icon-152-pm.png" rel="apple-touch-icon" sizes="152x152"/>
-<link href="apple-touch-icon-120-pm.png" rel="apple-touch-icon" sizes="120x120"/>
-<link href="favicon-32-pm.png" rel="icon" sizes="32x32" type="image/png"/>
-<link href="icon-192-pm.png" rel="icon" sizes="192x192" type="image/png"/>
-<link href="icon-512-pm.png" rel="icon" sizes="512x512" type="image/png"/>
-<title>Productive Magic</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+        <!-- PWA / iOS Add to Home Screen -->
+    <meta name="theme-color" content="#000000">
+    <meta name="color-scheme" content="dark">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kostyuk CRM">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icons/apple-touch-icon-120.png">
+<title>Kostyuk Event CRM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
         /* --- iOS SYSTEM THEME (PLATINUM) --- */
         :root {
             color-scheme: dark;
@@ -49,10 +53,12 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- TABS --- */
+        
+        html { background: var(--bg-body); height: 100%; }
+        body { min-height: 100%; }
+/* --- TABS --- */
         .tabs {
-            left: 0; width: 100%;
-            height: var(--tabs-h);
+            position: fixed; bottom: 0; left: 0; width: 100%;
             background: rgba(28, 28, 30, 0.85);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 0.5px solid rgba(255,255,255,0.15);
@@ -60,8 +66,6 @@
             display: flex; justify-content: space-around;
             z-index: 500;
         }
-        body:not(.pwa-fixed) .tabs{ position: fixed; bottom: 0; }
-        body.pwa-fixed #app-shell .tabs{ position: absolute; bottom: 0; }
         .tab-btn {
             flex: 1; padding: 8px 0 2px; text-align: center; color: var(--text-secondary);
             font-size: 10px; font-weight: 500; cursor: pointer; transition: color 0.2s;
@@ -174,62 +178,7 @@
             border: none; cursor: pointer; align-items: center; justify-content: center; gap: 8px;
             transition: transform 0.1s;
         }
-        
-        .btn-secondary{
-            width: 100%;
-            margin-top: 10px;
-            padding: 12px 16px;
-            border-radius: 14px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.14);
-            color: var(--text-primary);
-            font-weight: 700;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-        }
-        .btn-secondary:active{ transform: scale(0.99); }
-
-        /* Sales modal */
-        #sales-modal .modal-header{
-            position: sticky; top: 0;
-            background: rgba(18,18,18,0.9);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            z-index: 2;
-        }
-        #sales-search{
-            margin: 10px 0 12px 0;
-        }
-        .sales-list{
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .sales-item{
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.10);
-            border-radius: 14px;
-            padding: 12px;
-            cursor: pointer;
-        }
-        .sales-item.active{
-            border-color: rgba(10,132,255,0.55);
-            box-shadow: 0 0 0 3px rgba(10,132,255,0.16);
-        }
-        .sales-item .title{
-            font-weight: 800;
-            font-size: 14px;
-            margin-bottom: 6px;
-        }
-        .sales-item .hint{
-            font-size: 12px;
-            opacity: 0.72;
-            line-height: 1.25;
-        }
-.btn-main:active { transform: scale(0.97); opacity: 0.9; }
+        .btn-main:active { transform: scale(0.97); opacity: 0.9; }
 
         .discount-badge { color: var(--success); font-size: 13px; font-weight: 600; margin-bottom: 8px; display: none; }
         .bonus-banner { 
@@ -799,212 +748,36 @@ body{
 }
 
 
-/* --- v12 iPhone adaptive fixes (safe-area + no dead space + scrollable modals) --- */
+/* === v36: SINGLE iOS/PWA ADAPTATION (stop "treating", start "healing") ===
+   One scroll container (#app-scroll) + stable viewport (visualViewport) + tabbar inside the shell.
+   Fixes: black gap, dead buttons, keyboard hiding actions, iOS URL-bar jumps.
+*/
 :root{
-  --tabs-height: 62px;             /* visual height of tab bar (without safe area) */
-  --tabs-total: calc(var(--tabs-height) + var(--safe-bottom));
-  --app-height: 100vh;             /* will be set by JS to window.innerHeight for iOS keyboard */
+  --vvh: 100vh;
+  --vv-offset: 0px;
+  --kb: 0px;
+  --tabs-h: 64px;
+  --tabs-total: calc(var(--tabs-h) + var(--safe-bottom));
 }
-
 html, body{
   height: 100%;
-}
-
-body{
-  min-height: var(--app-height);
-  padding-bottom: var(--tabs-total) !important;
-}
-
-/* Tab bar becomes a “real” bar with stable height */
-.tabs{
-  height: var(--tabs-total);
-  padding-top: 6px;
-  padding-bottom: var(--safe-bottom) !important;
-  align-items: flex-end;
-}
-
-/* Content should not add extra random space at the bottom */
-.view{
-  /* IMPORTANT: keep content above fixed tab bar */
-  padding-bottom: calc(var(--tabs-total) + 18px) !important;
-  min-height: calc(var(--app-height) - var(--tabs-total) - var(--safe-top) - 10px);
-  scroll-padding-bottom: var(--tabs-total);
-}
-
-/* Avoid iOS “black gap” caused by large padding and short tab bar */
-.view:last-child{ margin-bottom: 0 !important; }
-
-/* Modals: limit height, enable scrolling, keep header tappable */
-.modal-card{
-  max-height: calc(var(--app-height) - var(--safe-top) - 8px);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: calc(16px + var(--safe-bottom) + var(--kb, 0px)) !important;
-}
-
-.modal-scroll{
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  flex: 1 1 auto;
-  min-height: 0; /* critical for iOS flex scroll */
-  padding-bottom: calc(12px + var(--kb, 0px));
-}
-
-.modal-header{
-  position: sticky;
-  top: 0;
-  background: #1C1C1E;
-  padding-top: 6px;
-  z-index: 10;
-}
-
-/* Bigger tap targets for modal actions */
-.modal-header .btn-close,
-.modal-header .btn-save{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.modal-header .btn-close{
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.10);
-}
-.modal-header .btn-save{
-  background: rgba(10,132,255,.18);
-  border: 1px solid rgba(10,132,255,.35);
-}
-.modal-header .btn-close:active,
-.modal-header .btn-save:active{ transform: scale(.99); opacity: .92; }
-
-
-/* Template modal header (same behavior) */
-.tpl-header{
-  position: sticky;
-  top: 0;
-  background: #1C1C1E;
-  z-index: 10;
-  padding-top: 6px;
-}
-
-/* Better touch targets on iPhone */
-.tab-btn{
-  padding: 10px 0 6px !important;
-}
-
-/* Prevent the sheet from hiding behind the home indicator when scrolling to the bottom */
-.modal-card *{
-  scroll-margin-bottom: calc(16px + var(--safe-bottom));
-}
-
-
-
-html.modal-lock,
-body.modal-lock{
-  overscroll-behavior: none;
-  height: 100%;
-  overflow: hidden;
-}
-body.modal-lock{
-  -webkit-overflow-scrolling: auto;
-}
-
-
-
-/* --- v23 PWA iPhone FIX (fundamental) --- */
-/* Stop window/body scrolling. All scrolling happens in #app-scroll and .modal-scroll. */
-html.pwa-fixed, body.pwa-fixed{
-  height: 100% !important;
-  width: 100% !important;
+  width: 100%;
   overflow: hidden !important;
-  position: fixed !important;
-  left: 0; top: 0;
+  background: var(--bg-body);
 }
-
 body{
+  padding-top: 0 !important;
   padding-bottom: 0 !important;
   min-height: 0 !important;
 }
-
-#app-shell{
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: var(--vv-height, 100vh);
-  overflow: hidden;
-  background: var(--bg-body);
-}
-
-#app-scroll{
-  position: absolute;
-  left: 0; right: 0;
-  top: 0;
-  bottom: var(--tabs-total);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 16px;
-}
-
-#app-shell .tabs{
-  position: absolute !important;
-  left: 0; right: 0;
-  bottom: 0 !important;
-}
-
-/* Ensure modals are also tied to the shell viewport */
-#app-shell .modal{
-  position: absolute !important;
-  inset: 0 !important;
-}
-
-/* Modal content should never be hidden behind the keyboard */
-#app-shell .modal-card{
-  max-height: calc(var(--vv-height, 100vh) - 24px);
-}
-
-#app-shell .modal-scroll{
-  padding-bottom: calc(16px + var(--kb, 0px)) !important;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* While modal is open, prevent background scroll area from moving */
-html.modal-open #app-scroll{
-  overflow: hidden;
-}
-
-
-
-/* ===== ProductiveMagic v34 — app-shell + стабильный таббар + без прыжков ===== */
-:root{
-  --vv-height: 100vh;
-  --vv-offset: 0px;
-  --kb: 0px;
-}
-
-/* Window never scrolls */
-html, body{
-  height: 100%;
-  width: 100%;
-  overflow: hidden !important;
-  background: var(--bg-body);
-}
-
-/* Shell */
 #app-shell{
   position: fixed;
   inset: 0;
-  height: var(--vv-height, 100vh);
+  height: var(--vvh, 100vh);
   transform: translateY(var(--vv-offset, 0px));
   overflow: hidden;
   background: var(--bg-body);
 }
-
-/* Main scroller ends above the tab bar */
 #app-scroll{
   position: absolute;
   left: 0; right: 0;
@@ -1013,418 +786,303 @@ html, body{
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  padding-top: calc(var(--safe-top) + 10px);
   padding-bottom: 16px;
 }
 
-/* Tabs live inside shell at the very bottom */
+/* Tabs must NOT be fixed to window (iOS hates it). Keep inside shell. */
 #app-shell .tabs{
   position: absolute !important;
   left: 0; right: 0;
   bottom: 0 !important;
   height: var(--tabs-total);
   padding-bottom: var(--safe-bottom) !important;
+  padding-top: 6px;
+  align-items: flex-end;
   z-index: 900;
 }
 
-/* Views: do NOT reserve extra space for tabs anymore */
-#app-scroll .view{
+/* Views no longer reserve "random" space for the tabbar */
+#app-shell .view{
   padding-bottom: 18px !important;
-  min-height: calc(var(--vv-height, 100vh) - var(--tabs-total)) !important;
+  min-height: calc(var(--vvh, 100vh) - var(--tabs-total)) !important;
 }
 
-/* Modals: tie to shell and keyboard */
+/* Modals: real sheet with internal scroll + keyboard safety */
 #app-shell .modal{
   position: absolute !important;
   inset: 0 !important;
-  height: var(--vv-height, 100vh) !important;
+  z-index: 1200;
 }
 #app-shell .modal-card{
-  max-height: calc(var(--vv-height, 100vh) - var(--kb) - 18px) !important;
-}
-
-
-/* =========================
-   FINAL LAYOUT OVERRIDES v35
-   Цель: идеальная safe-area, стабильный таббар, без чёрных полос и без прыжков
-   ========================= */
-
-html, body{
-  height: 100%;
+  max-height: calc(var(--vvh, 100vh) - 16px);
   overflow: hidden;
-  overscroll-behavior: none;
-  background: var(--bg-body);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(16px + var(--safe-bottom) + var(--kb, 0px)) !important;
 }
-
-/* App shell fills the screen, tabs live INSIDE layout (not overlay) */
-#app-shell{
-  position: fixed !important;
-  inset: 0 !important;
-  height: 100% !important;
-  width: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  overflow: hidden !important;
-  background: var(--bg-body) !important;
-  z-index: 1;
-}
-
-#app-scroll{
-  position: relative !important;
-  left: auto !important;
-  right: auto !important;
-  top: auto !important;
-  bottom: auto !important;
-  flex: 1 1 auto !important;
-  overflow-y: auto !important;
+#app-shell .modal-scroll{
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 14px !important;
-  z-index: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-bottom: calc(12px + var(--kb, 0px));
 }
-
-/* Header must always respect the notch and stay on top while scrolling */
-.header{
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 50 !important;
-  background: var(--bg-body) !important;
-  padding-top: calc(var(--safe-top) + 14px) !important;
-  padding-bottom: 12px !important;
+html.modal-open #app-shell .tabs{
+  pointer-events: none;
+  opacity: 0;
 }
-
-/* Tabs: stable height + safe bottom, always clickable */
-#app-shell .tabs{
-  position: relative !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  flex: 0 0 auto !important;
-  height: var(--tabs-total) !important;
-  padding-bottom: var(--safe-bottom) !important;
-  z-index: 9999 !important;
-  pointer-events: auto !important;
-}
-
-/* Make sure nothing can cover the tab bar */
-.view, .modal{
-  pointer-events: auto;
-}
-.modal{
-  z-index: 10000;
-}
-
-/* Modals: no flying to the bottom when keyboard appears */
-.modal-card{
-  max-height: calc(100dvh - var(--safe-top) - 12px) !important;
-  padding-bottom: calc(22px + var(--safe-bottom) + var(--kb, 0px)) !important;
-}
-.modal-scroll{
-  padding-bottom: calc(12px + var(--kb, 0px)) !important;
-}
-
-/* iOS text inputs: stop zoom + reduce layout shift */
-input, textarea, select{
-  font-size: 16px; /* prevents iOS auto-zoom */
-}
-
-/* Prevent accidental window scrolling */
-body{
-  position: fixed;
-  width: 100%;
+html.modal-open #app-scroll{
+  overflow: hidden;
 }
 
 </style>
 </head>
-<body><div id="app-shell"><div id="app-scroll"><div class="view active" id="view-calc">
-<div class="header">
-<div><h1>Productive Magic</h1><p>Конструктор КП</p></div>
-</div>
-<div class="group-container" style="margin-bottom: 20px;">
-<div class="input-row">
-<div class="label">Имя клиента</div>
-<input class="text-input" id="inp-client" placeholder="Иван" type="text"/>
-</div>
-<div class="input-row">
-<div class="label">Телефон</div>
-<input class="text-input" id="inp-phone" placeholder="8 9..." type="tel"/>
-</div>
-<div class="input-row">
-<div class="label">Статус</div>
-<div class="value-wrapper"><div class="value-display" id="disp-status">Интерес</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" id="inp-status" onchange="App.updateStatus()">
-<option selected="" value="new">Интерес (Спросил)</option>
-<option value="think">Думает</option>
-<option value="deposit">Бронь (Оплачено)</option>
-<option value="cancel">Отказ</option>
-</select>
-</div>
-<div class="input-row">
-<div class="label">Событие</div>
-<div class="value-wrapper"><div class="value-display" id="disp-event-type">Не выбрано</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" id="inp-event-type" onchange="App.updateEventType()">
-<option disabled="" selected="" value="">Тип</option><option value="Свадьба">Свадьба</option><option value="Корпоратив">Корпоратив</option><option value="Юбилей">Юбилей</option><option value="День Рождения">День Рождения</option><option value="Детский праздник">Детский праздник</option><option value="Вечеринка">Вечеринка</option><option value="Выпускной">Выпускной</option><option value="Частное">Частное</option>
-</select>
-</div>
-</div>
-<div class="section-title">Логистика</div>
-<div class="group-container">
-<div class="input-row" style="flex-direction:column; align-items:stretch;">
-<div style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
-<div class="label flex items-center">Дата <span class="badge" id="badge-holiday"></span></div>
-<div class="value-wrapper"><div class="value-display" id="disp-date">Сегодня</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-</div>
-<div class="conflict-alert" id="conflict-msg"></div>
-<input class="native-control" id="inp-date" onchange="App.updateDate()" type="date"/>
-</div>
-<div class="input-row">
-<div class="label">Время</div>
-<input class="text-input" id="inp-time" type="time" value="18:00"/>
-</div>
-<div class="input-row">
-<div class="label">Регион</div>
-<div class="value-wrapper"><div class="value-display" id="disp-region">Не выбран</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" id="inp-region" onchange="App.updateRegion()"></select>
-</div>
-<div class="input-row">
-<div class="label">Город</div>
-<div class="value-wrapper"><div class="value-display" id="disp-city">...</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" disabled="" id="inp-city" onchange="App.updateCity()"></select>
-</div>
-</div>
-<div class="section-title">Услуги</div>
-<div class="group-container">
-<div class="input-row">
-<div class="label">Категория</div>
-<div class="value-wrapper"><div class="value-display" id="disp-cat">Не выбрана</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" id="inp-cat" onchange="App.updateCat()"></select>
-</div>
-<div class="input-row">
-<div class="label">Услуга</div>
-<div class="value-wrapper"><div class="value-display" id="disp-svc">...</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" disabled="" id="inp-svc"></select>
-</div>
-<div class="service-adder">
-<div class="qty-control">
-<div class="qty-btn" onclick="App.changeQty(-1)">-</div>
-<div class="qty-val" id="svc-qty">1</div>
-<div class="qty-btn" onclick="App.changeQty(1)">+</div>
-</div>
-<div class="btn-add-service" onclick="App.addService()">+ Добавить услугу</div>
-</div>
-</div>
-<div class="cart-list" id="cart-list"></div>
-<div class="section-title">Доп. расходы / Гости</div>
-<div class="group-container">
-<div style="display:flex; padding:12px 16px; gap:10px; border-bottom:0.5px solid var(--separator);">
-<input class="edit-input" id="inp-manual-name" oninput="App.calc()" placeholder="Название допа (напр. Аренда)" type="text"/>
-<input class="edit-input" id="inp-manual-price" oninput="App.calc()" placeholder="₽" style="width:90px; text-align:right;" type="number"/>
-</div>
-<div class="input-row">
-<div class="label">Гости</div>
-<div class="value-wrapper"><div class="value-display" id="disp-guests">До 50 (0₽)</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" id="inp-guests" onchange="App.updateGuests()">
-<option value="0">До 50 человек (0₽)</option>
-<option value="5000">51–100 человек (+5 000₽)</option>
-<option value="10000">101–200 человек (+10 000₽)</option>
-<option value="custom">Более 200 (Слайдер)</option>
-</select>
-</div>
-</div>
-<div class="slider-wrap" id="slider-wrap" style="display:none; margin:10px 16px; background:var(--bg-card); padding:16px; border-radius:12px;">
-<div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; color:#888;"><span>ТОЧНОЕ ЧИСЛО</span><span id="slider-val" style="color:#fff;">250</span></div>
-<input id="inp-slider" max="500" min="201" oninput="App.calc()" step="5" style="width:100%;" type="range" value="250"/>
-</div>
-<!-- ИТОГ -->
-<div class="total-panel">
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:15px; border-bottom:1px solid #333;">
-<span style="font-size:15px; color:#fff;">Работа по договору (+6%)</span>
-<label class="switch">
-<input id="inp-tax" onchange="App.calc()" type="checkbox"/>
-<span class="slider"></span>
-</label>
-</div>
-<div class="bonus-banner" id="bonus-alert"></div>
-<div class="discount-badge" id="discount-badge">✅ Скидка 10% за объем</div>
-<div class="total-label">Итоговая смета</div>
-<div class="total-sum" id="total-sum">0 ₽</div>
-<button class="btn-main" onclick="App.copy()">
-<svg fill="none" height="20" stroke="currentColor" viewbox="0 0 24 24" width="20"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<body>
+  <div id="app-shell">
+    <div id="app-scroll">
+
+
+    <!-- Меню -->
+    
+
+    <!-- 1. КАЛЬКУЛЯТОР -->
+    <div id="view-calc" class="view active">
+        <div class="header">
+            <div><h1>Kostyuk CRM</h1><p>Конструктор КП</p></div>
+        </div>
+
+        <div class="group-container" style="margin-bottom: 20px;">
+            <div class="input-row">
+                <div class="label">Имя клиента</div>
+                <input type="text" id="inp-client" class="text-input" placeholder="Иван">
+            </div>
+            <div class="input-row">
+                <div class="label">Телефон</div>
+                <input type="tel" id="inp-phone" class="text-input" placeholder="8 9..." >
+            </div>
+            <div class="input-row">
+                <div class="label">Статус</div>
+                <div class="value-wrapper"><div id="disp-status" class="value-display">Интерес</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
+                <select id="inp-status" class="native-control" onchange="App.updateStatus()">
+                    <option value="new" selected>Интерес (Спросил)</option>
+                    <option value="think">Думает</option>
+                    <option value="deposit">Бронь (Оплачено)</option>
+                    <option value="cancel">Отказ</option>
+                </select>
+            </div>
+            <div class="input-row">
+                <div class="label">Событие</div>
+                <div class="value-wrapper"><div id="disp-event-type" class="value-display">Не выбрано</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
+                <select id="inp-event-type" class="native-control" onchange="App.updateEventType()">
+                    <option value="" disabled selected>Тип</option><option value="Свадьба">Свадьба</option><option value="Корпоратив">Корпоратив</option><option value="Юбилей">Юбилей</option><option value="День Рождения">День Рождения</option><option value="Детский праздник">Детский праздник</option><option value="Вечеринка">Вечеринка</option><option value="Выпускной">Выпускной</option><option value="Частное">Частное</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="section-title">Логистика</div>
+        <div class="group-container">
+            <div class="input-row" style="flex-direction:column; align-items:stretch;">
+                <div style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
+                    <div class="label flex items-center">Дата <span id="badge-holiday" class="badge"></span></div>
+                    <div class="value-wrapper"><div id="disp-date" class="value-display">Сегодня</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
+                </div>
+                <div id="conflict-msg" class="conflict-alert"></div>
+                <input type="date" id="inp-date" class="native-control" onchange="App.updateDate()">
+            </div>
+            <div class="input-row">
+                <div class="label">Время</div>
+                <input type="time" id="inp-time" class="text-input" value="18:00">
+            </div>
+            <div class="input-row">
+                <div class="label">Регион</div>
+                <div class="value-wrapper"><div id="disp-region" class="value-display">Не выбран</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
+                <select id="inp-region" class="native-control" onchange="App.updateRegion()"></select>
+            </div>
+            <div class="input-row">
+                <div class="label">Город</div>
+                <div class="value-wrapper"><div id="disp-city" class="value-display">...</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
+                <select id="inp-city" class="native-control" disabled onchange="App.updateCity()"></select>
+            </div>
+        </div>
+
+        <div class="section-title">Услуги</div>
+        <div class="group-container">
+            <div class="input-row">
+                <div class="label">Категория</div>
+                <div class="value-wrapper"><div id="disp-cat" class="value-display">Не выбрана</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
+                <select id="inp-cat" class="native-control" onchange="App.updateCat()"></select>
+            </div>
+            <div class="input-row">
+                <div class="label">Услуга</div>
+                <div class="value-wrapper"><div id="disp-svc" class="value-display">...</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
+                <select id="inp-svc" class="native-control" disabled></select>
+            </div>
+            <div class="service-adder">
+                <div class="qty-control">
+                    <div class="qty-btn" onclick="App.changeQty(-1)">-</div>
+                    <div class="qty-val" id="svc-qty">1</div>
+                    <div class="qty-btn" onclick="App.changeQty(1)">+</div>
+                </div>
+                <div class="btn-add-service" onclick="App.addService()">+ Добавить услугу</div>
+            </div>
+        </div>
+
+        <div id="cart-list" class="cart-list"></div>
+
+        <div class="section-title">Доп. расходы / Гости</div>
+        <div class="group-container">
+            <div style="display:flex; padding:12px 16px; gap:10px; border-bottom:0.5px solid var(--separator);">
+                <input type="text" id="inp-manual-name" class="edit-input" placeholder="Название допа (напр. Аренда)" oninput="App.calc()">
+                <input type="number" id="inp-manual-price" class="edit-input" style="width:90px; text-align:right;" placeholder="₽" oninput="App.calc()">
+            </div>
+            <div class="input-row">
+                <div class="label">Гости</div>
+                <div class="value-wrapper"><div id="disp-guests" class="value-display">До 50 (0₽)</div><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>
+                <select id="inp-guests" class="native-control" onchange="App.updateGuests()">
+                    <option value="0">До 50 человек (0₽)</option>
+                    <option value="5000">51–100 человек (+5 000₽)</option>
+                    <option value="10000">101–200 человек (+10 000₽)</option>
+                    <option value="custom">Более 200 (Слайдер)</option>
+                </select>
+            </div>
+        </div>
+        <div id="slider-wrap" class="slider-wrap" style="display:none; margin:10px 16px; background:var(--bg-card); padding:16px; border-radius:12px;">
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; color:#888;"><span>ТОЧНОЕ ЧИСЛО</span><span id="slider-val" style="color:#fff;">250</span></div>
+            <input type="range" id="inp-slider" min="201" max="500" value="250" step="5" oninput="App.calc()" style="width:100%;">
+        </div>
+
+        <!-- ИТОГ -->
+        <div class="total-panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:15px; border-bottom:1px solid #333;">
+                <span style="font-size:15px; color:#fff;">Работа по договору (+6%)</span>
+                <label class="switch">
+                    <input type="checkbox" id="inp-tax" onchange="App.calc()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div id="bonus-alert" class="bonus-banner"></div>
+            <div id="discount-badge" class="discount-badge">✅ Скидка 10% за объем</div>
+            
+            <div class="total-label">Итоговая смета</div>
+            <div id="total-sum" class="total-sum">0 ₽</div>
+            
+            <button class="btn-main" onclick="App.copy()">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
                 Сформировать КП
             </button>
-<button class="btn-secondary" onclick="Sales.open()">
-                🎯 Продажи: скрипты и дожим
-            </button>
-</div>
-</div><div class="view" id="view-calendar">
-<div class="header"><h1>Календарь</h1><div class="header-btn-add" onclick="Calendar.openModal()">+</div></div>
-<div class="calendar-header">
-<div class="month-nav" onclick="Calendar.prevMonth()">‹</div><div class="current-month" id="cal-month-title"></div><div class="month-nav" onclick="Calendar.nextMonth()">›</div>
-</div>
-<div class="weekdays"><div class="weekday">Пн</div><div class="weekday">Вт</div><div class="weekday">Ср</div><div class="weekday">Чт</div><div class="weekday">Пт</div><div class="weekday">Сб</div><div class="weekday">Вс</div></div>
-<div class="calendar-grid" id="calendar-grid"></div>
-<div class="events-container"><div class="selected-date-title" id="selected-date-title">События</div><div id="events-list"></div></div>
-</div><div class="view" id="view-history">
-<div class="header"><h1>История</h1><p>База расчетов</p></div>
-<div class="history-list" id="history-list"></div>
-</div><div class="view" id="view-settings">
-<div class="header"><h1>Настройки</h1></div>
-<div class="section-title">Логистика (Города)</div>
-<div id="settings-travel-list" style="margin: 0 16px;"></div>
-<div style="margin: 10px 16px;"><div class="btn-add" onclick="Admin.addRegion()">+ Добавить Регион</div></div>
-<div class="section-title">Услуги</div>
-<div id="settings-services-list" style="margin: 0 16px;"></div>
-<div style="margin: 10px 16px;"><div class="btn-add" onclick="Admin.addCategory()">+ Добавить Категорию</div></div>
-<div class="section-title">КП: реквизиты и ссылки</div>
-<div class="settings-block" style="margin: 0 16px;">
-<div class="settings-header" onclick="Admin.toggleSection(this)">
-<span>Реквизиты для брони</span>
-<span class="toggle-icon">▼</span>
-</div>
-<div class="settings-content open">
-<div id="settings-payments-list"></div>
-<div class="btn-add" onclick="Admin.addPayment()">+ Добавить реквизиты</div>
-</div>
-</div>
-<div class="settings-block" style="margin: 0 16px;">
-<div class="settings-header" onclick="Admin.toggleSection(this)">
-<span>Ссылки (портфолио / соцсети / отзывы)</span>
-<span class="toggle-icon">▼</span>
-</div>
-<div class="settings-content open">
-<div id="settings-links-list"></div>
-<div class="btn-add" onclick="Admin.addLink()">+ Добавить ссылку</div>
-</div>
-</div>
-<div class="section-title">Профиль фокусника</div>
-<div class="settings-block" style="margin: 0 16px;">
-<div class="input-row"><div class="label">Имя артиста</div><input class="text-input" id="cfg-performer" placeholder="Напр. Дмитрий Костюк"/></div>
-<div class="input-row"><div class="label">Задаток (%)</div><input class="text-input" id="cfg-deposit" placeholder="30" type="number"/></div>
-<div class="input-row" style="align-items:center;">
-<div class="label">Автосохранение при КП</div>
-<label class="switch" title="Если включено — при формировании КП автоматически создаётся/обновляется запись в календаре и в истории (без дублей).">
-<input id="cfg-autosave" type="checkbox"/>
-<span class="slider"></span>
-</label>
-</div>
-</div>
-<div class="section-title">Праздничные коэффициенты</div>
-<div class="settings-block" style="margin: 0 16px;">
-<div class="settings-header" onclick="Admin.toggleSection(this)">
-<span>Праздники (гибкая настройка)</span>
-<span class="toggle-icon">▼</span>
-</div>
-<div class="settings-content open">
-<div style="padding: 12px 16px; font-size: 12px; color: var(--text-secondary); line-height:1.3;">
+        </div>
+    </div>
+
+    <!-- 2. КАЛЕНДАРЬ -->
+    <div id="view-calendar" class="view">
+        <div class="header"><h1>Календарь</h1><div class="header-btn-add" onclick="Calendar.openModal()">+</div></div>
+        <div class="calendar-header">
+            <div class="month-nav" onclick="Calendar.prevMonth()">‹</div><div class="current-month" id="cal-month-title"></div><div class="month-nav" onclick="Calendar.nextMonth()">›</div>
+        </div>
+        <div class="weekdays"><div class="weekday">Пн</div><div class="weekday">Вт</div><div class="weekday">Ср</div><div class="weekday">Чт</div><div class="weekday">Пт</div><div class="weekday">Сб</div><div class="weekday">Вс</div></div>
+        <div id="calendar-grid" class="calendar-grid"></div>
+        <div class="events-container"><div id="selected-date-title" class="selected-date-title">События</div><div id="events-list"></div></div>
+    </div>
+
+    <!-- 3. ИСТОРИЯ -->
+    <div id="view-history" class="view">
+        <div class="header"><h1>История</h1><p>База расчетов</p></div>
+        <div id="history-list" class="history-list"></div>
+    </div>
+
+    <!-- 4. НАСТРОЙКИ (FIXED) -->
+    <div id="view-settings" class="view">
+        <div class="header"><h1>Настройки</h1></div>
+        
+        <div class="section-title">Логистика (Города)</div>
+        <div id="settings-travel-list" style="margin: 0 16px;"></div>
+        <div style="margin: 10px 16px;"><div class="btn-add" onclick="Admin.addRegion()">+ Добавить Регион</div></div>
+
+        <div class="section-title">Услуги</div>
+        <div id="settings-services-list" style="margin: 0 16px;"></div>
+        <div style="margin: 10px 16px;"><div class="btn-add" onclick="Admin.addCategory()">+ Добавить Категорию</div></div>
+
+        
+        <div class="section-title">КП: реквизиты и ссылки</div>
+
+        <div class="settings-block" style="margin: 0 16px;">
+            <div class="settings-header" onclick="Admin.toggleSection(this)">
+                <span>Реквизиты для брони</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content open">
+                <div id="settings-payments-list"></div>
+                <div class="btn-add" onclick="Admin.addPayment()">+ Добавить реквизиты</div>
+            </div>
+        </div>
+
+        <div class="settings-block" style="margin: 0 16px;">
+            <div class="settings-header" onclick="Admin.toggleSection(this)">
+                <span>Ссылки (портфолио / соцсети / отзывы)</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content open">
+                <div id="settings-links-list"></div>
+                <div class="btn-add" onclick="Admin.addLink()">+ Добавить ссылку</div>
+            </div>
+        </div>
+
+
+        <div class="section-title">Профиль фокусника</div>
+        <div class="settings-block" style="margin: 0 16px;">
+            <div class="input-row"><div class="label">Имя артиста</div><input id="cfg-performer" class="text-input" placeholder="Напр. Дмитрий Костюк"></div>
+            <div class="input-row"><div class="label">Задаток (%)</div><input id="cfg-deposit" type="number" class="text-input" placeholder="30"></div>
+            <div class="input-row" style="align-items:center;">
+                <div class="label">Автосохранение при КП</div>
+                <label class="switch" title="Если включено — при формировании КП автоматически создаётся/обновляется запись в календаре и в истории (без дублей).">
+                    <input type="checkbox" id="cfg-autosave">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+
+        <div class="section-title">Праздничные коэффициенты</div>
+        <div class="settings-block" style="margin: 0 16px;">
+            <div class="settings-header" onclick="Admin.toggleSection(this)">
+                <span>Праздники (гибкая настройка)</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings-content open">
+                <div style="padding: 12px 16px; font-size: 12px; color: var(--text-secondary); line-height:1.3;">
                     Формат дат: <b>ММ-ДД</b> (например, 12-31). Коэффициент умножает итоговую смету в выбранные даты/периоды.
                 </div>
-<div class="section-title" style="margin: 8px 16px 8px;">Точные даты</div>
-<div id="settings-holidays-list"></div>
-<div class="btn-add" onclick="HolidayCfg.addHoliday()">+ Добавить дату</div>
-<div class="section-title" style="margin: 16px 16px 8px;">Периоды</div>
-<div id="settings-holidayranges-list"></div>
-<div class="btn-add" onclick="HolidayCfg.addRange()">+ Добавить период</div>
-</div>
-</div>
-<div class="btn-add" onclick="if(typeof Touch!=='undefined') Touch.openTplModal()" style="margin: 10px 16px 0;">⚙️ Настроить шаблоны сообщений</div>
+
+                <div class="section-title" style="margin: 8px 16px 8px;">Точные даты</div>
+                <div id="settings-holidays-list"></div>
+                <div class="btn-add" onclick="HolidayCfg.addHoliday()">+ Добавить дату</div>
+
+                <div class="section-title" style="margin: 16px 16px 8px;">Периоды</div>
+                <div id="settings-holidayranges-list"></div>
+                <div class="btn-add" onclick="HolidayCfg.addRange()">+ Добавить период</div>
+            </div>
+        </div>
+
+
+<div class="btn-add" style="margin: 10px 16px 0;" onclick="if(typeof Touch!=='undefined') Touch.openTplModal()">⚙️ Настроить шаблоны сообщений</div>
+
 <div class="btn-reset" onclick="Admin.resetAll()">⚠️ Сброс к заводским настройкам</div>
-</div></div><div class="tabs">
-<div class="tab-btn active" data-tab="calc" onclick="switchTab('calc', this)"><svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>Калькулятор</div>
-<div class="tab-btn" data-tab="calendar" onclick="switchTab('calendar', this)"><svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>Календарь</div>
-<div class="tab-btn" data-tab="history" onclick="switchTab('history', this)"><svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>История</div>
-<div class="tab-btn" data-tab="settings" onclick="switchTab('settings', this)"><svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>Настройки</div>
-</div><div class="modal" id="sales-modal">
-<div class="modal-card">
-<div class="modal-header">
-<span class="btn-close" onclick="Sales.close()">Закрыть</span>
-<div class="modal-title">Продажи</div>
-<span class="btn-save" onclick="Touch.openTplModal()">Шаблоны</span>
-</div>
-<div class="modal-scroll">
-<div class="tpl-sub" style="margin-top:0;">
-                    Быстрые “умные продажи”: выбери скрипт → подставятся имя/город/дата/цена → копируй и отправляй.
-                    Всё редактируется в “Шаблоны”.
-                </div>
-<input class="text-input" id="sales-search" placeholder="Поиск скрипта или возражения…" type="text"/>
-<div class="sales-list" id="sales-list"></div>
-<div class="section-title" style="margin: 14px 0 10px 0;">Предпросмотр</div>
-<textarea class="touch-message" id="sales-preview" placeholder="Выбери скрипт выше…" rows="6"></textarea>
-<div class="tpl-actions" style="padding: 14px 0 8px 0;">
-<button class="touch-pill touch-primary" onclick="Sales.copy()" type="button">Скопировать</button>
-<button class="touch-pill ghost" onclick="Sales.applyToClipboardPlain()" type="button">Скопировать (чистый текст)</button>
-</div>
-</div>
-</div>
-</div><div class="modal" id="event-modal">
-<div class="modal-card">
-<div class="modal-header">
-<span class="btn-close" onclick="Calendar.closeModal()">Отмена</span>
-<div style="display:flex; gap:14px; align-items:center;">
-<span id="btn-modal-delete" onclick="Calendar.deleteFromModal()" style="color: var(--danger); display:none; cursor:pointer;">Удалить</span>
-<span class="btn-save" id="btn-modal-save" onclick="Calendar.saveManualEvent()">Добавить</span>
-</div>
-</div>
-<div class="modal-scroll">
-<h2 style="font-size:20px; font-weight:700; margin-bottom:15px;">Запись</h2>
-<div class="group-container" style="margin:0;">
-<div class="input-row"><div class="label">Название</div><input class="text-input" id="mod-title" placeholder="Иван"/></div>
-<div class="input-row"><div class="label">Дата</div><input class="native-control-inline" id="mod-date" type="date"/></div>
-<div class="input-row"><div class="label">Время</div><input class="native-control-inline" id="mod-time" type="time"/></div>
-<div class="input-row"><div class="label">Телефон</div><input class="text-input" id="mod-phone" placeholder="89..."/></div>
-<div class="input-row">
-<div class="label">Категория</div>
-<select class="native-control-inline" id="mod-type">
-<option value="Свадьба">Свадьба</option><option value="Корпоратив">Корпоратив</option><option value="Детский">Детский</option><option value="Другое">Другое</option>
-</select>
-</div>
-<div class="input-row"><div class="label">Сумма</div><input class="text-input" id="mod-price" placeholder="0" type="number"/></div>
-<div class="input-row" style="flex-direction:column; align-items:stretch;">
-<div style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
-<div class="label">Заметки</div>
-<div class="value-wrapper"><div class="value-display" style="opacity:.6;">(для себя)</div></div>
-</div>
-<textarea class="notes-area" id="mod-notes" placeholder="Адрес, тайминг, требования площадки, пожелания клиента..." rows="4">
-</textarea>
-</div>
-<!-- TOUCH: быстрый контакт с клиентом (для фокусника) -->
-<div class="section-title" style="margin-top:18px;">🎩 Клиент — быстрые ответы</div>
-<div class="touch-card">
-<div class="touch-actions">
-<button class="touch-btn" id="touch-manage" type="button">⚙️ Шаблоны</button>
-<button class="touch-btn" id="touch-vars" type="button">✨ Поля</button>
-</div>
-<div class="touch-chips" id="touch-templates"></div>
-<textarea class="touch-message" id="touch-message" placeholder="Сообщение клиенту…"></textarea>
-<div class="touch-toolbar">
-<button class="touch-pill" id="touch-copy" type="button">Скопировать</button>
-<button class="touch-pill" id="touch-share" type="button">Поделиться</button>
-<button class="touch-pill touch-primary" id="touch-regenerate" type="button">↻ Собрать</button>
-</div>
-<div class="touch-faq-title">Частые ответы (вставка в сообщение)</div>
-<div class="touch-faq" id="touch-faq"></div>
-<div class="touch-hint">Один тап по шаблону → “Собрать” → “Поделиться” (выбираешь мессенджер). Никакой магии… кроме твоей.</div>
-</div>
-</div>
-</div>
-</div>
-</div><div class="modal tpl-modal" id="tpl-modal">
-<div class="modal-card">
-<div class="grabber"></div>
-<div class="tpl-header">
-<span class="btn-close" id="tpl-close">Закрыть</span>
-<div class="tpl-title">Шаблоны сообщений</div>
-<span class="btn-save" id="tpl-add">Добавить</span>
-</div>
-<div class="modal-scroll">
-<div class="tpl-sub">
-                    Настрой свои “быстрые касания”: один тап → готовый текст. Подстановки: <b>{{whenLine}}</b>, <b>{{priceLine}}</b>, <b>{{depositPercent}}</b>, <b>{{portfolioLine}}</b> и др.
-                </div>
-<div class="tpl-list" id="tpl-list"></div>
-<div class="tpl-tools">
-<button class="touch-pill" id="tpl-export" type="button">Экспорт</button>
-<button class="touch-pill" id="tpl-import" type="button">Импорт</button>
-</div>
-</div>
-</div>
-</div><div class="toast" id="toast">Скопировано!</div></div><script>
+    </div>
+
+    <!-- MODAL -->
+    
+
+
+    
+    <!-- TOUCH TEMPLATES MANAGER -->
+    
+
+
+<div id="toast" class="toast">Скопировано!</div>
+
+<script>
     // --- DB INIT (FULL RESTORED v10) ---
     const DEFAULT_DB = {
         travel: {
@@ -1771,13 +1429,15 @@ body{
 
             // CLEAN COPY (текст для клиента)
             const dateStr = parseISODate(State.date).toLocaleDateString('ru-RU',{weekday:'short', day:'numeric', month:'long'});
-            let lines = [`✨ РАСЧЕТ: ${type.toUpperCase()} ✨`];
+            let lines = [`Здравствуйте, ${name}!`];
             lines.push(``);
-            lines.push(`📅 ${dateStr}`);
+            lines.push(`✨ **РАСЧЕТ: ${type.toUpperCase()}** ✨`);
+            lines.push(``);
+            lines.push(`📅 **${dateStr}**`);
             const cityText = (el('disp-city')?.innerText || el('inp-city')?.value || '').trim();
-            if(cityText) lines.push(`📍 ${cityText}`);
+            if(cityText) lines.push(`📍 **${cityText}**`);
             lines.push(``);
-            lines.push(`🎩 Программа:`);
+            lines.push(`🎩 **Программа:**`);
             State.cart.forEach(i => lines.push(`• ${i.name} — ${fmt(Math.round(i.price*i.qty*State.final.k))}`));
 
             if(State.discount>0) lines.push(`🎁 Скидка 10%: -${fmt(State.discount)}`);
@@ -1786,17 +1446,17 @@ body{
             if(State.final.man>0) lines.push(`🔹 Доп. расходы: ${fmt(State.final.man)}`);
             if(State.final.taxVal>0) lines.push(`📄 Налог / Документы (6%): ${fmt(State.final.taxVal)}`);
 
-            if(State.bonusList.length>0) { lines.push(``); lines.push(`🎁 ВАШИ БОНУСЫ:`); State.bonusList.forEach(b=>lines.push(`✅ ${b}`)); }
+            if(State.bonusList.length>0) { lines.push(``); lines.push(`🎁 **ВАШИ БОНУСЫ:**`); State.bonusList.forEach(b=>lines.push(`✅ ${b}`)); }
 
             const dep = depPct > 0 ? Math.round(State.final.total * (depPct/100)) : 0;
             lines.push(``);
-            lines.push(`💰 ИТОГО: ${fmt(State.final.total)}`);
+            lines.push(`💰 **ИТОГО: ${fmt(State.final.total)}**`);
             if(depPct > 0) lines.push(`💳 Задаток (${depPct}%): ${fmt(dep)}`);
             lines.push(``);
 
             // Реквизиты (из Настроек)
             if(Array.isArray(DB.payments) && DB.payments.length > 0){
-                lines.push(`📲 Реквизиты для брони:`);
+                lines.push(`📲 **Реквизиты для брони:**`);
                 DB.payments.forEach((p, idx) => {
                     const title = String(p?.title ?? '').trim();
                     const text = String(p?.text ?? '').trim();
@@ -1821,15 +1481,15 @@ body{
                     .filter(l => l.url.length > 0);
 
                 if(list.length > 0){
-                    lines.push(`🔗 Ссылки:`);
+                    lines.push(`🔗 **Ссылки:**`);
                     list.forEach(l => lines.push(`• ${l.label || 'Ссылка'}: ${l.url}`));
                     lines.push(``);
                 }
             }
 
-            lines.push(`⚠️ Дата и время бронируются за Вами только после внесения задатка.`);
+            lines.push(`⚠️ _Дата и время бронируются за Вами только после внесения задатка._`);
 
-            copyTextToClipboard(lines.join('\n').replace(/\u00A0/g,' ').replace(/[*_`]/g,'')).then((ok)=> {
+            copyTextToClipboard(lines.join('\n')).then((ok)=> {
                 if(ok){
                     el('toast').innerText = autoSave ? 'Скопировано + сохранено!' : 'Скопировано!';
                     el('toast').classList.add('show');
@@ -2193,10 +1853,7 @@ body{
         openModal: () => {
             Calendar.editingId = null;
             el('event-modal').classList.add('active');
-            
-            if(window.__iosFix) window.__iosFix.lockBody();
-            if(window.__iosFix) window.__iosFix.setHeights();
-// reset fields for ADD mode
+            // reset fields for ADD mode
             el('mod-title').value = '';
             el('mod-phone').value = '';
             el('mod-price').value = '';
@@ -2212,11 +1869,7 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Доба�
         },
         closeModal: () => {
             el('event-modal').classList.remove('active');
-            
-            if(window.__iosFix) window.__iosFix.unlockBody();
-            if(window.__iosFix && window.__iosFix.onModalClose) window.__iosFix.onModalClose();
-            if(window.__iosFix) window.__iosFix.setHeights();
-Calendar.editingId = null;
+            Calendar.editingId = null;
             const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Добавить';
             const delBtn = el('btn-modal-delete'); if(delBtn) delBtn.style.display = 'none';
         },
@@ -2254,10 +1907,7 @@ Calendar.editingId = null;
             Calendar.editingId = id;
             el('event-modal').classList.add('active');
 
-            
-            if(window.__iosFix) window.__iosFix.lockBody();
-            if(window.__iosFix) window.__iosFix.setHeights();
-el('mod-title').value = ev.title || '';
+            el('mod-title').value = ev.title || '';
             el('mod-date').value = ev.date || isoLocal(Calendar.selectedDate);
             el('mod-time').value = ev.time || '12:00';
             el('mod-phone').value = ev.phone || '';
@@ -2361,98 +2011,7 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Сохр�
 • если гостей много — микрофон (идеально беспроводной).
 Если чего-то нет — скажите, подберём решение под вашу площадку.`
             }
-
-            ,
-            {
-                id: 'sales_sent_kp',
-                label: 'Продажи: после КП (мягко)',
-                body:
-`{{clientHi}}
-
-Я отправил расчет по мероприятию.
-Если всё ок — могу закрепить дату за вами: задаток {{depositPercent}}% фиксирует время.
-
-Хотите, чтобы я забронировал?`
-            },
-            {
-                id: 'sales_ping_2h',
-                label: 'Продажи: пинг через 2–3 часа',
-                body:
-`{{clientHi}}
-
-Подскажите, расчёт посмотрели?
-Если хотите, я быстро подскажу, какой вариант будет лучше под вашу задачу — по эмоциям и по бюджету.`
-            },
-            {
-                id: 'sales_ping_nextday',
-                label: 'Продажи: пинг на следующий день',
-                body:
-`{{clientHi}}
-
-Я держу дату в резерве до вечера (чтобы вы спокойно подумали).
-Если решите фиксировать — просто напишите “Бронируем”, и я пришлю реквизиты на задаток {{depositPercent}}%.`
-            },
-            {
-                id: 'sales_objection_expensive',
-                label: 'Возражение: дорого',
-                body:
-`Понимаю вас 🙌
-
-Давайте сделаем аккуратно: можно оставить “вау”, но поджать бюджет:
-1) сократить длительность (например, 30 вместо 45–60);
-2) убрать 1 блок и оставить самое сильное;
-3) выбрать более компактный формат без потери эмоции.
-
-Что для вас важнее: уложиться в сумму или чтобы было максимально “вау”?`
-            },
-            {
-                id: 'sales_objection_think',
-                label: 'Возражение: надо подумать',
-                body:
-`Конечно, подумайте спокойно 🙂
-
-Чтобы вам легче было принять решение, уточню 1 вопрос:
-что сейчас больше всего смущает — цена, формат или “подойдёт ли гостям”?
-
-Я подстрою предложение так, чтобы вам было комфортно сказать “да”.`
-            },
-            {
-                id: 'sales_objection_compare',
-                label: 'Возражение: сравниваю варианты',
-                body:
-`Это нормально — сравнивать 🙂
-
-Чтобы вы сравнили честно, вот 3 критерия:
-1) гарантии (договор/чек/резерв даты),
-2) отзывы/портфолио,
-3) сценарий под вашу аудиторию (а не “шаблонный номер”).
-
-Если хотите — скину коротко 2–3 сильные фишки именно под ваш формат.`
-            },
-            {
-                id: 'sales_objection_spouse',
-                label: 'Возражение: нужно согласовать',
-                body:
-`Ок 👍
-
-Хотите, я напишу вам 3 строки “для пересылки” — чтобы вы просто отправили супругу/руководству?
-
-Там будет: дата, формат, цена, что входит, и как фиксируется бронь.`
-            },
-            {
-                id: 'sales_booking',
-                label: 'Финал: закрепляем бронь',
-                body:
-`Супер! Тогда фиксируем 🔒
-
-Чтобы закрепить дату, нужен задаток {{depositPercent}}%: {{depositLine}}
-
-{{paymentsBlock}}
-
-Как будет удобно: сейчас или чуть позже сегодня?`
-            }
-
-]),
+        ]),
 
         ensureTemplates: () => {
             if(!Array.isArray(DB.touchTemplates) || DB.touchTemplates.length === 0){
@@ -2634,20 +2193,13 @@ const saveBtn = el('btn-modal-save'); if(saveBtn) saveBtn.innerText = 'Сохр�
             if(!M.modal) return;
             Touch.ensureTemplates();
             M.modal.classList.add('active');
-            
-            if(window.__iosFix) window.__iosFix.lockBody();
-            if(window.__iosFix) window.__iosFix.setHeights();
-Touch.renderTplEditor();
+            Touch.renderTplEditor();
         },
         closeTplModal: () => {
             const M = Touch.tplEls();
             if(!M.modal) return;
             M.modal.classList.remove('active');
-        
-            if(window.__iosFix) window.__iosFix.unlockBody();
-            if(window.__iosFix && window.__iosFix.onModalClose) window.__iosFix.onModalClose();
-            if(window.__iosFix) window.__iosFix.setHeights();
-},
+        },
 
         newId: () => 'tpl_' + Date.now() + '_' + Math.random().toString(16).slice(2),
         esc: (s='') => String(s||'').replace(/[&<>"']/g, (ch) => ({
@@ -2854,360 +2406,146 @@ Touch.renderTplEditor();
             Touch.refresh(true);
         }
     };
-
-
-    // --- SALES HUB (smart follow-up scripts based on editable templates) ---
-    const Sales = {
-        currentId: null,
-        showAll: false,
-
-        isSalesTpl: (t) => {
-            const l = (t?.label || '').toLowerCase();
-            return (l.includes('продаж') || l.includes('возраж') || l.includes('финал'));
-        },
-
-        sanitizePlain: (s='') => String(s||'')
-            .replace(/\u00A0/g,' ')
-            .replace(/[*_`]/g,'')
-            .replace(/[ \t]+\n/g, '\n')
-            .replace(/\n{3,}/g, '\n\n')
-            .trim(),
-
-        getCtx: () => {
-            // Context from Calculator (KP) screen
-            const performer = (el('cfg-magician')?.value || '').trim() || 'Фокусник';
-            const depositPercent = parseInt(el('cfg-deposit')?.value || '30') || 30;
-
-            const client = (el('inp-client')?.value || '').trim();
-            const clientHi = client ? `Здравствуйте, ${client}!` : 'Здравствуйте!';
-            const date = el('inp-date')?.value || '';
-            const city = (el('disp-city')?.innerText || el('inp-city')?.value || '').trim();
-            const type = (el('inp-event-type')?.value || '').trim();
-
-            let total = 0;
-            try {
-                total = (State && State.final && typeof State.final.total === 'number') ? State.final.total : 0;
-            } catch(_) {}
-            if(!total){
-                const t = (el('total-sum')?.innerText || '').replace(/[^\d]/g,'');
-                total = parseInt(t || '0') || 0;
-            }
-
-            const deposit = Math.round(total * (depositPercent/100));
-            const depositLine = deposit ? fmt(deposit) : '';
-
-            // Payments block (from Settings)
-            let paymentsBlock = '';
-            if(Array.isArray(DB.payments) && DB.payments.length > 0){
-                const lines = [];
-                lines.push('📲 Реквизиты:');
-                DB.payments.forEach((p) => {
-                    const title = String(p?.title ?? '').trim();
-                    const text = String(p?.text ?? '').trim();
-                    if(!title && !text) return;
-                    if(title) lines.push(`${title}:`);
-                    if(text){
-                        text.split('\n').forEach(line => {
-                            const ln = String(line ?? '').trim();
-                            if(ln) lines.push(ln);
-                        });
-                    }
-                });
-                paymentsBlock = lines.join('\n');
-            }
-
-            return {
-                performer,
-                clientName: client || 'Клиент',
-                clientHi,
-                date,
-                city,
-                type,
-                total,
-                depositPercent,
-                deposit,
-                depositLine,
-                paymentsBlock
-            };
-        },
-
-        open: () => {
-            const modal = el('sales-modal');
-            if(!modal) return;
-
-            Touch.ensureTemplates();
-
-            Sales.showAll = false;
-            Sales.currentId = null;
-
-            modal.classList.add('active');
-            if(window.__iosFix) window.__iosFix.lockBody();
-            if(window.__iosFix) window.__iosFix.setHeights();
-
-            Sales.render();
-
-            // focus search (helps on iPhone)
-            setTimeout(() => { try{ el('sales-search')?.focus(); }catch(_){} }, 80);
-        },
-
-        close: () => {
-            const modal = el('sales-modal');
-            if(!modal) return;
-            modal.classList.remove('active');
-
-            if(window.__iosFix) window.__iosFix.unlockBody();
-            if(window.__iosFix && window.__iosFix.onModalClose) window.__iosFix.onModalClose();
-            if(window.__iosFix) window.__iosFix.setHeights();
-        },
-
-        select: (id) => {
-            Sales.currentId = id;
-            Sales.renderPreview();
-            Sales.renderListActive();
-        },
-
-        renderListActive: () => {
-            const list = el('sales-list');
-            if(!list) return;
-            list.querySelectorAll('.sales-item').forEach(node => {
-                const id = node.getAttribute('data-id');
-                node.classList.toggle('active', id === Sales.currentId);
-            });
-        },
-
-        renderPreview: () => {
-            const preview = el('sales-preview');
-            if(!preview) return;
-
-            const tpl = Touch.templates().find(t => t.id === Sales.currentId) || null;
-            if(!tpl){ preview.value = ''; return; }
-
-            const ctx = Sales.getCtx();
-            const msg = Touch.applyTokens(tpl.body || '', ctx);
-            preview.value = msg;
-        },
-
-        render: () => {
-            Sales.bindOnce();
-
-            const q = (el('sales-search')?.value || '').trim().toLowerCase();
-            const all = Touch.templates();
-            const pool = Sales.showAll ? all : all.filter(Sales.isSalesTpl);
-
-            const list = pool.filter(t => {
-                if(!q) return true;
-                const l = (t.label || '').toLowerCase();
-                const b = (t.body || '').toLowerCase();
-                return l.includes(q) || b.includes(q);
-            });
-
-            const listEl = el('sales-list');
-            if(listEl){
-                listEl.innerHTML = '';
-                if(list.length === 0){
-                    listEl.innerHTML = `<div class="tpl-sub">Ничего не найдено. Попробуй другой запрос или включи “Показать все”.</div>`;
-                } else {
-                    list.forEach(t => {
-                        const div = document.createElement('div');
-                        div.className = 'sales-item' + (t.id === Sales.currentId ? ' active' : '');
-                        div.setAttribute('data-id', t.id);
-                        div.innerHTML = `
-                            <div class="title">${Touch.esc(t.label)}</div>
-                            <div class="hint">Тап — открыть в предпросмотре. Переменные: {{clientName}}, {{date}}, {{city}}, {{depositPercent}}…</div>
-                        `;
-                        div.onclick = () => Sales.select(t.id);
-                        listEl.appendChild(div);
-                    });
-                }
-            }
-
-            // Default selection (first item)
-            if(!Sales.currentId){
-                const first = list[0];
-                if(first) Sales.currentId = first.id;
-            }
-            Sales.renderPreview();
-            Sales.renderListActive();
-        },
-
-        copy: async () => {
-            const preview = el('sales-preview');
-            const text = (preview?.value || '').trim();
-            if(!text){ Touch.toast('Сначала выбери скрипт'); return; }
-            const ok = await copyTextToClipboard(text);
-            Touch.toast(ok ? 'Скопировано' : 'Не удалось скопировать');
-        },
-
-        applyToClipboardPlain: async () => {
-            const preview = el('sales-preview');
-            const clean = Sales.sanitizePlain(preview?.value || '');
-            if(!clean){ Touch.toast('Сначала выбери скрипт'); return; }
-            const ok = await copyTextToClipboard(clean);
-            Touch.toast(ok ? 'Скопировано (чистый текст)' : 'Не удалось скопировать');
-        },
-
-        _bound: false,
-        bindOnce: () => {
-            if(Sales._bound) return;
-            Sales._bound = true;
-
-            const search = el('sales-search');
-            if(search){
-                search.addEventListener('input', () => Sales.render());
-            }
-
-            // Long-press on title toggles "show all" (no extra UI clutter)
-            const title = document.querySelector('#sales-modal .modal-title');
-            if(title){
-                let t0 = 0;
-                title.addEventListener('touchstart', ()=>{ t0 = Date.now(); }, {passive:true});
-                title.addEventListener('touchend', ()=>{
-                    const dt = Date.now()-t0;
-                    if(dt > 420){
-                        Sales.showAll = !Sales.showAll;
-                        Touch.toast(Sales.showAll ? 'Показать все: ВКЛ' : 'Только продажи: ВКЛ');
-                        Sales.render();
-                    }
-                }, {passive:true});
-            }
-        }
-    };
-
-    // --- Make objects available to inline onclick/onchange handlers (iOS/Safari-safe) ---
-    try {
-        window.switchTab = switchTab;
-        window.App = App;
-        window.Storage = Storage;
-        window.History = History;
-        window.Admin = Admin;
-        window.Calendar = Calendar;
-        window.Sales = Sales;
-        if (typeof Touch !== 'undefined') window.Touch = Touch;
-        if (typeof HolidayCfg !== 'undefined') window.HolidayCfg = HolidayCfg;
-    } catch(e) {
-        // If something is missing, avoid breaking app startup.
-        console.warn('Expose globals failed', e);
-    }
-
 Storage.load();
+</script>
 
-// --- iOS PWA (Add to Home Screen) фундаментальный фикс: viewport, клавиатура, прыжки форм (v24) ---
-    
-    // --- iOS / PWA фундаментальный фикс: safe-area, клавиатура, прыжки ввода (v35) ---
-    (function(){
-        const root = document.documentElement;
-        const shell = document.getElementById('app-shell');
-        const appScroll = document.getElementById('app-scroll');
+<script>
+  // PWA: register Service Worker (works only on https:// or localhost)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
 
-        function setVars(){
-            const vv = window.visualViewport;
-            let kb = 0;
-            if(vv){
-                // keyboard / bottom UI height approximation
-                kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-            }
-            root.style.setProperty('--kb', kb + 'px');
-        }
+    </div>
+<div id="event-modal" class="modal">
+        <div class="modal-card">
+            <div class="modal-header"><span class="btn-close" onclick="Calendar.closeModal()">Отмена</span><div style="display:flex; gap:14px; align-items:center;"><span id="btn-modal-delete" style="color: var(--danger); display:none; cursor:pointer;" onclick="Calendar.deleteFromModal()">Удалить</span><span id="btn-modal-save" class="btn-save" onclick="Calendar.saveManualEvent()">Добавить</span></div></div>
+            <div class="modal-scroll">
 
-        function getTabsHeight(){
-            const tabs = shell ? shell.querySelector('.tabs') : document.querySelector('.tabs');
-            if(!tabs) return 0;
-            const r = tabs.getBoundingClientRect();
-            return Math.max(0, r.height);
-        }
+            <h2 style="font-size:20px; font-weight:700; margin-bottom:15px;">Запись</h2>
+            <div class="group-container" style="margin:0;">
+                <div class="input-row"><div class="label">Название</div><input id="mod-title" class="text-input" placeholder="Иван"></div>
+                <div class="input-row"><div class="label">Дата</div><input type="date" id="mod-date" class="native-control-inline"></div>
+                <div class="input-row"><div class="label">Время</div><input type="time" id="mod-time" class="native-control-inline"></div>
+                <div class="input-row"><div class="label">Телефон</div><input id="mod-phone" class="text-input" placeholder="89..."></div>
+                <div class="input-row">
+                    <div class="label">Категория</div>
+                    <select id="mod-type" class="native-control-inline">
+                        <option value="Свадьба">Свадьба</option><option value="Корпоратив">Корпоратив</option><option value="Детский">Детский</option><option value="Другое">Другое</option>
+                    </select>
+                </div>
+                <div class="input-row"><div class="label">Сумма</div><input type="number" id="mod-price" class="text-input" placeholder="0"></div>
+                <div class="input-row" style="flex-direction:column; align-items:stretch;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
+                        <div class="label">Заметки</div>
+                        <div class="value-wrapper"><div class="value-display" style="opacity:.6;">(для себя)</div></div>
+                    </div>
+                    <textarea id="mod-notes" class="notes-area" placeholder="Адрес, тайминг, требования площадки, пожелания клиента..." rows="4">
+</textarea>
+                </div>
 
-        function ensureVisible(target){
-            if(!target || !(target instanceof HTMLElement)) return;
+                <!-- TOUCH: быстрый контакт с клиентом (для фокусника) -->
+                <div class="section-title" style="margin-top:18px;">🎩 Клиент — быстрые ответы</div>
+                <div class="touch-card">
+                    <div class="touch-actions">
+                        <button class="touch-btn" id="touch-manage" type="button">⚙️ Шаблоны</button>
+                        <button class="touch-btn" id="touch-vars" type="button">✨ Поля</button>
+                    </div>
 
-            // Scroll inside closest scrollable, never the window
-            const scroller = target.closest('.modal-scroll') || appScroll;
-            if(!scroller) return;
+                    <div class="touch-chips" id="touch-templates"></div>
 
-            const tRect = target.getBoundingClientRect();
-            const sRect = scroller.getBoundingClientRect();
+                    <textarea id="touch-message" class="touch-message" placeholder="Сообщение клиенту…"></textarea>
 
-            const tabsH = getTabsHeight();
-            const kb = parseFloat(getComputedStyle(root).getPropertyValue('--kb')) || 0;
+                    <div class="touch-toolbar">
+                        <button class="touch-pill" id="touch-copy" type="button">Скопировать</button>
+                        <button class="touch-pill" id="touch-share" type="button">Поделиться</button>
+                        <button class="touch-pill touch-primary" id="touch-regenerate" type="button">↻ Собрать</button>
+                    </div>
 
-            // Visible window inside scroller
-            const visibleTop = sRect.top + 12;
-            const visibleBottom = sRect.bottom - tabsH - kb - 12;
+                    <div class="touch-faq-title">Частые ответы (вставка в сообщение)</div>
+                    <div class="touch-faq" id="touch-faq"></div>
 
-            if(tRect.bottom > visibleBottom){
-                scroller.scrollTop += (tRect.bottom - visibleBottom);
-            } else if(tRect.top < visibleTop){
-                scroller.scrollTop -= (visibleTop - tRect.top);
-            }
-        }
+                    <div class="touch-hint">Один тап по шаблону → “Собрать” → “Поделиться” (выбираешь мессенджер). Никакой магии… кроме твоей.</div>
+                </div>
 
-        // Focus handlers: iOS animates keyboard + offsets, so run a few times
-        document.addEventListener('focusin', (e) => {
-            const t = e.target;
-            if(!t) return;
-            const tag = (t.tagName || '').toUpperCase();
-            if(tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') return;
+            </div>
+        
+            </div>
+</div>
+    </div>
+<div id="tpl-modal" class="modal tpl-modal">
+        <div class="modal-card">
+            <div class="grabber"></div>
+            <div class="tpl-header">
+                <span class="btn-close" id="tpl-close">Закрыть</span>
+                <div class="tpl-title">Шаблоны сообщений</div>
+                <span class="btn-save" id="tpl-add">Добавить</span>
+            </div>
+            <div class="tpl-sub">
+                Настрой свои “быстрые касания”: один тап → готовый текст. Подстановки: <b>{{whenLine}}</b>, <b>{{priceLine}}</b>, <b>{{depositPercent}}</b>, <b>{{portfolioLine}}</b> и др.
+            </div>
+            <div class="tpl-list" id="tpl-list"></div>
+            <div class="tpl-tools">
+                <button class="touch-pill" id="tpl-export" type="button">Экспорт</button>
+                <button class="touch-pill" id="tpl-import" type="button">Импорт</button>
+            </div>
+        </div>
+    </div>
+<div class="tabs">
+        <div class="tab-btn active" data-tab="calc" onclick="switchTab('calc', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>Калькулятор</div>
+        <div class="tab-btn" data-tab="calendar" onclick="switchTab('calendar', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Календарь</div>
+        <div class="tab-btn" data-tab="history" onclick="switchTab('history', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>История</div>
+        <div class="tab-btn" data-tab="settings" onclick="switchTab('settings', this)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>Настройки</div>
+    </div>
+  </div>
 
-            setTimeout(() => { setVars(); ensureVisible(t); }, 0);
-            setTimeout(() => { setVars(); ensureVisible(t); }, 120);
-            setTimeout(() => { setVars(); ensureVisible(t); }, 240);
-        }, true);
+<script>
+/* === v36 viewport stabilizer (iOS / PWA) === */
+(function(){
+  const root = document.documentElement;
 
-        document.addEventListener('focusout', () => {
-            setTimeout(setVars, 80);
-            setTimeout(setVars, 220);
-        }, true);
+  function isStandalone(){
+    return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches || (window.navigator && window.navigator.standalone);
+  }
 
-        // VisualViewport listeners
-        if(window.visualViewport){
-            window.visualViewport.addEventListener('resize', () => setVars());
-            window.visualViewport.addEventListener('scroll', () => setVars());
-        }
-        window.addEventListener('orientationchange', () => setTimeout(setVars, 220));
-        window.addEventListener('resize', () => setTimeout(setVars, 120));
+  function updateVV(){
+    const vv = window.visualViewport;
+    if(!vv){
+      root.style.setProperty('--vvh', window.innerHeight + 'px');
+      root.style.setProperty('--vv-offset', '0px');
+      root.style.setProperty('--kb', '0px');
+      return;
+    }
+    root.style.setProperty('--vvh', vv.height + 'px');
+    root.style.setProperty('--vv-offset', vv.offsetTop + 'px');
 
-        // Public API used by modals (keep compatibility)
-        window.__iosFix = {
-            setHeights: setVars,
-            lockBody: () => { document.body.classList.add('modal-open'); },
-            unlockBody: () => { document.body.classList.remove('modal-open'); },
-            onModalClose: () => { setVars(); setTimeout(setVars, 140); setTimeout(setVars, 260); }
-        };
+    // Keyboard height approximation (works well on iOS Safari/PWA)
+    const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    root.style.setProperty('--kb', kb + 'px');
+  }
 
-        // Init
-        setVars();
-    })();
-; 
-;
-;
+  updateVV();
+  window.addEventListener('resize', updateVV, {passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', updateVV, {passive:true});
+    window.visualViewport.addEventListener('scroll', updateVV, {passive:true});
+  }
 
+  // Toggle modal-open class automatically when any modal becomes active
+  const observer = new MutationObserver(() => {
+    const anyOpen = !!document.querySelector('.modal.active');
+    root.classList.toggle('modal-open', anyOpen);
+  });
+  observer.observe(document.body, {subtree:true, attributes:true, attributeFilter:['class']});
 
-    // --- Manifest (Android/desktop) via Blob (single-folder friendly) ---
-    (function(){
-        try{
-            const manifest = {
-                name: "Productive Magic",
-                short_name: "Productive Magic",
-                start_url: ".",
-                scope: ".",
-                display: "standalone",
-                background_color: "#0b0c10",
-                theme_color: "#0b0c10",
-                icons: [
-                    { src: "icon-192-pm.png", sizes: "192x192", type: "image/png" },
-                    { src: "icon-512-pm.png", sizes: "512x512", type: "image/png" }
-                ]
-            };
-            const blob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
-            const url = URL.createObjectURL(blob);
-            let link = document.querySelector('link[rel="manifest"]');
-            if(!link){
-                link = document.createElement('link');
-                link.rel = 'manifest';
-                document.head.appendChild(link);
-            }
-            link.href = url;
-        }catch(_){}
-    })();
+  if(isStandalone()){
+    root.classList.add('pwa-fixed');
+    document.body.classList.add('pwa-fixed');
+  }
+})();
+</script>
 
-</script></body>
+</body>
 </html>
