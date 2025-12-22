@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-<!-- PWA / iOS Add to Home Screen -->
 <meta content="#000000" name="theme-color"/>
 <meta content="dark" name="color-scheme"/>
 <meta content="yes" name="mobile-web-app-capable"/>
@@ -13,13 +11,6 @@
 <meta content="Kostyuk CRM" name="apple-mobile-web-app-title"/>
 <meta content="telephone=no" name="format-detection"/>
 <link href="manifest.webmanifest" rel="manifest"/>
-<!-- Icons -->
-<link href="icons/icon-192.png" rel="icon" sizes="192x192" type="image/png"/>
-<link href="icons/icon-512.png" rel="icon" sizes="512x512" type="image/png"/>
-<link href="icons/apple-touch-icon-180.png" rel="apple-touch-icon" sizes="180x180"/>
-<link href="icons/apple-touch-icon-167.png" rel="apple-touch-icon" sizes="167x167"/>
-<link href="icons/apple-touch-icon-152.png" rel="apple-touch-icon" sizes="152x152"/>
-<link href="icons/apple-touch-icon-120.png" rel="apple-touch-icon" sizes="120x120"/>
 <title>Kostyuk Event CRM</title>
 <style>
         /* --- iOS SYSTEM THEME (PLATINUM) --- */
@@ -37,9 +28,9 @@
             --success: #30D158;
             --separator: #38383A;
             --safe-top: env(safe-area-inset-top);
-              --safe-left: env(safe-area-inset-left);
-  --safe-right: env(safe-area-inset-right);
---safe-bottom: env(safe-area-inset-bottom);
+            --safe-left: env(safe-area-inset-left);
+            --safe-right: env(safe-area-inset-right);
+            --safe-bottom: env(safe-area-inset-bottom);
         }
 
         body {
@@ -47,31 +38,50 @@
             color: var(--text-primary);
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
             margin: 0; padding: 0;
--webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: transparent;
             user-select: none;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- TABS --- */
-        .tabs{
-  position: absolute;
-  padding-left: var(--safe-left);
-  padding-right: var(--safe-right);
- left: 0; right: 0; bottom: 0;
+        /* --- TABS (MENU) FIX --- */
+        .tabs {
+            position: absolute; /* Внутри app-shell это работает как fixed */
+            left: 0; right: 0; bottom: 0;
             height: var(--tabs-total);
-            background: rgba(28, 28, 30, 0.85);
+            background: rgba(28, 28, 30, 0.95); /* Чуть менее прозрачный для четкости */
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-top: 0.5px solid rgba(255,255,255,0.15);
             padding-top: 6px;
             padding-bottom: var(--safe-bottom);
-            display: flex; justify-content: space-around; align-items: flex-end;
-            z-index: 900;
+            padding-left: var(--safe-left);
+            padding-right: var(--safe-right);
+            display: flex; 
+            justify-content: space-around; 
+            align-items: flex-start; /* Выравнивание по верху, чтобы иконки были на одной линии */
+            z-index: 1000; /* Поверх всего */
+            touch-action: none; /* Блокируем скролл на самом меню */
         }
-.tab-btn {
-            flex: 1; padding: 8px 0 2px; text-align: center; color: var(--text-secondary);
-            font-size: 10px; font-weight: 500; cursor: pointer; transition: color 0.2s;
+        .tab-btn {
+            flex: 1; 
+            padding: 4px 0 2px; 
+            text-align: center; 
+            color: var(--text-secondary);
+            font-size: 10px; 
+            font-weight: 500; 
+            cursor: pointer; 
+            transition: color 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
-        .tab-btn svg { width: 28px; height: 28px; margin: 0 auto 2px; display: block; }
+        .tab-btn svg { 
+            width: 26px; 
+            height: 26px; 
+            margin-bottom: 4px; 
+            display: block; 
+            flex-shrink: 0; /* Запрещаем сжатие иконки */
+        }
         .tab-btn.active { color: var(--accent); }
 
         /* --- VIEWS --- */
@@ -81,11 +91,11 @@
 
         /* --- HEADER --- */
         .header{
-  padding: 10px calc(16px + var(--safe-right)) 20px calc(16px + var(--safe-left));
-display: flex; justify-content: space-between; align-items: center; }
+            padding: 10px calc(16px + var(--safe-right)) 20px calc(16px + var(--safe-left));
+            display: flex; justify-content: space-between; align-items: center; 
+        }
         .header h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
         .header p { font-size: 13px; color: var(--text-secondary); margin-top: 2px; font-weight: 500; }
-        .header-btn-add { font-size: 28px; color: var(--accent); cursor: pointer; padding: 5px; line-height: 1; }
 
         /* --- FORMS & INPUTS --- */
         .section-title { 
@@ -125,7 +135,6 @@ display: flex; justify-content: space-between; align-items: center; }
         .text-input::placeholder { color: var(--text-secondary); }
 
         /* --- CONTROLS --- */
-        /* iOS Switch */
         .switch { position: relative; display: inline-block; width: 51px; height: 31px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
@@ -190,39 +199,6 @@ display: flex; justify-content: space-between; align-items: center; }
             border-radius: 10px; margin-bottom: 16px; display: none; text-align: left;
         }
 
-        /* --- CALENDAR --- */
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; padding: 0 16px 16px; }
-        .current-month { font-size: 20px; font-weight: 700; color: var(--accent-gold); }
-        .month-nav { font-size: 24px; color: var(--accent); padding: 5px 15px; cursor: pointer; }
-        
-        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 8px; padding: 0 8px; }
-        .weekday { text-align: center; font-size: 12px; color: #666; font-weight: 600; text-transform: uppercase; }
-        
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 8px; padding: 0 8px; }
-        .day-cell { 
-            aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            font-size: 18px; position: relative; border-radius: 50%; cursor: pointer;
-        }
-        .day-cell.today { color: var(--calendar-red); font-weight: 700; }
-        .day-cell.selected { background: #fff; color: #000 !important; font-weight: 600; }
-        .day-cell.today.selected { background: var(--calendar-red); color: #fff !important; }
-        
-        .day-dots { display: flex; gap: 3px; position: absolute; bottom: 6px; }
-        .dot { width: 4px; height: 4px; border-radius: 50%; background: #555; }
-        .dot.active { background: var(--accent); }
-
-        .events-container { margin-top: 24px; border-top: 0.5px solid var(--separator); }
-        .selected-date-title { 
-            padding: 12px 16px; font-size: 13px; color: var(--text-secondary); 
-            text-transform: uppercase; font-weight: 600; background: #121212; 
-        }
-        .event-item { display: flex; padding: 12px 16px; border-bottom: 0.5px solid var(--separator); align-items: center; }
-        .event-time { width: 50px; font-size: 15px; color: var(--text-secondary); font-weight: 500; }
-        .event-details { flex-grow: 1; padding-left: 10px; border-left: 3px solid var(--accent); }
-        .event-title { font-size: 16px; font-weight: 600; color: #fff; }
-        .event-sub { font-size: 13px; color: var(--text-secondary); }
-        .event-price { font-size: 15px; font-weight: 600; color: #fff; margin-right: 10px; }
-
         /* --- SETTINGS --- */
         .btn-add { width: 100%; padding: 14px; text-align: center; color: var(--accent); font-weight: 600; font-size: 16px; background: var(--bg-card); border-top: 0.5px solid var(--separator); cursor: pointer; }
         .btn-add:active { background: #2c2c2e; }
@@ -254,35 +230,6 @@ display: flex; justify-content: space-between; align-items: center; }
         }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
         
-        .conflict-alert { color: var(--danger); font-size: 12px; font-weight: 600; margin-top: 6px; display: none; }
-
-        /* HISTORY */
-        .history-list { margin: 0 16px; display: flex; flex-direction: column; gap: 10px; }
-        .history-item { background: var(--bg-card); padding: 14px; border-radius: 12px; border-left: 4px solid var(--separator); position: relative; }
-        .history-item.status-new { border-left-color: var(--separator); } 
-        .history-item.status-think { border-left-color: var(--accent); }
-        .history-item.status-deposit { border-left-color: var(--success); }
-        .history-item.status-cancel { border-left-color: var(--danger); }
-        .hist-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .hist-name { font-weight: 600; font-size: 16px; } .hist-date { font-size: 13px; color: var(--text-secondary); }
-        .hist-bot { display: flex; justify-content: space-between; align-items: flex-end; }
-        .hist-det { font-size: 13px; color: #888; max-width: 70%; }
-        .hist-price { font-size: 16px; font-weight: 700; color: var(--accent-gold); }
-        .btn-hist-del { position: absolute; top: 10px; right: 10px; color: var(--danger); opacity: 0.5; font-size: 18px; }
-
-        /* Modal */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 600; display: none; align-items: flex-end; }
-        .modal.active { display: flex; animation: slideUp 0.3s; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-card{
-  display: flex;
-  flex-direction: column;
-  max-height: calc(var(--vvh, 100vh) - var(--safe-top) - 12px);
-  min-height: 0;
- background: #1C1C1E; width: 100%; border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: 50px; }
-        .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
-    
-        /* --- v11: missing utility classes (keep existing UI, just make it consistent) --- */
         .edit-input, .text-input, select.native-control, input.native-control {
             background: var(--bg-input);
             color: var(--text-primary);
@@ -296,68 +243,6 @@ display: flex; justify-content: space-between; align-items: center; }
             box-shadow: 0 0 0 3px rgba(10,132,255,.18);
         }
 
-
-
-/* --- FIX: visible controls in modal (no white fields) --- */
-.native-control-inline{
-    background: var(--bg-input);
-    color: var(--text-primary);
-    border: 1px solid rgba(255,255,255,.10);
-    border-radius: 10px;
-    padding: 10px 12px;
-    outline: none;
-    font-size: 16px;
-    line-height: 1.2;
-    min-width: 120px;
-    text-align: right;
-    appearance: none;
-    -webkit-appearance: none;
-    color-scheme: dark;
-}
-.native-control-inline:focus{
-    border-color: rgba(10,132,255,.55);
-    box-shadow: 0 0 0 3px rgba(10,132,255,.18);
-}
-/* Safari/iOS: force text color inside date/time */
-#event-modal input[type="date"].native-control-inline,
-#event-modal input[type="time"].native-control-inline{
-    -webkit-text-fill-color: var(--text-primary);
-}
-#event-modal select.native-control-inline{
-    padding-right: 34px;
-    background-image:
-        linear-gradient(45deg, transparent 50%, #8E8E93 50%),
-        linear-gradient(135deg, #8E8E93 50%, transparent 50%);
-    background-position:
-        calc(100% - 18px) 50%,
-        calc(100% - 13px) 50%;
-    background-size: 6px 6px, 6px 6px;
-    background-repeat: no-repeat;
-}
-
-
-/* --- Notes (Calendar Event) --- */
-.notes-area{
-    width: 100%;
-    margin-top: 10px;
-    background: var(--bg-input);
-    color: var(--text-primary);
-    border: 1px solid rgba(255,255,255,.10);
-    border-radius: 12px;
-    padding: 12px;
-    font-size: 16px;
-    line-height: 1.35;
-    outline: none;
-    resize: none;
-    min-height: 110px;
-    -webkit-text-fill-color: var(--text-primary);
-}
-.notes-area::placeholder{ color: var(--text-secondary); }
-.notes-area:focus{
-    border-color: rgba(10,132,255,.55);
-    box-shadow: 0 0 0 3px rgba(10,132,255,.18);
-}
-
         .btn-add-item, .btn-delete-hist {
             width: 32px; height: 32px;
             display: flex; align-items: center; justify-content: center;
@@ -368,489 +253,69 @@ display: flex; justify-content: space-between; align-items: center; }
             cursor: pointer;
             user-select: none;
         }
-        .btn-add-item:active, .btn-delete-hist:active { transform: scale(.98); }
+        .btn-add-item:active { transform: scale(.98); }
 
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            line-height: 1;
-            padding: 3px 8px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,.12);
-            background: rgba(255,255,255,.06);
-            margin-right: 6px;
-            white-space: nowrap;
+        /* --- v14 Polish --- */
+        :root{
+            --radius-card: 14px;
+            --hairline: rgba(255,255,255,.14);
+            --shadow-card: 0 6px 24px rgba(0,0,0,.35);
         }
-        .status-badge.sb-new { color: #0A84FF; border-color: rgba(10,132,255,.35); background: rgba(10,132,255,.12); }
-        .status-badge.sb-think { color: #FFD60A; border-color: rgba(255,214,10,.35); background: rgba(255,214,10,.12); }
-        .status-badge.sb-deposit { color: #30D158; border-color: rgba(48,209,88,.35); background: rgba(48,209,88,.12); }
-        .status-badge.sb-cancel { color: #FF453A; border-color: rgba(255,69,58,.35); background: rgba(255,69,58,.12); }
+        body{ user-select: text; -webkit-text-size-adjust: 100%; }
+        .tab-btn, .btn-main, .qty-btn, .btn-add-service, .btn-remove, .btn-del-item, .btn-add, .settings-header, .btn-reset {
+            user-select: none; -webkit-user-select: none; touch-action: manipulation;
+        }
+        .group-container, .cart-item, .total-panel, .settings-block { border-radius: var(--radius-card); }
+        .group-container { box-shadow: 0 1px 0 rgba(255,255,255,.04) inset; }
+        .total-panel { box-shadow: var(--shadow-card); }
+        .input-row { border-bottom: none; }
+        .input-row::after {
+            content:""; position:absolute; left:16px; right:0; bottom:0; height:0.5px;
+            background: var(--separator); opacity:.9;
+        }
+        .input-row:last-child::after { display:none; }
+        .input-row:active { background: rgba(255,255,255,.04); }
+        .section-title { text-transform: uppercase; letter-spacing: .9px; font-size: 12px; margin-top: 22px; opacity: .9; }
+        .tabs { background: rgba(28,28,30,.78); border-top: 0.5px solid var(--hairline); }
+        .tab-btn { font-size: 11px; padding: 8px 0 4px; }
+        .tab-btn svg { width: 24px; height: 24px; margin-bottom: 3px; opacity: .92; }
+        .tab-btn.active { color: var(--accent); }
+        .tab-btn:active { transform: scale(.98); opacity: .85; }
+        .header h1 { letter-spacing: -0.8px; }
+        .header p { opacity: .9; }
+        .btn-main {
+            background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0)), var(--accent);
+            color: #fff; box-shadow: 0 8px 18px rgba(10,132,255,.25);
+        }
+        .btn-main:active { transform: scale(.98); opacity: .95; }
 
-/* --- v14: Apple-like polish (only overrides, nothing removed) --- */
-:root{
-  --radius-card: 14px;
-  --radius-modal: 22px;
-  --hairline: rgba(255,255,255,.14);
-  --shadow-card: 0 6px 24px rgba(0,0,0,.35);
-  --shadow-elev: 0 10px 40px rgba(0,0,0,.55);
-}
-
-/* Let users copy text like in real apps */
-body{
-  user-select: text;
-  -webkit-text-size-adjust: 100%;
-}
-.tab-btn, .btn-main, .qty-btn, .btn-add-service, .header-btn-add, .btn-remove, .btn-del-item,
-.btn-add, .settings-header, .month-nav, .day-cell, .btn-reset, .btn-close, .btn-save{
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-}
-
-/* Softer, more iOS-like grouped cards */
-.group-container,
-.cart-item,
-.total-panel,
-.settings-block,
-.history-item{
-  border-radius: var(--radius-card);
-}
-.group-container{
-  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
-}
-.total-panel{ box-shadow: var(--shadow-card); }
-
-/* Inset separators (like iOS Settings) */
-.input-row{ border-bottom: none; }
-.input-row::after{
-  content:"";
-  position:absolute;
-  left:16px;
-  right:0;
-  bottom:0;
-  height:0.5px;
-  background: var(--separator);
-  opacity:.9;
-}
-.input-row:last-child::after{ display:none; }
-.input-row:active{ background: rgba(255,255,255,.04); }
-
-/* Section label: calmer and cleaner */
-.section-title{
-  text-transform: uppercase;
-  letter-spacing: .9px;
-  font-size: 12px;
-  margin-top: 22px;
-  opacity: .9;
-}
-
-/* Tabs: bigger text, cleaner spacing */
-.tabs{
-  background: rgba(28,28,30,.78);
-  border-top: 0.5px solid var(--hairline);
-}
-.tab-btn{
-  font-size: 11px;
-  padding: 8px 0 4px;
-}
-.tab-btn svg{
-  width: 24px;
-  height: 24px;
-  margin-bottom: 3px;
-  opacity: .92;
-}
-.tab-btn.active{ color: var(--accent); }
-.tab-btn:active{ transform: scale(.98); opacity: .85; }
-
-/* Header: iOS large-title vibe */
-.header h1{
-  letter-spacing: -0.8px;
-}
-.header p{
-  opacity: .9;
-}
-
-/* Primary button: true iOS blue */
-.btn-main{
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0)) ,
-    var(--accent);
-  color: #fff;
-  box-shadow: 0 8px 18px rgba(10,132,255,.25);
-}
-.btn-main:active{
-  transform: scale(.98);
-  opacity: .95;
-}
-
-/* Calendar: remove "gold month" (gold reserved for money) */
-.current-month{ color: var(--text-primary); }
-.weekday{ color: rgba(255,255,255,.38); font-weight: 600; }
-
-/* Calendar selected day: premium highlight instead of white bubble */
-.day-cell{
-  background: transparent;
-  transition: transform .12s ease, background .12s ease;
-}
-.day-cell:active{ transform: scale(.92); background: rgba(255,255,255,.05); }
-.day-cell.selected{
-  background: rgba(10,132,255,.18);
-  border: 1px solid rgba(10,132,255,.55);
-  color: #fff !important;
-  font-weight: 700;
-}
-.day-cell.today{ color: var(--calendar-red); }
-.day-cell.today.selected{
-  background: rgba(255,69,58,.18);
-  border: 1px solid rgba(255,69,58,.65);
-  color:#fff !important;
-}
-
-/* Events list: grouped card style */
-.events-container{
-  margin: 18px 16px 0;
-  background: var(--bg-card);
-  border-radius: var(--radius-card);
-  overflow: hidden;
-  border: 0.5px solid rgba(255,255,255,.06);
-}
-.selected-date-title{
-  background: rgba(255,255,255,.03);
-  border-bottom: 0.5px solid rgba(255,255,255,.10);
-}
-.event-item{
-  border-bottom: 0.5px solid rgba(255,255,255,.08);
-}
-.event-item:last-child{ border-bottom: none; }
-
-/* Modal: iOS sheet feel + grabber + safe area */
-.modal{ backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-.modal-card{
-  border-radius: var(--radius-modal) var(--radius-modal) 0 0;
-  box-shadow: var(--shadow-elev);
-  max-height: calc(100vh - 24px);
-  overflow: auto;
-  padding-bottom: calc(22px + var(--safe-bottom));
-}
-.modal-card::before{
-  content:"";
-  display:block;
-  width: 42px;
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.20);
-  margin: -6px auto 14px;
-}
-
-/* Notes textarea: nicer focus + auto-feel */
-.notes-area{
-  min-height: 120px;
-  border-radius: 14px;
-}
-.notes-area:focus{
-  border-color: rgba(10,132,255,.55);
-  box-shadow: 0 0 0 3px rgba(10,132,255,.18);
-}
-
-/* --- Touch (быстрые ответы фокусника) --- */
-.touch-card{
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: 16px;
-  padding: 12px;
-}
-.touch-actions{
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.touch-btn{
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.10);
-  color: var(--text-primary);
-  border-radius: 12px;
-  padding: 10px 8px;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1;
-  cursor: pointer;
-  transition: transform .08s ease, background .15s ease, border-color .15s ease;
-}
-.touch-btn:active{ transform: scale(.98); background: rgba(255,255,255,.10); }
-.touch-message{
-  width: 100%;
-  margin-top: 10px;
-  background: var(--bg-input);
-  color: var(--text-primary);
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: 14px;
-  padding: 12px;
-  font-size: 15px;
-  line-height: 1.35;
-  outline: none;
-  resize: none;
-  min-height: 140px;
-}
-.touch-message:focus{
-  border-color: rgba(10,132,255,.55);
-  box-shadow: 0 0 0 3px rgba(10,132,255,.18);
-}
-.touch-toolbar{
-  display:flex;
-  gap: 8px;
-  margin-top: 10px;
-}
-.touch-pill{
-  flex: 1;
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.10);
-  color: var(--text-primary);
-  border-radius: 12px;
-  padding: 10px 10px;
-  font-weight: 700;
-  font-size: 13px;
-  cursor:pointer;
-}
-
-.touch-pill.danger{
-  background: rgba(255,69,58,.14);
-  border-color: rgba(255,69,58,.30);
-  color: var(--danger);
-}
-.touch-pill.ghost{
-  background: rgba(255,255,255,.03);
-}
-.touch-pill:active{ transform: scale(.99); }
-.touch-primary{
-  background: rgba(10,132,255,.18);
-  border-color: rgba(10,132,255,.35);
-}
-.touch-chips{
-  display:flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 2px;
-}
-.touch-chip{
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.10);
-  color: var(--text-primary);
-  border-radius: 999px;
-  padding: 7px 10px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor:pointer;
-}
-.touch-chip.active{
-  background: rgba(10,132,255,.18);
-  border-color: rgba(10,132,255,.35);
-}
-.touch-faq-title{
-  margin-top: 12px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  font-weight: 700;
-}
-.touch-faq{
-  display:flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-.touch-faq button{
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.10);
-  color: var(--text-primary);
-  border-radius: 999px;
-  padding: 7px 10px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor:pointer;
-}
-.touch-faq button:active{ transform: scale(.99); }
-.touch-hint{
-  margin-top: 10px;
-  font-size: 12px;
-  color: rgba(255,255,255,.55);
-  line-height: 1.25;
-}
-@media (max-width: 420px){
-  .touch-actions{ grid-template-columns: repeat(2, 1fr); }
-}
-
-/* --- Touch Templates Manager (v16) --- */
-.tpl-modal .modal-card{ padding-bottom: calc(var(--safe-bottom) + 14px); }
-.tpl-header{
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 14px 8px;
-}
-.tpl-title{
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -0.2px;
-}
-.tpl-sub{
-  font-size: 12px;
-  color: rgba(255,255,255,.55);
-  margin: 0 14px 10px;
-  line-height: 1.25;
-}
-.tpl-list{
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  flex: 1 1 auto;
-  min-height: 0;
- padding: 0 14px; display:flex; flex-direction:column; gap: 12px;  padding-bottom: calc(12px + var(--kb, 0px));
-}
-.tpl-item{
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: 16px;
-  padding: 12px;
-}
-.tpl-row{
-  display:flex;
-  align-items:center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-.tpl-row .text-input{ flex:1; }
-.tpl-actions{
-  display:flex;
-  gap: 8px;
-  margin-top: 10px;
-}
-.tpl-actions .touch-pill{ flex: 1; }
-.tpl-area{
-  width:100%;
-  background: var(--bg-input);
-  color: var(--text-primary);
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: 14px;
-  padding: 12px;
-  font-size: 14px;
-  line-height: 1.35;
-  outline: none;
-  resize: none;
-  min-height: 150px;
-  -webkit-text-fill-color: var(--text-primary);
-}
-.tpl-area:focus{
-  border-color: rgba(10,132,255,.55);
-  box-shadow: 0 0 0 3px rgba(10,132,255,.18);
-}
-.tpl-tools{
-  display:grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  padding: 12px 14px 0;
-}
-.tpl-tools .touch-pill{ width:100%; }
-
-/* Reduce motion if user asks OS to */
-@media (prefers-reduced-motion: reduce){
-  *{ animation: none !important; transition: none !important; }
-}
-
-
-/* === v36: SINGLE iOS/PWA ADAPTATION (stop "treating", start "healing") ===
-   One scroll container (#app-scroll) + stable viewport (visualViewport) + tabbar inside the shell.
-   Fixes: black gap, dead buttons, keyboard hiding actions, iOS URL-bar jumps.
-*/
-:root{
-  --vvh: 100vh;
-  --vv-offset: 0px;
-  --kb: 0px;
-  --tabs-h: 64px;
-  --tabs-total: calc(var(--tabs-h) + var(--safe-bottom));
-}
-html, body{
-  height: 100%;
-  width: 100%;
-  overflow: hidden !important;
-  background: var(--bg-body);
-}
-body{
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  min-height: 0 !important;
-}
-#app-shell{
-  position: fixed;
-  inset: 0;
-  height: var(--vvh, 100vh);
-  transform: translateY(var(--vv-offset, 0px));
-  overflow: hidden;
-  background: var(--bg-body);
-}
-#app-scroll{
-  position: absolute;
-  left: 0; right: 0;
-  top: 0;
-  bottom: var(--tabs-total);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  padding-top: calc(var(--safe-top) + 10px);
-  padding-bottom: 16px;
-}
-
-/* Views no longer reserve "random" space for the tabbar */
-#app-shell .view{
-  padding-bottom: 18px !important;
-  min-height: calc(var(--vvh, 100vh) - var(--tabs-total)) !important;
-}
-
-/* Modals: real sheet with internal scroll + keyboard safety */
-#app-shell .modal{
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 1200;
-}
-#app-shell .modal-card{
-  max-height: calc(var(--vvh, 100vh) - 16px);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: calc(16px + var(--safe-bottom) + var(--kb, 0px)) !important;
-}
-#app-shell .modal-scroll{
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  flex: 1 1 auto;
-  min-height: 0;
-  padding-bottom: calc(12px + var(--kb, 0px));
-}
-html.modal-open #app-shell .tabs{
-  pointer-events: none;
-  opacity: 0;
-}
-html.modal-open #app-scroll{
-  overflow: hidden;
-}
-
-
-/* === iPhone ergonomics: minimum tap targets === */
-@media (pointer: coarse){
-  button, .btn, .touch-btn, .touch-pill{
-    min-height: 44px;
-  }
-  .touch-btn{ font-size: 13px; padding: 12px 10px; }
-  .touch-pill{ padding: 12px 14px; }
-  .tab{ min-height: 44px; }
-}
+        /* === v36: SINGLE iOS/PWA ADAPTATION === */
+        :root{
+            --vvh: 100vh; --vv-offset: 0px; --kb: 0px; --tabs-h: 64px;
+            --tabs-total: calc(var(--tabs-h) + var(--safe-bottom));
+        }
+        html, body{ height: 100%; width: 100%; overflow: hidden !important; background: var(--bg-body); }
+        body{ padding-top: 0 !important; padding-bottom: 0 !important; min-height: 0 !important; }
+        #app-shell{
+            position: fixed; left: 0; right: 0; top: var(--vv-offset, 0px); height: var(--vvh, 100vh);
+            overflow: hidden; background: var(--bg-body);
+        }
+        #app-scroll{
+            position: absolute; left: 0; right: 0; top: 0; bottom: var(--tabs-total);
+            overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+            padding-top: calc(var(--safe-top) + 10px); padding-bottom: 16px;
+        }
+        #app-shell .view { padding-bottom: 18px !important; min-height: calc(var(--vvh, 100vh) - var(--tabs-total)) !important; }
+        @media (pointer: coarse){
+            button, .btn { min-height: 44px; }
+            .tab { min-height: 44px; }
+        }
 </style>
 </head>
 <body>
 <div id="app-shell">
 <div id="app-scroll">
-<!-- Меню -->
+
 <!-- 1. КАЛЬКУЛЯТОР -->
 <div class="view active" id="view-calc">
 <div class="header">
@@ -932,7 +397,7 @@ html.modal-open #app-scroll{
 <div class="section-title">Доп. расходы / Гости</div>
 <div class="group-container">
 <div style="display:flex; padding:12px 16px; gap:10px; border-bottom:0.5px solid var(--separator);">
-<input class="edit-input" id="inp-manual-name" oninput="App.calc()" placeholder="Название допа (напр. Аренда)" type="text"/>
+<input class="edit-input" id="inp-manual-name" oninput="App.calc()" placeholder="Название допа" type="text"/>
 <input class="edit-input" id="inp-manual-price" oninput="App.calc()" placeholder="₽" style="width:90px; text-align:right;" type="number"/>
 </div>
 <div class="input-row">
@@ -969,13 +434,6 @@ html.modal-open #app-scroll{
             </button>
 </div>
 </div>
-<!-- 2. КАЛЕНДАРЬ -->
-
-<!-- removed view-calendar -->
-
-<!-- 3. ИСТОРИЯ -->
-
-<!-- removed view-history -->
 
 <!-- 4. НАСТРОЙКИ (FIXED) -->
 <div class="view" id="view-settings">
@@ -1011,7 +469,7 @@ html.modal-open #app-scroll{
 <div class="settings-block" style="margin: 0 16px;">
 <div class="input-row"><div class="label">Имя артиста</div><input class="text-input" id="cfg-performer" placeholder="Напр. Дмитрий Костюк"/></div>
 <div class="input-row"><div class="label">Задаток (%)</div><input class="text-input" id="cfg-deposit" placeholder="30" type="number"/></div>
-<!-- removed autosave setting -->
+</div>
 <div class="section-title">Праздничные коэффициенты</div>
 <div class="settings-block" style="margin: 0 16px;">
 <div class="settings-header" onclick="Admin.toggleSection(this)">
@@ -1030,14 +488,13 @@ html.modal-open #app-scroll{
 <div class="btn-add" onclick="HolidayCfg.addRange()">+ Добавить период</div>
 </div>
 </div>
-<!-- removed templates settings button -->
 <div class="btn-reset" onclick="Admin.resetAll()">⚠️ Сброс к заводским настройкам</div>
 </div>
-<!-- MODAL -->
-<!-- TOUCH TEMPLATES MANAGER -->
+
 <div class="toast" id="toast">Скопировано!</div>
+
 <script>
-    // --- DB INIT (FULL RESTORED v10) ---
+    // --- DB INIT ---
     const DEFAULT_DB = {
         travel: {
             "Ярославская": { fee: 1000, cities: {"Ярославль": 0, "Рыбинск": 2000, "Тутаев": 2000, "Углич": 2000, "Ростов": 2000, "Переславль-Залесский": 2000, "Гаврилов-Ям": 2000, "Данилов": 2000, "Пошехонье": 4000, "Мышкин": 2000, "Любим": 2000} },
@@ -1055,7 +512,6 @@ html.modal-open #app-scroll{
             "Концерты": { "Мини-шоу СЕКРЕТ (1 ч)": 150000, "Спектакль СЕКРЕТ (2 ч)": 300000 }
         },
         settings: { extraGuest: 80, holidays: {"12-31":2, "01-01":2, "02-23":1.5, "03-08":1.5}, holidayRanges: [{sm:12, sd:15, em:12, ed:30, k:1.5}] },
-
         payments: [
             { title: "Т-БАНК", text: "8 909 276 33 86\nДмитрий Павлович К." }
         ],
@@ -1065,16 +521,13 @@ html.modal-open #app-scroll{
 
     let DB = {};
 
-
-    // --- Date, safety & clipboard helpers (v11 improvements: local dates, safe strings, reliable copy) ---
-    // local ISO date (YYYY-MM-DD) without UTC shift
+    // --- Date helpers ---
     const isoLocal = (d = new Date()) => {
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2,'0');
         const day = String(d.getDate()).padStart(2,'0');
         return `${y}-${m}-${day}`;
     };
-    // parse ISO date (YYYY-MM-DD) as LOCAL date (prevents Safari/UTC day shift)
     const parseISODate = (iso) => {
         if(!iso) return new Date();
         const parts = String(iso).split('-').map(n => parseInt(n,10));
@@ -1082,11 +535,9 @@ html.modal-open #app-scroll{
         const [y, m, d] = parts;
         return new Date(y, (m || 1) - 1, d || 1);
     };
-    // basic HTML escape to prevent layout breaks from user input (name/phone/etc)
     const esc = (v) => String(v ?? '').replace(/[&<>"'`]/g, ch => ({
         '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;', '`':'&#96;'
     }[ch]));
-    // clipboard copy with fallback (works even on file:// in many cases)
     const copyTextToClipboard = async (text) => {
         try {
             if(navigator.clipboard && window.isSecureContext) {
@@ -1121,11 +572,9 @@ html.modal-open #app-scroll{
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById('view-'+tab).classList.add('active');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-
-        // Prefer explicit element; fallback to data-tab; last resort: global event (old inline handlers)
         const btn = btnEl || document.querySelector(`.tab-btn[data-tab="${tab}"]`) || (typeof event !== 'undefined' ? event.currentTarget : null);
         if(btn && btn.classList) btn.classList.add('active');
-};
+    };
 
     // --- STORAGE ---
     const Storage = {
@@ -1137,9 +586,7 @@ html.modal-open #app-scroll{
             } else {
                 DB = JSON.parse(JSON.stringify(DEFAULT_DB));
             }
-
-            // Forward-compatible defaults (older saves won't have new fields)
-if(!Array.isArray(DB.payments)) DB.payments = JSON.parse(JSON.stringify(DEFAULT_DB.payments || []));
+            if(!Array.isArray(DB.payments)) DB.payments = JSON.parse(JSON.stringify(DEFAULT_DB.payments || []));
             if(!Array.isArray(DB.links)) DB.links = JSON.parse(JSON.stringify(DEFAULT_DB.links || []));
 
             Admin.render();
@@ -1149,7 +596,6 @@ if(!Array.isArray(DB.payments)) DB.payments = JSON.parse(JSON.stringify(DEFAULT_
         save: () => { localStorage.setItem('kostyuk_crm_v10', JSON.stringify(DB)); },
         reset: () => { if(confirm('Сбросить все настройки и базу?')) { localStorage.removeItem('kostyuk_crm_v10'); location.reload(); } }
     };
-
 
     // --- APP LOGIC ---
     const App = {
@@ -1161,9 +607,10 @@ if(!Array.isArray(DB.payments)) DB.payments = JSON.parse(JSON.stringify(DEFAULT_
             // Categories
             const cSel = el('inp-cat'); cSel.innerHTML='<option disabled selected>Выберите</option>';
             for(let c in DB.services) cSel.add(new Option(c, c));
+            
             App.updateDate();
-// Профиль фокусника (персонализация быстрых ответов)
-const p = el('cfg-performer');
+            
+            const p = el('cfg-performer');
             if(p){
                 p.value = (DB.touchCfg && DB.touchCfg.performer) ? DB.touchCfg.performer : '';
                 p.oninput = () => { if(!DB.touchCfg) DB.touchCfg = { performer: 'Фокусник', depositPercent: 30 }; DB.touchCfg.performer = p.value.trim() || 'Фокусник'; Storage.save(); };
@@ -1172,8 +619,6 @@ const p = el('cfg-performer');
             if(d){
                 d.value = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ? DB.touchCfg.depositPercent : 30;
                 d.oninput = () => { if(!DB.touchCfg) DB.touchCfg = { performer: 'Фокусник', depositPercent: 30 }; DB.touchCfg.depositPercent = Math.max(0, Math.min(100, parseInt(d.value||'30')||30)); Storage.save(); };
-            }
-            /* autosave removed */
             }
         },
         updateDate: () => {
@@ -1186,23 +631,20 @@ const p = el('cfg-performer');
             let k = 1;
             if(DB.settings.holidays[key]) k = DB.settings.holidays[key];
             else {
-                // holidayRanges supports start/end month/day
                 const md = (d.getMonth()+1) * 100 + d.getDate();
                 for(let r of DB.settings.holidayRanges) {
                     const sm = r.sm || 1, sd = r.sd || 1;
                     const em = r.em || sm, ed = r.ed || sd;
                     const start = sm * 100 + sd;
                     const end = em * 100 + ed;
-                    // Поддержка “через Новый год”: если конец меньше старта, считаем периодом (start..12-31) ИЛИ (01-01..end)
                     const inRange = start <= end ? (md >= start && md <= end) : (md >= start || md <= end);
                     if(inRange) { k = HolidayCfg.parseK(r.k); break; }
                 }
             }
             State.holidayK = k;
-el('badge-holiday').style.display = k > 1 ? 'inline-block' : 'none';
+            el('badge-holiday').style.display = k > 1 ? 'inline-block' : 'none';
             el('badge-holiday').innerText = `x${k}`;
-App.calc();
-        }
+            App.calc();
         },
         updateRegion: () => {
             const r = el('inp-region').value; el('disp-region').innerText=r; el('disp-region').classList.add('filled');
@@ -1285,9 +727,8 @@ App.calc();
             const name = el('inp-client').value.trim() || 'Клиент';
             const type = el('inp-event-type').value || 'Событие';
             const phone = el('inp-phone').value || '';
-const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ? DB.touchCfg.depositPercent : 30;
+            const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ? DB.touchCfg.depositPercent : 30;
 
-// CLEAN COPY (текст для клиента)
             const dateStr = parseISODate(State.date).toLocaleDateString('ru-RU',{weekday:'short', day:'numeric', month:'long'});
             let lines = [`Здравствуйте, ${name}!`];
             lines.push(``);
@@ -1314,7 +755,7 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
             if(depPct > 0) lines.push(`💳 Задаток (${depPct}%): ${fmt(dep)}`);
             lines.push(``);
 
-            // Реквизиты (из Настроек)
+            // Реквизиты
             if(Array.isArray(DB.payments) && DB.payments.length > 0){
                 lines.push(`📲 **Реквизиты для брони:**`);
                 DB.payments.forEach((p, idx) => {
@@ -1334,7 +775,7 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
                 lines.push(``);
             }
 
-            // Ссылки (портфолио/соцсети)
+            // Ссылки
             if(Array.isArray(DB.links) && DB.links.length > 0){
                 const list = DB.links
                     .map(l => ({ label: String(l?.label ?? '').trim(), url: String(l?.url ?? '').trim() }))
@@ -1351,7 +792,7 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
 
             copyTextToClipboard(lines.join('\n')).then((ok)=> {
                 if(ok){
-                    el('toast').innerText = autoSave ? 'Скопировано + сохранено!' : 'Скопировано!';
+                    el('toast').innerText = 'Скопировано!';
                     el('toast').classList.add('show');
                     setTimeout(()=>el('toast').classList.remove('show'), 2000);
                 } else {
@@ -1361,12 +802,7 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
         }
     };
 
-    // --- HISTORY ---
-    
-/* removed const History */
-
-
-    // --- ADMIN (FLEXIBLE) ---
+    // --- ADMIN ---
     const Admin = {
         render: () => {
             const tDiv = el('settings-travel-list'); tDiv.innerHTML = '';
@@ -1381,7 +817,7 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
                 for(let s in DB.services[c]) { sHtml += `<div class="set-row"><input class="set-input-name" value="${s}" onchange="Admin.renameSvc('${c}','${s}',this.value)"><input type="number" class="set-input-price" value="${DB.services[c][s]}" onchange="Admin.setSvcPrice('${c}','${s}',this.value)"><div class="btn-del-item" onclick="Admin.delSvc('${c}','${s}')">×</div></div>`; }
                 sDiv.innerHTML += `<div class="settings-block"><div class="settings-header" onclick="Admin.toggleSection(this)"><span>${c}</span><span class="toggle-icon">▼</span></div><div class="settings-content">${sHtml}<div class="btn-add-item" onclick="Admin.addSvc('${c}')">+ Услуга</div><div class="btn-del-item" style="width:100%; font-size:14px; padding:10px;" onclick="Admin.delCat('${c}')">Удалить категорию</div></div></div>`;
             }
-            // --- КП: реквизиты и ссылки ---
+            // Payments
             const pDiv = el('settings-payments-list');
             if(pDiv){
                 pDiv.innerHTML = '';
@@ -1404,7 +840,7 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
                     });
                 }
             }
-
+            // Links
             const lDiv = el('settings-links-list');
             if(lDiv){
                 lDiv.innerHTML = '';
@@ -1424,7 +860,6 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
                     });
                 }
             }
-
         },
         toggleSection: (el) => { const c = el.nextElementSibling; c.classList.toggle('open'); el.querySelector('.toggle-icon').style.transform = c.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)'; },
         addRegion: () => { const n = prompt("Название региона:"); if(n && !DB.travel[n]) { DB.travel[n]={fee:0, cities:{}}; Storage.save(); Admin.render(); } },
@@ -1441,7 +876,7 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
         renameSvc: (c,oldS,newS) => { if(oldS===newS || !newS) return; const price = DB.services[c][oldS]; delete DB.services[c][oldS]; DB.services[c][newS] = price; Storage.save(); App.init(); },
         setSvcPrice: (c,s,v) => { DB.services[c][s]=parseInt(v); Storage.save(); },
         
-        // --- Payments / Links for КП ---
+        // Payments / Links
         addPayment: () => {
             if(!Array.isArray(DB.payments)) DB.payments = [];
             DB.payments.push({ title: "Новый способ", text: "" });
@@ -1463,8 +898,7 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
         resetAll: () => Storage.reset()
     };
 
-    
-    // --- HOLIDAYS (FLEXIBLE COEFFICIENTS) ---
+    // --- HOLIDAYS ---
     const HolidayCfg = {
         ensure: () => {
             if(!DB.settings) DB.settings = {};
@@ -1486,19 +920,15 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
         parseK: (v) => {
             let k = parseFloat(String(v).replace(',','.'));
             if(Number.isNaN(k)) k = 1;
-            // keep reasonable range
             k = Math.max(1, Math.min(5, k));
-            // round to 2 decimals (nice for UI)
             return Math.round(k * 100) / 100;
         },
         render: () => {
             HolidayCfg.ensure();
-
             const list = el('settings-holidays-list');
             const ranges = el('settings-holidayranges-list');
             if(!list || !ranges) return;
 
-            // --- fixed dates ---
             const keys = Object.keys(DB.settings.holidays || {}).sort();
             list.innerHTML = keys.length ? '' : `<div style="padding: 10px 16px; color: rgba(255,255,255,.55); font-size: 13px;">Пока нет дат. Добавь, если у тебя есть “дорогие” дни.</div>`;
 
@@ -1506,31 +936,20 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
                 const kVal = DB.settings.holidays[key];
                 const row = document.createElement('div');
                 row.className = 'set-row';
-                row.innerHTML = `
-                    <input class="set-input-name" value="${esc(key)}" placeholder="ММ-ДД" inputmode="numeric">
-                    <input class="set-input-price" value="${esc(kVal)}" placeholder="×1.5" inputmode="decimal">
-                    <div class="btn-del-item" title="Удалить">×</div>
-                `;
+                row.innerHTML = `<input class="set-input-name" value="${esc(key)}" placeholder="ММ-ДД" inputmode="numeric"><input class="set-input-price" value="${esc(kVal)}" placeholder="×1.5" inputmode="decimal"><div class="btn-del-item" title="Удалить">×</div>`;
                 const inpKey = row.children[0];
                 const inpK = row.children[1];
                 const btnDel = row.children[2];
 
-                // key change (rename)
                 inpKey.onblur = () => {
                     const newKey = HolidayCfg.normalizeMD(inpKey.value);
                     if(!newKey) { inpKey.value = key; return; }
                     const kNow = HolidayCfg.parseK(inpK.value);
-                    // rename safely
-                    if(newKey !== key) {
-                        delete DB.settings.holidays[key];
-                    }
+                    if(newKey !== key) { delete DB.settings.holidays[key]; }
                     DB.settings.holidays[newKey] = kNow;
-                    Storage.save();
-                    HolidayCfg.render();
+                    Storage.save(); HolidayCfg.render();
                     try { App.updateDate(); App.calc(); } catch(e){}
                 };
-
-                // coefficient change
                 inpK.onblur = () => {
                     const kk = HolidayCfg.parseK(inpK.value);
                     DB.settings.holidays[key] = kk;
@@ -1538,18 +957,14 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
                     Storage.save();
                     try { App.updateDate(); App.calc(); } catch(e){}
                 };
-
                 btnDel.onclick = () => {
                     delete DB.settings.holidays[key];
-                    Storage.save();
-                    HolidayCfg.render();
+                    Storage.save(); HolidayCfg.render();
                     try { App.updateDate(); App.calc(); } catch(e){}
                 };
-
                 list.appendChild(row);
             });
 
-            // --- ranges ---
             const rs = DB.settings.holidayRanges || [];
             ranges.innerHTML = rs.length ? '' : `<div style="padding: 10px 16px; color: rgba(255,255,255,.55); font-size: 13px;">Пока нет периодов. Добавь, если у тебя есть сезонные надбавки.</div>`;
 
@@ -1559,15 +974,8 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
                 const kVal = HolidayCfg.parseK(r.k ?? 1);
 
                 const wrap = document.createElement('div');
-                wrap.className = 'set-row';
-                wrap.style.gap = '8px';
-                wrap.innerHTML = `
-                    <input class="set-input-name" style="max-width:92px;" value="${esc(start)}" placeholder="ММ-ДД" inputmode="numeric">
-                    <div style="opacity:.6; font-weight:700;">→</div>
-                    <input class="set-input-name" style="max-width:92px;" value="${esc(end)}" placeholder="ММ-ДД" inputmode="numeric">
-                    <input class="set-input-price" style="width:72px;" value="${esc(kVal)}" placeholder="×1.5" inputmode="decimal">
-                    <div class="btn-del-item" title="Удалить">×</div>
-                `;
+                wrap.className = 'set-row'; wrap.style.gap = '8px';
+                wrap.innerHTML = `<input class="set-input-name" style="max-width:92px;" value="${esc(start)}" placeholder="ММ-ДД" inputmode="numeric"><div style="opacity:.6; font-weight:700;">→</div><input class="set-input-name" style="max-width:92px;" value="${esc(end)}" placeholder="ММ-ДД" inputmode="numeric"><input class="set-input-price" style="width:72px;" value="${esc(kVal)}" placeholder="×1.5" inputmode="decimal"><div class="btn-del-item" title="Удалить">×</div>`;
                 const inpStart = wrap.children[0];
                 const inpEnd = wrap.children[2];
                 const inpK = wrap.children[3];
@@ -1576,112 +984,57 @@ const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ?
                 const saveRow = () => {
                     const s1 = HolidayCfg.normalizeMD(inpStart.value);
                     const s2 = HolidayCfg.normalizeMD(inpEnd.value);
-                    if(!s1 || !s2) {
-                        inpStart.value = start;
-                        inpEnd.value = end;
-                        return;
-                    }
+                    if(!s1 || !s2) { inpStart.value = start; inpEnd.value = end; return; }
                     const [sm, sd] = s1.split('-').map(n=>parseInt(n,10));
                     const [em, ed] = s2.split('-').map(n=>parseInt(n,10));
                     const kk = HolidayCfg.parseK(inpK.value);
-
                     DB.settings.holidayRanges[i] = { sm, sd, em, ed, k: kk };
-                    inpStart.value = s1;
-                    inpEnd.value = s2;
-                    inpK.value = kk;
-                    Storage.save();
-                    try { App.updateDate(); App.calc(); } catch(e){}
+                    inpStart.value = s1; inpEnd.value = s2; inpK.value = kk;
+                    Storage.save(); try { App.updateDate(); App.calc(); } catch(e){}
                 };
-
-                inpStart.onblur = saveRow;
-                inpEnd.onblur = saveRow;
-                inpK.onblur = saveRow;
-
+                inpStart.onblur = saveRow; inpEnd.onblur = saveRow; inpK.onblur = saveRow;
                 btnDel.onclick = () => {
                     DB.settings.holidayRanges.splice(i, 1);
-                    Storage.save();
-                    HolidayCfg.render();
+                    Storage.save(); HolidayCfg.render();
                     try { App.updateDate(); App.calc(); } catch(e){}
                 };
-
                 ranges.appendChild(wrap);
             });
         },
         addHoliday: () => {
             HolidayCfg.ensure();
-            // pick next free key
             const candidates = ['12-31','01-01','03-08','02-23','06-01','09-01'];
             let key = candidates.find(k => !(k in DB.settings.holidays));
             if(!key){
-                // fallback: today
                 const d = new Date();
                 key = `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-                if(key in DB.settings.holidays){
-                    // pick ближайшую свободную дату (в пределах года), чтобы ключ всегда оставался валидным ММ-ДД
-                    let dd = new Date();
-                    for(let step=0; step<366; step++){
-                        const k2 = `${String(dd.getMonth()+1).padStart(2,'0')}-${String(dd.getDate()).padStart(2,'0')}`;
-                        if(!(k2 in DB.settings.holidays)) { key = k2; break; }
-                        dd.setDate(dd.getDate()+1);
-                    }
-                }
             }
             DB.settings.holidays[key] = 1.5;
-            Storage.save();
-            HolidayCfg.render();
-            try { App.updateDate(); App.calc(); } catch(e){}
+            Storage.save(); HolidayCfg.render(); try { App.updateDate(); App.calc(); } catch(e){}
         },
         addRange: () => {
             HolidayCfg.ensure();
             DB.settings.holidayRanges.push({ sm: 12, sd: 15, em: 12, ed: 30, k: 1.5 });
-            Storage.save();
-            HolidayCfg.render();
-            try { App.updateDate(); App.calc(); } catch(e){}
+            Storage.save(); HolidayCfg.render(); try { App.updateDate(); App.calc(); } catch(e){}
         }
     };
 
+    Storage.load();
 
-// --- CALENDAR ---
-    
-/* removed const Calendar */
-
-
-    
-
-
-    
-/* removed Touch module */
-Storage.load();
+    // --- expose functions for inline handlers ---
+    try {
+      window.switchTab = switchTab;
+      window.App = App;
+      window.Admin = Admin;
+      window.HolidayCfg = HolidayCfg;
+    } catch(e) {}
 </script>
-<script>
-  // PWA: register Service Worker (works only on https:// or localhost)
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    });
-  }
-</script>
-</div>
 
-<!-- removed event-modal -->
-
-
-<!-- removed tpl-modal -->
-
-<div class="tabs">
-<div class="tab-btn active" data-tab="calc" onclick="switchTab('calc', this)"><svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>Калькулятор</div>
-<div class="tab-btn" data-tab="settings" onclick="switchTab('settings', this)"><svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>Настройки</div>
-</div>
-</div>
 <script>
 /* === v36 viewport stabilizer (iOS / PWA) === */
 (function(){
   const root = document.documentElement;
-
-  function isStandalone(){
-    return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches || (window.navigator && window.navigator.standalone);
-  }
-
+  function isStandalone(){ return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches || (window.navigator && window.navigator.standalone); }
   function updateVV(){
     const vv = window.visualViewport;
     if(!vv){
@@ -1692,31 +1045,26 @@ Storage.load();
     }
     root.style.setProperty('--vvh', vv.height + 'px');
     root.style.setProperty('--vv-offset', vv.offsetTop + 'px');
-
-    // Keyboard height approximation (works well on iOS Safari/PWA)
     const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
     root.style.setProperty('--kb', kb + 'px');
   }
-
   updateVV();
   window.addEventListener('resize', updateVV, {passive:true});
   if(window.visualViewport){
     window.visualViewport.addEventListener('resize', updateVV, {passive:true});
     window.visualViewport.addEventListener('scroll', updateVV, {passive:true});
   }
-
-  // Toggle modal-open class automatically when any modal becomes active
-  const observer = new MutationObserver(() => {
-    const anyOpen = !!document.querySelector('.modal.active');
-    root.classList.toggle('modal-open', anyOpen);
-  });
-  observer.observe(document.body, {subtree:true, attributes:true, attributeFilter:['class']});
-
-  if(isStandalone()){
-    root.classList.add('pwa-fixed');
-    document.body.classList.add('pwa-fixed');
-  }
+  if(isStandalone()){ root.classList.add('pwa-fixed'); document.body.classList.add('pwa-fixed'); }
 })();
 </script>
+
+<!-- TABS -->
+<div class="tabs">
+<div class="tab-btn active" data-tab="calc" onclick="switchTab('calc', this)"><svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>Калькулятор</div>
+<div class="tab-btn" data-tab="settings" onclick="switchTab('settings', this)"><svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>Настройки</div>
+</div>
+
+</div>
+</div>
 </body>
 </html>
