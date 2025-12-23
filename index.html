@@ -30,6 +30,9 @@
             min-height: 100vh;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
+            /* Учитываем челку и нижний бар */
+            padding-top: env(safe-area-inset-top, 20px);
+            padding-bottom: env(safe-area-inset-bottom, 20px);
         }
 
         h1, h2, h3, .font-display {
@@ -153,6 +156,8 @@
             width: 100%; max-width: 420px; height: 100%; max-height: 100vh; overflow-y: auto;
             box-shadow: 0 0 50px rgba(0,0,0,0.8);
             transform: translateY(20px); transition: transform 0.3s;
+            /* Safe area for modal content if needed */
+            padding-bottom: env(safe-area-inset-bottom);
         }
         @media(min-width: 640px) {
             .modal-content { height: auto; max-height: 85vh; border-radius: 20px; }
@@ -319,10 +324,6 @@
 
             <!-- Total Panel -->
             <div class="glass-panel p-6 border-amber-500/20 shadow-[0_0_30px_rgba(245,158,11,0.1)] relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-                    <i data-lucide="banknote" class="w-24 h-24"></i>
-                </div>
-
                 <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
                     <span class="text-sm font-medium text-slate-300">Договор (+6%)</span>
                     <label class="switch">
@@ -331,10 +332,14 @@
                     </label>
                 </div>
 
-                <div id="discount-badge" class="hidden mb-4 text-center">
+                <div id="discount-badge" class="hidden mb-2 text-center">
                     <span class="inline-block bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                         ✨ Скидка за объем 10%
                     </span>
+                </div>
+
+                <div id="bonus-list" class="flex flex-col gap-2 items-center mb-4 text-center empty:hidden">
+                    <!-- Bonuses will appear here -->
                 </div>
 
                 <div class="text-center mb-6">
@@ -377,6 +382,14 @@
                                  <input id="cfg-deposit" type="number" class="magic-input w-20" placeholder="30">
                              </div>
                         </div>
+                    </div>
+
+                    <!-- Bonuses Section (NEW) -->
+                    <div class="admin-section">
+                        <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Бонусы от суммы</h4>
+                        <p class="text-[10px] text-slate-500 mb-2">Автоматические подарки при достижении суммы.</p>
+                        <div id="settings-bonuses-list" class="space-y-2 mb-3"></div>
+                        <button onclick="Admin.addBonus()" class="btn-add-mini">+ Добавить бонус</button>
                     </div>
 
                     <!-- Logistics Editor -->
@@ -451,13 +464,17 @@
             },
             holidays: {"12-31": 2.0, "01-01": 2.0, "02-23": 1.5, "03-08": 1.5},
             holidayRanges: [{sm:12, sd:15, em:12, ed:30, k:1.5}],
+            bonuses: [
+                { threshold: 15000, text: "🎁 2 билета на шоу" },
+                { threshold: 30000, text: "🎩 Персональный фокус в подарок" }
+            ],
             payments: [{ title: "Т-Банк", text: "8 909 276 33 86\nДмитрий Павлович К." }],
             links: [{ label: "Портфолио", url: "" }],
             config: { performer: "Illusionist", deposit: 30 }
         };
 
         let DB = {};
-        let State = { date: new Date().toISOString().split('T')[0], cart: [], serviceQty: 1, holidayK: 1 };
+        let State = { date: new Date().toISOString().split('T')[0], cart: [], serviceQty: 1, holidayK: 1, activeBonuses: [] };
 
         // --- APP LOGIC ---
         const App = {
@@ -641,6 +658,23 @@
                 State.finalDetails = { sTot, discount, travel, manPrice, guestPrice, tax, k };
 
                 document.getElementById('total-sum').innerText = State.finalTotal.toLocaleString() + ' ₽';
+
+                // Check Bonuses
+                State.activeBonuses = [];
+                if(DB.bonuses && DB.bonuses.length > 0) {
+                    State.activeBonuses = DB.bonuses.filter(b => State.finalTotal >= b.threshold);
+                }
+                
+                const bonusListEl = document.getElementById('bonus-list');
+                bonusListEl.innerHTML = '';
+                if(State.activeBonuses.length > 0) {
+                    State.activeBonuses.forEach(b => {
+                        bonusListEl.innerHTML += `
+                        <div class="inline-block bg-amber-500/10 text-amber-400 border border-amber-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider animate-enter">
+                           ${b.text}
+                        </div>`;
+                    });
+                }
             },
 
             copyQuote: () => {
@@ -671,6 +705,11 @@
                 if(State.finalDetails.guestPrice > 0) text += `👥 Доплата за гостей: ${State.finalDetails.guestPrice.toLocaleString()} ₽\n`;
                 if(State.finalDetails.manPrice > 0) text += `🔹 Доп: ${State.finalDetails.manPrice.toLocaleString()} ₽\n`;
                 if(State.finalDetails.tax > 0) text += `📄 Договор (+6%): ${State.finalDetails.tax.toLocaleString()} ₽\n`;
+
+                if(State.activeBonuses.length > 0) {
+                     text += `\n🎁 **ВАШИ БОНУСЫ:**\n`;
+                     State.activeBonuses.forEach(b => text += `✅ ${b.text}\n`);
+                }
 
                 text += `\n💰 **ИТОГО: ${State.finalTotal.toLocaleString()} ₽**\n`;
                 text += `💳 Бронь даты (${depPct}%): ${deposit.toLocaleString()} ₽\n`;
@@ -834,6 +873,21 @@
                     });
                 }
 
+                // BONUSES
+                const bDiv = document.getElementById('settings-bonuses-list');
+                bDiv.innerHTML = '';
+                if(DB.bonuses) {
+                    DB.bonuses.forEach((b, i) => {
+                        bDiv.innerHTML += `
+                        <div class="edit-row">
+                            <span class="text-xs text-slate-500 w-8">От</span>
+                            <input type="number" class="edit-input w-24" value="${b.threshold}" placeholder="Сумма" onchange="Admin.updateBonus(${i}, 'threshold', this.value)">
+                            <input class="edit-input flex-1" value="${b.text}" placeholder="Текст бонуса" onchange="Admin.updateBonus(${i}, 'text', this.value)">
+                            <i onclick="Admin.delBonus(${i})" data-lucide="x" class="btn-del-mini w-4 h-4"></i>
+                        </div>`;
+                    });
+                }
+
                 // PAYMENTS & LINKS
                 const payDiv = document.getElementById('settings-payments-list');
                 payDiv.innerHTML = '';
@@ -910,6 +964,15 @@
                 Storage.save();
             },
 
+            // --- BONUSES (NEW) ---
+            addBonus: () => { if(!DB.bonuses) DB.bonuses=[]; DB.bonuses.push({threshold: 10000, text: "Бонус"}); Storage.save(); Admin.render(); },
+            delBonus: (i) => { DB.bonuses.splice(i, 1); Storage.save(); Admin.render(); },
+            updateBonus: (i, field, val) => { 
+                if(field === 'threshold') DB.bonuses[i].threshold = parseInt(val) || 0;
+                else DB.bonuses[i].text = val;
+                Storage.save();
+            },
+
             // --- EXTRAS ---
             addPayment: () => { if(!DB.payments) DB.payments=[]; DB.payments.push({title:"Банк", text:""}); Storage.save(); Admin.render(); },
             delPayment: (i) => { DB.payments.splice(i,1); Storage.save(); Admin.render(); },
@@ -941,6 +1004,7 @@
                 if(!DB.holidayRanges) DB.holidayRanges = DEFAULT_DB.holidayRanges;
                 if(!DB.payments) DB.payments = DEFAULT_DB.payments;
                 if(!DB.links) DB.links = DEFAULT_DB.links;
+                if(!DB.bonuses) DB.bonuses = DEFAULT_DB.bonuses;
             }
         };
 
