@@ -1,1070 +1,950 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
-<meta content="#000000" name="theme-color"/>
-<meta content="dark" name="color-scheme"/>
-<meta content="yes" name="mobile-web-app-capable"/>
-<meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
-<meta content="Kostyuk CRM" name="apple-mobile-web-app-title"/>
-<meta content="telephone=no" name="format-detection"/>
-<link href="manifest.webmanifest" rel="manifest"/>
-<title>Kostyuk Event CRM</title>
-<style>
-        /* --- iOS SYSTEM THEME (PLATINUM) --- */
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Illusionist OS</title>
+    
+    <meta name="theme-color" content="#050507">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
         :root {
-            color-scheme: dark;
-            --bg-body: #000000;
-            --bg-card: #1C1C1E;
-            --bg-input: #2C2C2E;
-            --text-primary: #FFFFFF;
-            --text-secondary: #8E8E93;
-            --accent: #0A84FF;
-            --accent-gold: #D4AF37;
-            --calendar-red: #FF453A;
-            --danger: #FF453A;
-            --success: #30D158;
-            --separator: #38383A;
-            --safe-top: env(safe-area-inset-top);
-            --safe-left: env(safe-area-inset-left);
-            --safe-right: env(safe-area-inset-right);
-            --safe-bottom: env(safe-area-inset-bottom);
+            --gold-primary: #f59e0b;
+            --dark-bg: #050507;
+            --card-surface: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
         }
 
         body {
-            background-color: var(--bg-body);
-            color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-            margin: 0; padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            -webkit-font-smoothing: antialiased;
         }
 
-        /* --- TABS (MENU) FIX --- */
-        .tabs {
-            position: absolute; /* Внутри app-shell это работает как fixed */
-            left: 0; right: 0; bottom: 0;
-            height: var(--tabs-total);
-            background: rgba(28, 28, 30, 0.95); /* Чуть менее прозрачный для четкости */
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-top: 0.5px solid rgba(255,255,255,0.15);
-            padding-top: 6px;
-            padding-bottom: var(--safe-bottom);
-            padding-left: var(--safe-left);
-            padding-right: var(--safe-right);
-            display: flex; 
-            justify-content: space-around; 
-            align-items: flex-start; /* Выравнивание по верху, чтобы иконки были на одной линии */
-            z-index: 1000; /* Поверх всего */
-            touch-action: none; /* Блокируем скролл на самом меню */
+        h1, h2, h3, .font-display {
+            font-family: 'Cinzel', serif;
         }
-        .tab-btn {
-            flex: 1; 
-            padding: 4px 0 2px; 
-            text-align: center; 
-            color: var(--text-secondary);
-            font-size: 10px; 
-            font-weight: 500; 
-            cursor: pointer; 
-            transition: color 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .tab-btn svg { 
-            width: 26px; 
-            height: 26px; 
-            margin-bottom: 4px; 
-            display: block; 
-            flex-shrink: 0; /* Запрещаем сжатие иконки */
-        }
-        .tab-btn.active { color: var(--accent); }
 
-        /* --- VIEWS --- */
-        .view { display: none; width: 100%; padding-bottom: 40px; }
-        .view.active { display: block; animation: fadeIn 0.2s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Background Effects */
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
 
-        /* --- HEADER --- */
-        .header{
-            padding: 10px calc(16px + var(--safe-right)) 20px calc(16px + var(--safe-left));
-            display: flex; justify-content: space-between; align-items: center; 
+        /* UI Components */
+        .glass-panel {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.6) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
         }
-        .header h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.5px; margin: 0; }
-        .header p { font-size: 13px; color: var(--text-secondary); margin-top: 2px; font-weight: 500; }
 
-        /* --- FORMS & INPUTS --- */
-        .section-title { 
-            margin: 24px 16px 8px; font-size: 13px; color: var(--text-secondary); 
-            text-transform: uppercase; letter-spacing: -0.2px; padding-left: 12px;
+        .input-group {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 4px 16px;
+            transition: border-color 0.2s;
         }
-        .group-container { 
-            margin: 0 16px; background: var(--bg-card); border-radius: 12px; overflow: hidden; 
+        .input-group:focus-within { border-color: rgba(245, 158, 11, 0.5); }
+
+        .magic-input {
+            background: transparent;
+            border: none;
+            color: white;
+            width: 100%;
+            padding: 10px 0;
+            outline: none;
+            font-size: 15px;
+            text-align: right;
         }
+        .magic-input::placeholder { color: rgba(255,255,255,0.2); }
         
-        .input-row {
-            position: relative; display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 16px; border-bottom: 0.5px solid var(--separator); min-height: 50px;
+        .magic-select {
+            background: transparent;
+            border: none;
+            color: white;
+            width: 100%;
+            padding: 10px 0;
+            outline: none;
+            appearance: none;
+            text-align: right;
+            direction: rtl; 
         }
-        .input-row:last-child { border-bottom: none; }
-        .input-row:active { background: #252527; }
-        
-        .label { font-size: 17px; color: var(--text-primary); flex-shrink: 0; }
-        
-        .value-wrapper { display: flex; align-items: center; gap: 8px; flex-grow: 1; justify-content: flex-end; overflow: hidden; }
-        .value-display { 
-            font-size: 17px; color: var(--text-secondary); text-align: right; 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .value-display.filled { color: var(--accent); }
-        .chevron { color: #555; width: 14px; height: 14px; opacity: 0.5; }
+        .magic-select option { background: #1e293b; color: white; text-align: left; }
 
-        .native-control { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            opacity: 0; cursor: pointer; font-size: 16px; z-index: 10;
+        .label-text {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            color: var(--text-muted);
+            flex-shrink: 0;
         }
-        
-        .text-input { 
-            background: transparent; border: none; color: #fff; font-size: 17px; 
-            text-align: right; outline: none; width: 100%; 
-        }
-        .text-input::placeholder { color: var(--text-secondary); }
 
-        /* --- CONTROLS --- */
-        .switch { position: relative; display: inline-block; width: 51px; height: 31px; }
+        .btn-gold {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+        .btn-gold:active { transform: scale(0.98); }
+
+        .btn-icon {
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-icon:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #39393D; transition: .3s; border-radius: 34px;
+            background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 34px;
         }
         .slider:before {
-            position: absolute; content: ""; height: 27px; width: 27px; left: 2px; bottom: 2px;
-            background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
         }
-        input:checked + .slider { background-color: #30D158; }
-        input:checked + .slider:before { transform: translateX(20px); }
+        input:checked + .slider { background-color: var(--gold-primary); }
+        input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
 
-        /* --- CART --- */
-        .service-adder { display: flex; align-items: center; border-top: 0.5px solid var(--separator); }
-        .qty-control { display: flex; align-items: center; padding: 0 4px; border-right: 0.5px solid var(--separator); background: #252527; }
-        .qty-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--accent); cursor: pointer; }
-        .qty-val { width: 28px; text-align: center; font-weight: 600; font-size: 17px; }
-        .btn-add-service { 
-            flex-grow: 1; background: var(--bg-card); color: var(--accent); 
-            font-weight: 600; text-align: center; padding: 14px; font-size: 17px; cursor: pointer; 
-        }
-        .btn-add-service:active { opacity: 0.7; background: #2c2c2e; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
 
-        .cart-list { margin: 12px 16px 0; display: flex; flex-direction: column; gap: 8px; }
-        .cart-item { 
-            background: var(--bg-card); padding: 12px 16px; border-radius: 12px; 
-            display: flex; justify-content: space-between; align-items: center;
-            animation: slideIn 0.2s ease-out;
-        }
-        @keyframes slideIn { from { transform: translateY(-5px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-enter { animation: fade-in-up 0.4s ease-out forwards; }
+        @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        .cart-info { flex-grow: 1; }
-        .cart-name { font-size: 16px; font-weight: 500; color: #fff; margin-bottom: 2px; }
-        .cart-price { font-size: 14px; color: var(--text-secondary); }
-        .btn-remove { 
-            width: 32px; height: 32px; border-radius: 50%; background: rgba(255,69,58,0.15); 
-            color: var(--danger); display: flex; align-items: center; justify-content: center; 
-            font-size: 20px; margin-left: 12px; cursor: pointer; 
+        /* Modal */
+        .modal-backdrop {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px);
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
+        .modal-backdrop.active { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background: #0f172a; border: 1px solid rgba(245, 158, 11, 0.2);
+            width: 100%; max-width: 420px; height: 100%; max-height: 100vh; overflow-y: auto;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            transform: translateY(20px); transition: transform 0.3s;
+        }
+        @media(min-width: 640px) {
+            .modal-content { height: auto; max-height: 85vh; border-radius: 20px; }
+        }
+        .modal-backdrop.active .modal-content { transform: translateY(0); }
 
-        /* --- TOTAL PANEL --- */
-        .total-panel { 
-            margin: 24px 16px 0; padding: 20px; background: var(--bg-card); border-radius: 16px; 
-            text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.3); position: relative;
-        }
-        .total-label { font-size: 12px; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; margin-bottom: 4px; }
-        .total-sum { font-size: 44px; font-weight: 800; color: var(--accent-gold); line-height: 1; letter-spacing: -1px; margin-bottom: 12px; }
-        
-        .btn-main { 
-            display: flex; width: 100%; background: var(--text-primary); color: #000; 
-            font-size: 17px; font-weight: 600; padding: 16px; border-radius: 14px; 
-            border: none; cursor: pointer; align-items: center; justify-content: center; gap: 8px;
-            transition: transform 0.1s;
-        }
-        .btn-main:active { transform: scale(0.97); opacity: 0.9; }
+        /* Admin Settings Specifics */
+        .admin-section { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 12px; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 8px 0; }
+        .admin-content { display: none; padding-top: 8px; }
+        .admin-content.open { display: block; animation: fade-in-up 0.2s; }
+        .edit-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .edit-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; padding: 6px 10px; width: 100%; outline: none; font-size: 13px; }
+        .edit-input:focus { border-color: var(--gold-primary); }
+        .btn-add-mini { width: 100%; padding: 8px; border: 1px dashed rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); border-radius: 8px; font-size: 12px; transition: 0.2s; }
+        .btn-add-mini:hover { border-color: var(--gold-primary); color: var(--gold-primary); }
+        .btn-del-mini { color: #ef4444; padding: 4px; cursor: pointer; opacity: 0.6; }
+        .btn-del-mini:hover { opacity: 1; }
 
-        .discount-badge { color: var(--success); font-size: 13px; font-weight: 600; margin-bottom: 8px; display: none; }
-        .bonus-banner { 
-            background: linear-gradient(90deg, #252527, #303033); border: 1px solid rgba(212,175,55,0.3); 
-            color: var(--accent-gold); font-size: 13px; font-weight: 600; padding: 12px; 
-            border-radius: 10px; margin-bottom: 16px; display: none; text-align: left;
-        }
-
-        /* --- SETTINGS --- */
-        .btn-add { width: 100%; padding: 14px; text-align: center; color: var(--accent); font-weight: 600; font-size: 16px; background: var(--bg-card); border-top: 0.5px solid var(--separator); cursor: pointer; }
-        .btn-add:active { background: #2c2c2e; }
-        
-        .settings-block { margin-bottom: 16px; background: var(--bg-card); border-radius: 12px; overflow: hidden; }
-        .settings-header { 
-            padding: 14px 16px; background: #252527; font-weight: 600; color: var(--accent); 
-            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
-        }
-        .settings-header .toggle-icon { transition: transform 0.2s; font-size: 12px; }
-        .settings-content { display: none; }
-        .settings-content.open { display: block; }
-        
-        .set-row { display: flex; padding: 10px 16px; border-bottom: 0.5px solid var(--separator); align-items: center; gap: 10px; }
-        .set-input-name { background: transparent; border: none; color: #fff; flex-grow: 1; font-size: 16px; border-bottom: 1px solid transparent; padding: 4px 0; outline: none; }
-        .set-input-name:focus { border-bottom: 1px solid var(--accent); }
-        .set-input-price { background: #333; border: none; border-radius: 6px; padding: 6px; color: #fff; width: 80px; text-align: right; font-size: 15px; outline: none; }
-        .btn-del-item { color: var(--danger); font-size: 24px; width: 30px; text-align: center; cursor: pointer; line-height: 20px; }
-
-        .btn-reset { margin: 30px 16px; padding: 14px; text-align: center; color: var(--danger); border: 1px solid var(--danger); border-radius: 12px; font-weight: 600; cursor: pointer; }
-
-        /* --- UTILS --- */
-        .badge { background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 8px; display: none; }
-        .toast { 
-            position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-20px); 
-            background: rgba(50,50,50,0.9); backdrop-filter: blur(10px); color: #fff; 
-            padding: 12px 24px; border-radius: 50px; font-weight: 600; font-size: 14px; 
-            opacity: 0; pointer-events: none; transition: 0.3s; z-index: 600; display: flex; align-items: center; gap: 8px; 
-        }
-        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        
-        .edit-input, .text-input, select.native-control, input.native-control {
-            background: var(--bg-input);
-            color: var(--text-primary);
-            border: 1px solid rgba(255,255,255,.10);
-            border-radius: 10px;
-            padding: 10px 12px;
-            outline: none;
-        }
-        .edit-input:focus, .text-input:focus, select.native-control:focus, input.native-control:focus {
-            border-color: rgba(10,132,255,.55);
-            box-shadow: 0 0 0 3px rgba(10,132,255,.18);
-        }
-
-        .btn-add-item, .btn-delete-hist {
-            width: 32px; height: 32px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 10px;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.10);
-            color: var(--text-primary);
-            cursor: pointer;
-            user-select: none;
-        }
-        .btn-add-item:active { transform: scale(.98); }
-
-        /* --- v14 Polish --- */
-        :root{
-            --radius-card: 14px;
-            --hairline: rgba(255,255,255,.14);
-            --shadow-card: 0 6px 24px rgba(0,0,0,.35);
-        }
-        body{ user-select: text; -webkit-text-size-adjust: 100%; }
-        .tab-btn, .btn-main, .qty-btn, .btn-add-service, .btn-remove, .btn-del-item, .btn-add, .settings-header, .btn-reset {
-            user-select: none; -webkit-user-select: none; touch-action: manipulation;
-        }
-        .group-container, .cart-item, .total-panel, .settings-block { border-radius: var(--radius-card); }
-        .group-container { box-shadow: 0 1px 0 rgba(255,255,255,.04) inset; }
-        .total-panel { box-shadow: var(--shadow-card); }
-        .input-row { border-bottom: none; }
-        .input-row::after {
-            content:""; position:absolute; left:16px; right:0; bottom:0; height:0.5px;
-            background: var(--separator); opacity:.9;
-        }
-        .input-row:last-child::after { display:none; }
-        .input-row:active { background: rgba(255,255,255,.04); }
-        .section-title { text-transform: uppercase; letter-spacing: .9px; font-size: 12px; margin-top: 22px; opacity: .9; }
-        .tabs { background: rgba(28,28,30,.78); border-top: 0.5px solid var(--hairline); }
-        .tab-btn { font-size: 11px; padding: 8px 0 4px; }
-        .tab-btn svg { width: 24px; height: 24px; margin-bottom: 3px; opacity: .92; }
-        .tab-btn.active { color: var(--accent); }
-        .tab-btn:active { transform: scale(.98); opacity: .85; }
-        .header h1 { letter-spacing: -0.8px; }
-        .header p { opacity: .9; }
-        .btn-main {
-            background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0)), var(--accent);
-            color: #fff; box-shadow: 0 8px 18px rgba(10,132,255,.25);
-        }
-        .btn-main:active { transform: scale(.98); opacity: .95; }
-
-        /* === v36: SINGLE iOS/PWA ADAPTATION === */
-        :root{
-            --vvh: 100vh; --vv-offset: 0px; --kb: 0px; --tabs-h: 64px;
-            --tabs-total: calc(var(--tabs-h) + var(--safe-bottom));
-        }
-        html, body{ height: 100%; width: 100%; overflow: hidden !important; background: var(--bg-body); }
-        body{ padding-top: 0 !important; padding-bottom: 0 !important; min-height: 0 !important; }
-        #app-shell{
-            position: fixed; left: 0; right: 0; top: var(--vv-offset, 0px); height: var(--vvh, 100vh);
-            overflow: hidden; background: var(--bg-body);
-        }
-        #app-scroll{
-            position: absolute; left: 0; right: 0; top: 0; bottom: var(--tabs-total);
-            overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
-            padding-top: calc(var(--safe-top) + 10px); padding-bottom: 16px;
-        }
-        #app-shell .view { padding-bottom: 18px !important; min-height: calc(var(--vvh, 100vh) - var(--tabs-total)) !important; }
-        @media (pointer: coarse){
-            button, .btn { min-height: 44px; }
-            .tab { min-height: 44px; }
-        }
-</style>
+    </style>
 </head>
-<body>
-<div id="app-shell">
-<div id="app-scroll">
+<body class="flex flex-col items-center">
 
-<!-- 1. КАЛЬКУЛЯТОР -->
-<div class="view active" id="view-calc">
-<div class="header">
-<div><h1>Kostyuk CRM</h1><p>Конструктор КП</p></div>
-</div>
-<div class="group-container" style="margin-bottom: 20px;">
-<div class="input-row">
-<div class="label">Имя клиента</div>
-<input class="text-input" id="inp-client" placeholder="Иван" type="text"/>
-</div>
-<div class="input-row">
-<div class="label">Телефон</div>
-<input class="text-input" id="inp-phone" placeholder="8 9..." type="tel"/>
-</div>
-<div class="input-row">
-<div class="label">Статус</div>
-<div class="value-wrapper"><div class="value-display" id="disp-status">Интерес</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" id="inp-status" onchange="App.updateStatus()">
-<option selected="" value="new">Интерес (Спросил)</option>
-<option value="think">Думает</option>
-<option value="deposit">Бронь (Оплачено)</option>
-<option value="cancel">Отказ</option>
-</select>
-</div>
-<div class="input-row">
-<div class="label">Событие</div>
-<div class="value-wrapper"><div class="value-display" id="disp-event-type">Не выбрано</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" id="inp-event-type" onchange="App.updateEventType()">
-<option disabled="" selected="" value="">Тип</option><option value="Свадьба">Свадьба</option><option value="Корпоратив">Корпоратив</option><option value="Юбилей">Юбилей</option><option value="День Рождения">День Рождения</option><option value="Детский праздник">Детский праздник</option><option value="Вечеринка">Вечеринка</option><option value="Выпускной">Выпускной</option><option value="Частное">Частное</option>
-</select>
-</div>
-</div>
-<div class="section-title">Логистика</div>
-<div class="group-container">
-<div class="input-row" style="flex-direction:column; align-items:stretch;">
-<div style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
-<div class="label flex items-center">Дата <span class="badge" id="badge-holiday"></span></div>
-<div class="value-wrapper"><div class="value-display" id="disp-date">Сегодня</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-</div>
-<input class="native-control" id="inp-date" onchange="App.updateDate()" type="date"/>
-</div>
-<div class="input-row">
-<div class="label">Время</div>
-<input class="text-input" id="inp-time" type="time" value="18:00"/>
-</div>
-<div class="input-row">
-<div class="label">Регион</div>
-<div class="value-wrapper"><div class="value-display" id="disp-region">Не выбран</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" id="inp-region" onchange="App.updateRegion()"></select>
-</div>
-<div class="input-row">
-<div class="label">Город</div>
-<div class="value-wrapper"><div class="value-display" id="disp-city">...</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" disabled="" id="inp-city" onchange="App.updateCity()"></select>
-</div>
-</div>
-<div class="section-title">Услуги</div>
-<div class="group-container">
-<div class="input-row">
-<div class="label">Категория</div>
-<div class="value-wrapper"><div class="value-display" id="disp-cat">Не выбрана</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" id="inp-cat" onchange="App.updateCat()"></select>
-</div>
-<div class="input-row">
-<div class="label">Услуга</div>
-<div class="value-wrapper"><div class="value-display" id="disp-svc">...</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" disabled="" id="inp-svc"></select>
-</div>
-<div class="service-adder">
-<div class="qty-control">
-<div class="qty-btn" onclick="App.changeQty(-1)">-</div>
-<div class="qty-val" id="svc-qty">1</div>
-<div class="qty-btn" onclick="App.changeQty(1)">+</div>
-</div>
-<div class="btn-add-service" onclick="App.addService()">+ Добавить услугу</div>
-</div>
-</div>
-<div class="cart-list" id="cart-list"></div>
-<div class="section-title">Доп. расходы / Гости</div>
-<div class="group-container">
-<div style="display:flex; padding:12px 16px; gap:10px; border-bottom:0.5px solid var(--separator);">
-<input class="edit-input" id="inp-manual-name" oninput="App.calc()" placeholder="Название допа" type="text"/>
-<input class="edit-input" id="inp-manual-price" oninput="App.calc()" placeholder="₽" style="width:90px; text-align:right;" type="number"/>
-</div>
-<div class="input-row">
-<div class="label">Гости</div>
-<div class="value-wrapper"><div class="value-display" id="disp-guests">До 50 (0₽)</div><svg class="chevron" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div>
-<select class="native-control" id="inp-guests" onchange="App.updateGuests()">
-<option value="0">До 50 человек (0₽)</option>
-<option value="5000">51–100 человек (+5 000₽)</option>
-<option value="10000">101–200 человек (+10 000₽)</option>
-<option value="custom">Более 200 (Слайдер)</option>
-</select>
-</div>
-</div>
-<div class="slider-wrap" id="slider-wrap" style="display:none; margin:10px 16px; background:var(--bg-card); padding:16px; border-radius:12px;">
-<div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:10px; color:#888;"><span>ТОЧНОЕ ЧИСЛО</span><span id="slider-val" style="color:#fff;">250</span></div>
-<input id="inp-slider" max="500" min="201" oninput="App.calc()" step="5" style="width:100%;" type="range" value="250"/>
-</div>
-<!-- ИТОГ -->
-<div class="total-panel">
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:15px; border-bottom:1px solid #333;">
-<span style="font-size:15px; color:#fff;">Работа по договору (+6%)</span>
-<label class="switch">
-<input id="inp-tax" onchange="App.calc()" type="checkbox"/>
-<span class="slider"></span>
-</label>
-</div>
-<div class="bonus-banner" id="bonus-alert"></div>
-<div class="discount-badge" id="discount-badge">✅ Скидка 10% за объем</div>
-<div class="total-label">Итоговая смета</div>
-<div class="total-sum" id="total-sum">0 ₽</div>
-<button class="btn-main" onclick="App.copy()">
-<svg fill="none" height="20" stroke="currentColor" viewbox="0 0 24 24" width="20"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-                Сформировать КП
-            </button>
-</div>
-</div>
-
-<!-- 4. НАСТРОЙКИ (FIXED) -->
-<div class="view" id="view-settings">
-<div class="header"><h1>Настройки</h1></div>
-<div class="section-title">Логистика (Города)</div>
-<div id="settings-travel-list" style="margin: 0 16px;"></div>
-<div style="margin: 10px 16px;"><div class="btn-add" onclick="Admin.addRegion()">+ Добавить Регион</div></div>
-<div class="section-title">Услуги</div>
-<div id="settings-services-list" style="margin: 0 16px;"></div>
-<div style="margin: 10px 16px;"><div class="btn-add" onclick="Admin.addCategory()">+ Добавить Категорию</div></div>
-<div class="section-title">КП: реквизиты и ссылки</div>
-<div class="settings-block" style="margin: 0 16px;">
-<div class="settings-header" onclick="Admin.toggleSection(this)">
-<span>Реквизиты для брони</span>
-<span class="toggle-icon">▼</span>
-</div>
-<div class="settings-content open">
-<div id="settings-payments-list"></div>
-<div class="btn-add" onclick="Admin.addPayment()">+ Добавить реквизиты</div>
-</div>
-</div>
-<div class="settings-block" style="margin: 0 16px;">
-<div class="settings-header" onclick="Admin.toggleSection(this)">
-<span>Ссылки (портфолио / соцсети / отзывы)</span>
-<span class="toggle-icon">▼</span>
-</div>
-<div class="settings-content open">
-<div id="settings-links-list"></div>
-<div class="btn-add" onclick="Admin.addLink()">+ Добавить ссылку</div>
-</div>
-</div>
-<div class="section-title">Профиль фокусника</div>
-<div class="settings-block" style="margin: 0 16px;">
-<div class="input-row"><div class="label">Имя артиста</div><input class="text-input" id="cfg-performer" placeholder="Напр. Дмитрий Костюк"/></div>
-<div class="input-row"><div class="label">Задаток (%)</div><input class="text-input" id="cfg-deposit" placeholder="30" type="number"/></div>
-</div>
-<div class="section-title">Праздничные коэффициенты</div>
-<div class="settings-block" style="margin: 0 16px;">
-<div class="settings-header" onclick="Admin.toggleSection(this)">
-<span>Праздники (гибкая настройка)</span>
-<span class="toggle-icon">▼</span>
-</div>
-<div class="settings-content open">
-<div style="padding: 12px 16px; font-size: 12px; color: var(--text-secondary); line-height:1.3;">
-                    Формат дат: <b>ММ-ДД</b> (например, 12-31). Коэффициент умножает итоговую смету в выбранные даты/периоды.
-                </div>
-<div class="section-title" style="margin: 8px 16px 8px;">Точные даты</div>
-<div id="settings-holidays-list"></div>
-<div class="btn-add" onclick="HolidayCfg.addHoliday()">+ Добавить дату</div>
-<div class="section-title" style="margin: 16px 16px 8px;">Периоды</div>
-<div id="settings-holidayranges-list"></div>
-<div class="btn-add" onclick="HolidayCfg.addRange()">+ Добавить период</div>
-</div>
-</div>
-<div class="btn-reset" onclick="Admin.resetAll()">⚠️ Сброс к заводским настройкам</div>
-</div>
-
-<div class="toast" id="toast">Скопировано!</div>
-
-<script>
-    // --- DB INIT ---
-    const DEFAULT_DB = {
-        travel: {
-            "Ярославская": { fee: 1000, cities: {"Ярославль": 0, "Рыбинск": 2000, "Тутаев": 2000, "Углич": 2000, "Ростов": 2000, "Переславль-Залесский": 2000, "Гаврилов-Ям": 2000, "Данилов": 2000, "Пошехонье": 4000, "Мышкин": 2000, "Любим": 2000} },
-            "Костромская": { fee: 3000, cities: {"Кострома": 2000, "Волгореченск": 2000, "Буй": 3000, "Нерехта": 2000, "Шарья": 6000, "Мантурово": 5500, "Галич": 3500} },
-            "Ивановская": { fee: 5000, cities: {"Иваново": 2000, "Плес": 3000, "Кинешма": 3500, "Шуя": 3000, "Тейково": 2500, "Кохма": 2500, "Вичуга": 3000, "Фурманов": 2500, "Родники": 3000, "Приволжск": 2000, "Южа": 4000} },
-            "Владимирская": { fee: 10000, cities: {"Владимир": 10000, "Суздаль": 10000, "Ковров": 10000, "Муром": 17000, "Александров": 10000, "Гусь-Хрустальный": 13500} },
-            "Вологодская": { fee: 9000, cities: {"Вологда": 9000, "Череповец": 15000, "Сокол": 12000} },
-            "Москва и МО": { fee: 15000, cities: {"Москва": 15000, "Химки": 15000, "Балашиха": 15000} }
-        },
-        services: {
-            "Детские шоу": { "Детское шоу (30 мин)": 11250, "Детское шоу (40 мин)": 13750, "Индив. детское шоу": 21250 },
-            "Взрослые шоу": { "Шоу (20 мин)": 17500, "Шоу (30 мин)": 23750, "Шоу (40 мин)": 30000 },
-            "Микромагия": { "Микромагия (30 мин)": 13000, "Микромагия (1 ч)": 20000, "Микромагия (2 ч)": 30000, "Микромагия (3 ч)": 36000 },
-            "Спец-проекты": { "Свадьба (20 мин)": 26250, "Свадьба (30 мин)": 32500, "Корпоратив (20 мин)": 26250, "Корпоратив (30 мин)": 32500, "Юбилей (20 мин)": 23750, "Юбилей (30 мин)": 30000, "Выпускной (20 мин)": 23750, "Выпускной (30 мин)": 30000 },
-            "Концерты": { "Мини-шоу СЕКРЕТ (1 ч)": 150000, "Спектакль СЕКРЕТ (2 ч)": 300000 }
-        },
-        settings: { extraGuest: 80, holidays: {"12-31":2, "01-01":2, "02-23":1.5, "03-08":1.5}, holidayRanges: [{sm:12, sd:15, em:12, ed:30, k:1.5}] },
-        payments: [
-            { title: "Т-БАНК", text: "8 909 276 33 86\nДмитрий Павлович К." }
-        ],
-        links: [
-            { label: "Портфолио", url: "" }
-        ]};
-
-    let DB = {};
-
-    // --- Date helpers ---
-    const isoLocal = (d = new Date()) => {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2,'0');
-        const day = String(d.getDate()).padStart(2,'0');
-        return `${y}-${m}-${day}`;
-    };
-    const parseISODate = (iso) => {
-        if(!iso) return new Date();
-        const parts = String(iso).split('-').map(n => parseInt(n,10));
-        if(parts.length < 3 || parts.some(n => Number.isNaN(n))) return new Date(iso);
-        const [y, m, d] = parts;
-        return new Date(y, (m || 1) - 1, d || 1);
-    };
-    const esc = (v) => String(v ?? '').replace(/[&<>"'`]/g, ch => ({
-        '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;', '`':'&#96;'
-    }[ch]));
-    const copyTextToClipboard = async (text) => {
-        try {
-            if(navigator.clipboard && window.isSecureContext) {
-                await navigator.clipboard.writeText(text);
-                return true;
-            }
-        } catch(e) {}
-        try {
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            ta.setAttribute('readonly','');
-            ta.style.position = 'fixed';
-            ta.style.top = '-9999px';
-            ta.style.left = '-9999px';
-            document.body.appendChild(ta);
-            ta.select();
-            const ok = document.execCommand('copy');
-            document.body.removeChild(ta);
-            return ok;
-        } catch(e) { return false; }
-    };
-    let State = { date: isoLocal(), holidayK: 1, cart: [], bonus: "", discount: 0, serviceQty: 1, taxActive: false };
+    <div class="noise-overlay"></div>
+    <canvas id="bg-canvas"></canvas>
     
-    // UI Helpers
-    const el = (id) => document.getElementById(id);
-    const fmt = (n) => n.toLocaleString('ru-RU') + ' ₽';
-    const parseMoney = (v) => {
-        const s = String(v ?? '').replace(/[^0-9]/g,'');
-        return s ? parseInt(s,10) : 0;
-    };
-    const switchTab = (tab, btnEl) => {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById('view-'+tab).classList.add('active');
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        const btn = btnEl || document.querySelector(`.tab-btn[data-tab="${tab}"]`) || (typeof event !== 'undefined' ? event.currentTarget : null);
-        if(btn && btn.classList) btn.classList.add('active');
-    };
+    <!-- Top Bar -->
+    <header class="w-full max-w-lg p-6 flex justify-between items-center z-10 animate-enter">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500/20 to-transparent border border-amber-500/30 flex items-center justify-center shadow-lg shadow-amber-900/20">
+                <i data-lucide="calculator" class="w-5 h-5 text-amber-500"></i>
+            </div>
+            <div>
+                <h1 class="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-600 tracking-widest font-display">ILLUSIONIST OS</h1>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em]">Smart Calc</p>
+            </div>
+        </div>
+        <button onclick="App.toggleSettings()" class="btn-icon">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+        </button>
+    </header>
 
-    // --- STORAGE ---
-    const Storage = {
-        load: () => {
-            const saved = localStorage.getItem('kostyuk_crm_v10');
-            if (saved) {
-                try { DB = JSON.parse(saved); }
-                catch(e) { DB = JSON.parse(JSON.stringify(DEFAULT_DB)); }
-            } else {
-                DB = JSON.parse(JSON.stringify(DEFAULT_DB));
-            }
-            if(!Array.isArray(DB.payments)) DB.payments = JSON.parse(JSON.stringify(DEFAULT_DB.payments || []));
-            if(!Array.isArray(DB.links)) DB.links = JSON.parse(JSON.stringify(DEFAULT_DB.links || []));
-
-            Admin.render();
-            if(typeof HolidayCfg !== "undefined") HolidayCfg.render();
-            App.init();
-        },
-        save: () => { localStorage.setItem('kostyuk_crm_v10', JSON.stringify(DB)); },
-        reset: () => { if(confirm('Сбросить все настройки и базу?')) { localStorage.removeItem('kostyuk_crm_v10'); location.reload(); } }
-    };
-
-    // --- APP LOGIC ---
-    const App = {
-        init: () => {
-            el('inp-date').value = State.date;
-            // Regions
-            const rSel = el('inp-region'); rSel.innerHTML='<option disabled selected>Выберите</option>';
-            for(let r in DB.travel) rSel.add(new Option(r, r));
-            // Categories
-            const cSel = el('inp-cat'); cSel.innerHTML='<option disabled selected>Выберите</option>';
-            for(let c in DB.services) cSel.add(new Option(c, c));
-            
-            App.updateDate();
-            
-            const p = el('cfg-performer');
-            if(p){
-                p.value = (DB.touchCfg && DB.touchCfg.performer) ? DB.touchCfg.performer : '';
-                p.oninput = () => { if(!DB.touchCfg) DB.touchCfg = { performer: 'Фокусник', depositPercent: 30 }; DB.touchCfg.performer = p.value.trim() || 'Фокусник'; Storage.save(); };
-            }
-            const d = el('cfg-deposit');
-            if(d){
-                d.value = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ? DB.touchCfg.depositPercent : 30;
-                d.oninput = () => { if(!DB.touchCfg) DB.touchCfg = { performer: 'Фокусник', depositPercent: 30 }; DB.touchCfg.depositPercent = Math.max(0, Math.min(100, parseInt(d.value||'30')||30)); Storage.save(); };
-            }
-        },
-        updateDate: () => {
-            const val = el('inp-date').value; if(!val) return;
-            State.date = val; const d = parseISODate(val);
-            el('disp-date').innerText = d.toLocaleDateString('ru-RU', {day:'numeric', month:'short'});
-            el('disp-date').classList.add('filled');
-            const m = d.getMonth()+1, day = d.getDate();
-            const key = `${String(m).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-            let k = 1;
-            if(DB.settings.holidays[key]) k = DB.settings.holidays[key];
-            else {
-                const md = (d.getMonth()+1) * 100 + d.getDate();
-                for(let r of DB.settings.holidayRanges) {
-                    const sm = r.sm || 1, sd = r.sd || 1;
-                    const em = r.em || sm, ed = r.ed || sd;
-                    const start = sm * 100 + sd;
-                    const end = em * 100 + ed;
-                    const inRange = start <= end ? (md >= start && md <= end) : (md >= start || md <= end);
-                    if(inRange) { k = HolidayCfg.parseK(r.k); break; }
-                }
-            }
-            State.holidayK = k;
-            el('badge-holiday').style.display = k > 1 ? 'inline-block' : 'none';
-            el('badge-holiday').innerText = `x${k}`;
-            App.calc();
-        },
-        updateRegion: () => {
-            const r = el('inp-region').value; el('disp-region').innerText=r; el('disp-region').classList.add('filled');
-            const cSel = el('inp-city'); cSel.innerHTML=''; cSel.disabled=false;
-            for(let c in DB.travel[r].cities) cSel.add(new Option(c, c));
-            cSel.add(new Option("Другой", "other")); cSel.value="";
-            el('disp-city').innerText="..."; el('disp-city').classList.remove('filled'); App.calc();
-        },
-        updateCity: () => { const v = el('inp-city').value; el('disp-city').innerText=v==='other'?'Другой':v; el('disp-city').classList.add('filled'); App.calc(); },
-        updateCat: () => {
-            const c = el('inp-cat').value; el('disp-cat').innerText=c; el('disp-cat').classList.add('filled');
-            const sSel = el('inp-svc'); sSel.innerHTML=''; sSel.disabled=false;
-            for(let s in DB.services[c]) sSel.add(new Option(s, s)); sSel.value="";
-            el('disp-svc').innerText="..."; el('disp-svc').classList.remove('filled');
-        },
-        updateEventType: () => { const v=el('inp-event-type').value; el('disp-event-type').innerText=v; el('disp-event-type').classList.add('filled'); },
-        updateStatus: () => { 
-            const s = el('inp-status').value;
-            const names = {'new':'Спросил', 'think':'Думает', 'deposit':'Бронь', 'cancel':'Отказ'};
-            el('disp-status').innerText = names[s]; el('disp-status').classList.add('filled');
-        },
-        changeQty: (d) => { let q=State.serviceQty+d; if(q<1)q=1; State.serviceQty=q; el('svc-qty').innerText=q; },
-        addService: () => {
-            const cat = el('inp-cat').value, svc = el('inp-svc').value;
-            if(!cat || !svc) return alert("Выберите услугу!");
-            State.cart.push({ name: svc, price: DB.services[cat][svc], qty: State.serviceQty });
-            State.serviceQty=1; el('svc-qty').innerText=1;
-            el('disp-svc').innerText="..."; el('disp-svc').classList.remove('filled'); el('inp-svc').value="";
-            App.renderCart(); App.calc();
-        },
-        removeService: (i) => { State.cart.splice(i,1); App.renderCart(); App.calc(); },
-        renderCart: () => {
-            const div = el('cart-list'); div.innerHTML='';
-            State.cart.forEach((it,i) => {
-                const k=State.holidayK, tot=Math.round(it.price*it.qty*k);
-                div.innerHTML += `<div class="cart-item"><div class="cart-info"><div class="cart-name">${it.name} ${it.qty>1?`(x${it.qty})`:''}</div><div class="cart-price">${fmt(tot)}</div></div><div class="btn-remove" onclick="App.removeService(${i})">×</div></div>`;
-            });
-        },
-        updateGuests: () => {
-            const v=el('inp-guests').value;
-            let t="До 50"; if(v==='5000')t="50-100"; if(v==='10000')t="100-200"; if(v==='custom')t="Слайдер";
-            el('slider-wrap').style.display = v==='custom'?'block':'none';
-            el('disp-guests').innerText=t; App.calc();
-        },
-        calc: () => {
-            const k = State.holidayK;
-            let sTot=0; State.cart.forEach(i=> sTot+=i.price*i.qty*k); sTot=Math.round(sTot);
-            State.discount=0; if(State.cart.length>1) { State.discount=Math.round(sTot*0.1); sTot-=State.discount; el('discount-badge').style.display='block'; }
-            else el('discount-badge').style.display='none';
-
-            const reg=el('inp-region').value, cit=el('inp-city').value;
-            let road=0; if(reg&&cit) road = (cit==='other')?DB.travel[reg].fee : DB.travel[reg].cities[cit];
-            const rTot=Math.round(road*(k>1?1.5:1));
-
-            const gV=el('inp-guests').value; let guest=0;
-            if(gV==='5000')guest=5000; if(gV==='10000')guest=10000;
-            if(gV==='custom') { const n=parseInt(el('inp-slider').value); el('slider-val').innerText=n; guest = Math.max(0, (n-200) * DB.settings.extraGuest); }
-            
-            const man = parseMoney(el('inp-manual-price').value);
-            
-            let preTax = sTot+rTot+guest+man;
-            State.taxActive = el('inp-tax').checked;
-            let taxVal = State.taxActive ? Math.round(preTax*0.06) : 0;
-            
-            const total = preTax + taxVal;
-            State.final = { total, sTot, rTot, guest, man, k, taxVal };
-
-            let b = [];
-            if(total>=15000) b.push("🎟️ 2 билета на шоу"); 
-            if(total>=25000) b=["🎩 Персональный фокус","🎟️ 2 билета"]; 
-            if(total>=40000) b=["🔥 Опасный трюк","🎩 Фокус","🎟️ 2 билета"];
-            State.bonusList=b;
-            el('bonus-alert').style.display=b.length>0?'block':'none';
-            el('bonus-alert').innerText = b.length>0 ? b[0]+(b.length>1?" (+ еще)":"") : "";
-            el('total-sum').innerText = fmt(total);
-        },
-        copy: () => {
-            if(!State.final || State.final.total===0) return alert('0 ₽');
-
-            const name = el('inp-client').value.trim() || 'Клиент';
-            const type = el('inp-event-type').value || 'Событие';
-            const phone = el('inp-phone').value || '';
-            const depPct = (DB.touchCfg && typeof DB.touchCfg.depositPercent === 'number') ? DB.touchCfg.depositPercent : 30;
-
-            const dateStr = parseISODate(State.date).toLocaleDateString('ru-RU',{weekday:'short', day:'numeric', month:'long'});
-            let lines = [`Здравствуйте, ${name}!`];
-            lines.push(``);
-            lines.push(`✨ **РАСЧЕТ: ${type.toUpperCase()}** ✨`);
-            lines.push(``);
-            lines.push(`📅 **${dateStr}**`);
-            const cityText = (el('disp-city')?.innerText || el('inp-city')?.value || '').trim();
-            if(cityText) lines.push(`📍 **${cityText}**`);
-            lines.push(``);
-            lines.push(`🎩 **Программа:**`);
-            State.cart.forEach(i => lines.push(`• ${i.name} — ${fmt(Math.round(i.price*i.qty*State.final.k))}`));
-
-            if(State.discount>0) lines.push(`🎁 Скидка 10%: -${fmt(State.discount)}`);
-            if(State.final.rTot>0) lines.push(`🚕 Логистика: ${fmt(State.final.rTot)}`);
-            if(State.final.guest>0) lines.push(`👥 Доплата за гостей: ${fmt(State.final.guest)}`);
-            if(State.final.man>0) lines.push(`🔹 Доп. расходы: ${fmt(State.final.man)}`);
-            if(State.final.taxVal>0) lines.push(`📄 Налог / Документы (6%): ${fmt(State.final.taxVal)}`);
-
-            if(State.bonusList.length>0) { lines.push(``); lines.push(`🎁 **ВАШИ БОНУСЫ:**`); State.bonusList.forEach(b=>lines.push(`✅ ${b}`)); }
-
-            const dep = depPct > 0 ? Math.round(State.final.total * (depPct/100)) : 0;
-            lines.push(``);
-            lines.push(`💰 **ИТОГО: ${fmt(State.final.total)}**`);
-            if(depPct > 0) lines.push(`💳 Задаток (${depPct}%): ${fmt(dep)}`);
-            lines.push(``);
-
-            // Реквизиты
-            if(Array.isArray(DB.payments) && DB.payments.length > 0){
-                lines.push(`📲 **Реквизиты для брони:**`);
-                DB.payments.forEach((p, idx) => {
-                    const title = String(p?.title ?? '').trim();
-                    const text = String(p?.text ?? '').trim();
-                    if(!title && !text) return;
-
-                    if(title) lines.push(`${title}:`);
-                    if(text){
-                        text.split('\n').forEach(line => {
-                            const ln = String(line ?? '').trim();
-                            if(ln) lines.push(ln);
-                        });
-                    }
-                    if(idx !== DB.payments.length - 1) lines.push(``);
-                });
-                lines.push(``);
-            }
-
-            // Ссылки
-            if(Array.isArray(DB.links) && DB.links.length > 0){
-                const list = DB.links
-                    .map(l => ({ label: String(l?.label ?? '').trim(), url: String(l?.url ?? '').trim() }))
-                    .filter(l => l.url.length > 0);
-
-                if(list.length > 0){
-                    lines.push(`🔗 **Ссылки:**`);
-                    list.forEach(l => lines.push(`• ${l.label || 'Ссылка'}: ${l.url}`));
-                    lines.push(``);
-                }
-            }
-
-            lines.push(`⚠️ _Дата и время бронируются за Вами только после внесения задатка._`);
-
-            copyTextToClipboard(lines.join('\n')).then((ok)=> {
-                if(ok){
-                    el('toast').innerText = 'Скопировано!';
-                    el('toast').classList.add('show');
-                    setTimeout(()=>el('toast').classList.remove('show'), 2000);
-                } else {
-                    alert('Не удалось скопировать. Попробуйте выделить текст вручную.');
-                }
-            });
-        }
-    };
-
-    // --- ADMIN ---
-    const Admin = {
-        render: () => {
-            const tDiv = el('settings-travel-list'); tDiv.innerHTML = '';
-            for (let r in DB.travel) {
-                const cities = DB.travel[r].cities; let cHtml = '';
-                for(let c in cities) { cHtml += `<div class="set-row"><input class="set-input-name" value="${c}" onchange="Admin.renameCity('${r}','${c}',this.value)"><input type="number" class="set-input-price" value="${cities[c]}" onchange="Admin.setCityPrice('${r}','${c}',this.value)"><div class="btn-del-item" onclick="Admin.delCity('${r}','${c}')">×</div></div>`; }
-                tDiv.innerHTML += `<div class="settings-block"><div class="settings-header" onclick="Admin.toggleSection(this)"><span>${r}</span><span class="toggle-icon">▼</span></div><div class="settings-content"><div class="set-row" style="background:#2C2C2E;"><span style="font-size:15px; color:#aaa;">Базовая цена:</span><input type="number" class="set-input-price" value="${DB.travel[r].fee}" onchange="Admin.setRegionFee('${r}',this.value)"></div>${cHtml}<div class="btn-add-item" onclick="Admin.addCity('${r}')">+ Город</div><div class="btn-del-item" style="width:100%; font-size:14px; padding:10px;" onclick="Admin.delRegion('${r}')">Удалить регион</div></div></div>`;
-            }
-            const sDiv = el('settings-services-list'); sDiv.innerHTML = '';
-            for (let c in DB.services) {
-                let sHtml = '';
-                for(let s in DB.services[c]) { sHtml += `<div class="set-row"><input class="set-input-name" value="${s}" onchange="Admin.renameSvc('${c}','${s}',this.value)"><input type="number" class="set-input-price" value="${DB.services[c][s]}" onchange="Admin.setSvcPrice('${c}','${s}',this.value)"><div class="btn-del-item" onclick="Admin.delSvc('${c}','${s}')">×</div></div>`; }
-                sDiv.innerHTML += `<div class="settings-block"><div class="settings-header" onclick="Admin.toggleSection(this)"><span>${c}</span><span class="toggle-icon">▼</span></div><div class="settings-content">${sHtml}<div class="btn-add-item" onclick="Admin.addSvc('${c}')">+ Услуга</div><div class="btn-del-item" style="width:100%; font-size:14px; padding:10px;" onclick="Admin.delCat('${c}')">Удалить категорию</div></div></div>`;
-            }
-            // Payments
-            const pDiv = el('settings-payments-list');
-            if(pDiv){
-                pDiv.innerHTML = '';
-                const list = Array.isArray(DB.payments) ? DB.payments : [];
-                if(list.length === 0){
-                    pDiv.innerHTML = `<div style="padding:14px 16px; color:#888; font-size:13px;">Пусто — добавьте реквизиты, чтобы они автоматически попадали в КП.</div>`;
-                } else {
-                    list.forEach((p, idx) => {
-                        const title = esc(p?.title ?? '');
-                        const text = esc(p?.text ?? '');
-                        pDiv.innerHTML += `
-                            <div class="set-row" style="flex-direction:column; align-items:stretch;">
-                                <div style="display:flex; gap:10px; align-items:center;">
-                                    <input class="set-input-name" placeholder="Заголовок (например: СБП, Тинькофф, Наличные)" value="${title}" oninput="Admin.setPaymentTitle(${idx}, this.value)">
-                                    <div class="btn-del-item" onclick="Admin.delPayment(${idx})">×</div>
-                                </div>
-                                <textarea class="edit-input" style="width:100%; margin-top:8px; min-height:78px; font-size:14px; resize:vertical;"
-                                    placeholder="Любые реквизиты/инструкции. Можно несколько строк." oninput="Admin.setPaymentText(${idx}, this.value)">${text}</textarea>
-                            </div>`;
-                    });
-                }
-            }
-            // Links
-            const lDiv = el('settings-links-list');
-            if(lDiv){
-                lDiv.innerHTML = '';
-                const list = Array.isArray(DB.links) ? DB.links : [];
-                if(list.length === 0){
-                    lDiv.innerHTML = `<div style="padding:14px 16px; color:#888; font-size:13px;">Пока нет ссылок — добавьте портфолио, соцсети, отзывы, сайт.</div>`;
-                } else {
-                    list.forEach((l, idx) => {
-                        const label = esc(l?.label ?? '');
-                        const url = esc(l?.url ?? '');
-                        lDiv.innerHTML += `
-                            <div class="set-row">
-                                <input class="set-input-name" style="flex:1" placeholder="Название (например: Instagram)" value="${label}" oninput="Admin.setLinkLabel(${idx}, this.value)">
-                                <input class="set-input-name" style="flex:2; font-size:14px;" placeholder="Ссылка (https://...)" value="${url}" oninput="Admin.setLinkUrl(${idx}, this.value)">
-                                <div class="btn-del-item" onclick="Admin.delLink(${idx})">×</div>
-                            </div>`;
-                    });
-                }
-            }
-        },
-        toggleSection: (el) => { const c = el.nextElementSibling; c.classList.toggle('open'); el.querySelector('.toggle-icon').style.transform = c.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)'; },
-        addRegion: () => { const n = prompt("Название региона:"); if(n && !DB.travel[n]) { DB.travel[n]={fee:0, cities:{}}; Storage.save(); Admin.render(); } },
-        delRegion: (r) => { if(confirm(`Удалить ${r}?`)) { delete DB.travel[r]; Storage.save(); Admin.render(); App.init(); } },
-        setRegionFee: (r,v) => { DB.travel[r].fee=parseInt(v); Storage.save(); },
-        addCity: (r) => { const n = prompt("Название города:"); if(n) { DB.travel[r].cities[n]=0; Storage.save(); Admin.render(); App.init(); } },
-        delCity: (r,c) => { delete DB.travel[r].cities[c]; Storage.save(); Admin.render(); App.init(); },
-        renameCity: (r,oldC,newC) => { if(oldC===newC || !newC) return; const price = DB.travel[r].cities[oldC]; delete DB.travel[r].cities[oldC]; DB.travel[r].cities[newC] = price; Storage.save(); App.init(); },
-        setCityPrice: (r,c,v) => { DB.travel[r].cities[c]=parseInt(v); Storage.save(); },
-        addCategory: () => { const n = prompt("Название категории:"); if(n && !DB.services[n]) { DB.services[n]={}; Storage.save(); Admin.render(); App.init(); } },
-        delCat: (c) => { if(confirm(`Удалить ${c}?`)) { delete DB.services[c]; Storage.save(); Admin.render(); App.init(); } },
-        addSvc: (c) => { const n = prompt("Название услуги:"); if(n) { DB.services[c][n]=0; Storage.save(); Admin.render(); App.init(); } },
-        delSvc: (c,s) => { delete DB.services[c][s]; Storage.save(); Admin.render(); App.init(); },
-        renameSvc: (c,oldS,newS) => { if(oldS===newS || !newS) return; const price = DB.services[c][oldS]; delete DB.services[c][oldS]; DB.services[c][newS] = price; Storage.save(); App.init(); },
-        setSvcPrice: (c,s,v) => { DB.services[c][s]=parseInt(v); Storage.save(); },
+    <!-- Main Content -->
+    <main class="w-full max-w-lg px-4 pb-24 z-10 flex-1 overflow-y-auto no-scrollbar">
         
-        // Payments / Links
-        addPayment: () => {
-            if(!Array.isArray(DB.payments)) DB.payments = [];
-            DB.payments.push({ title: "Новый способ", text: "" });
-            Storage.save(); Admin.render();
-        },
-        delPayment: (idx) => { if(!Array.isArray(DB.payments)) return; DB.payments.splice(idx,1); Storage.save(); Admin.render(); },
-        setPaymentTitle: (idx, v) => { if(!Array.isArray(DB.payments)) return; DB.payments[idx].title = v; Storage.save(); },
-        setPaymentText: (idx, v) => { if(!Array.isArray(DB.payments)) return; DB.payments[idx].text = v; Storage.save(); },
+        <!-- CALCULATOR VIEW -->
+        <div id="view-calc" class="view-section active space-y-4 animate-enter" style="animation-delay: 0.1s;">
+            
+            <!-- Card: Client Info -->
+            <div class="glass-panel p-5 space-y-4">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
+                    <i data-lucide="user" class="w-3 h-3 text-amber-500"></i> Клиент
+                </h3>
+                
+                <div class="input-group flex items-center justify-between">
+                    <span class="label-text">Имя</span>
+                    <input type="text" id="inp-client" class="magic-input" placeholder="Введите имя...">
+                </div>
+                
+                <div class="input-group flex items-center justify-between">
+                    <span class="label-text">Телефон</span>
+                    <input type="tel" id="inp-phone" class="magic-input" placeholder="8 (999)...">
+                </div>
 
-        addLink: () => {
-            if(!Array.isArray(DB.links)) DB.links = [];
-            DB.links.push({ label: "Ссылка", url: "" });
-            Storage.save(); Admin.render();
-        },
-        delLink: (idx) => { if(!Array.isArray(DB.links)) return; DB.links.splice(idx,1); Storage.save(); Admin.render(); },
-        setLinkLabel: (idx, v) => { if(!Array.isArray(DB.links)) return; DB.links[idx].label = v; Storage.save(); },
-        setLinkUrl: (idx, v) => { if(!Array.isArray(DB.links)) return; DB.links[idx].url = v; Storage.save(); },
+                <div class="input-group flex items-center justify-between">
+                    <span class="label-text">Событие</span>
+                    <select id="inp-event-type" class="magic-select text-right">
+                        <option value="Свадьба">Свадьба</option>
+                        <option value="Корпоратив">Корпоратив</option>
+                        <option value="Юбилей">Юбилей</option>
+                        <option value="Детский праздник">Детский праздник</option>
+                        <option value="Частное">Частное</option>
+                        <option value="Выпускной">Выпускной</option>
+                    </select>
+                </div>
+            </div>
 
-        resetAll: () => Storage.reset()
-    };
+            <!-- Card: Logistics -->
+            <div class="glass-panel p-5 space-y-4">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
+                    <i data-lucide="map-pin" class="w-3 h-3 text-amber-500"></i> Логистика
+                </h3>
 
-    // --- HOLIDAYS ---
-    const HolidayCfg = {
-        ensure: () => {
-            if(!DB.settings) DB.settings = {};
-            if(!DB.settings.holidays || typeof DB.settings.holidays !== 'object') {
-                DB.settings.holidays = JSON.parse(JSON.stringify(DEFAULT_DB.settings.holidays || {}));
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="input-group flex flex-col justify-center">
+                        <span class="label-text mb-1">Дата</span>
+                        <input type="date" id="inp-date" class="magic-input text-left" style="padding-top:0; padding-bottom:0;" onchange="App.updateDate()">
+                    </div>
+                    <div class="input-group flex flex-col justify-center">
+                        <span class="label-text mb-1">Время</span>
+                        <input type="time" id="inp-time" class="magic-input text-left" style="padding-top:0; padding-bottom:0;" value="18:00">
+                    </div>
+                </div>
+                
+                <div id="holiday-alert" class="hidden bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs px-3 py-2 rounded-lg text-center font-bold">
+                    🔥 Праздничный тариф (x<span id="holiday-k">1</span>)
+                </div>
+
+                <div class="input-group flex items-center justify-between">
+                    <span class="label-text">Регион</span>
+                    <select id="inp-region" class="magic-select" onchange="App.updateRegion()"></select>
+                </div>
+
+                <div class="input-group flex items-center justify-between">
+                    <span class="label-text">Город</span>
+                    <select id="inp-city" class="magic-select" disabled onchange="App.calc()"></select>
+                </div>
+            </div>
+
+            <!-- Card: Services -->
+            <div class="glass-panel p-5 space-y-4">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
+                    <i data-lucide="sparkles" class="w-3 h-3 text-amber-500"></i> Услуги
+                </h3>
+
+                <div class="input-group flex items-center justify-between">
+                    <span class="label-text">Категория</span>
+                    <select id="inp-cat" class="magic-select" onchange="App.updateCat()"></select>
+                </div>
+
+                <div class="flex gap-2">
+                    <div class="input-group flex-1 flex items-center justify-between">
+                        <select id="inp-svc" class="magic-select text-left" disabled></select>
+                    </div>
+                    <div class="flex items-center bg-black/30 rounded-lg px-2 border border-white/10">
+                         <button onclick="App.changeQty(-1)" class="w-8 h-full text-slate-400 hover:text-white font-bold text-lg">-</button>
+                         <span id="svc-qty" class="w-6 text-center text-sm font-bold">1</span>
+                         <button onclick="App.changeQty(1)" class="w-8 h-full text-amber-400 hover:text-white font-bold text-lg">+</button>
+                    </div>
+                </div>
+
+                <button onclick="App.addService()" class="w-full py-3 rounded-xl border border-amber-500/30 text-amber-500 font-bold hover:bg-amber-500/10 transition text-sm flex items-center justify-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Добавить в смету
+                </button>
+
+                <!-- Cart List -->
+                <div id="cart-list" class="space-y-2 pt-2"></div>
+            </div>
+
+            <!-- Card: Extras -->
+            <div class="glass-panel p-5 space-y-4">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
+                    <i data-lucide="wallet" class="w-3 h-3 text-amber-500"></i> Дополнительно
+                </h3>
+                
+                <div class="flex gap-3">
+                    <div class="input-group flex-1">
+                        <input id="inp-manual-name" class="magic-input text-left" placeholder="Доп. расход (напр. такси)">
+                    </div>
+                    <div class="input-group w-24">
+                        <input id="inp-manual-price" type="number" class="magic-input" placeholder="0 ₽" oninput="App.calc()">
+                    </div>
+                </div>
+
+                <div class="input-group flex items-center justify-between">
+                    <span class="label-text">Гости</span>
+                    <select id="inp-guests" class="magic-select" onchange="App.calc()">
+                        <option value="0">До 50 человек (0₽)</option>
+                        <option value="5000">51–100 человек (+5k)</option>
+                        <option value="10000">101–200 человек (+10k)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Total Panel -->
+            <div class="glass-panel p-6 border-amber-500/20 shadow-[0_0_30px_rgba(245,158,11,0.1)] relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                    <i data-lucide="banknote" class="w-24 h-24"></i>
+                </div>
+
+                <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+                    <span class="text-sm font-medium text-slate-300">Договор (+6%)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="inp-tax" onchange="App.calc()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div id="discount-badge" class="hidden mb-4 text-center">
+                    <span class="inline-block bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                        ✨ Скидка за объем 10%
+                    </span>
+                </div>
+
+                <div class="text-center mb-6">
+                    <div class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-2">Итоговая смета</div>
+                    <div id="total-sum" class="text-4xl md:text-5xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-br from-amber-300 to-amber-600">0 ₽</div>
+                </div>
+
+                <button onclick="App.copyQuote()" class="btn-gold w-full py-4 rounded-xl text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Сформировать КП
+                </button>
+            </div>
+        </div>
+
+
+        <!-- SETTINGS VIEW (Overlay) -->
+        <div id="view-settings" class="modal-backdrop">
+            <div class="modal-content glass-panel p-0 animate-enter flex flex-col h-full">
+                <!-- Modal Header -->
+                <div class="p-6 pb-2 shrink-0">
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-xl font-display text-white">Настройки</h2>
+                        <button onclick="App.toggleSettings()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+                    </div>
+                    <p class="text-xs text-slate-500">Настройка цен, городов и услуг</p>
+                </div>
+
+                <!-- Modal Body (Scrollable) -->
+                <div class="p-6 pt-2 flex-1 overflow-y-auto space-y-6">
+                    
+                    <!-- Config Section -->
+                    <div class="admin-section">
+                        <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Профиль</h4>
+                        <div class="space-y-3">
+                             <div class="input-group">
+                                 <span class="label-text block mb-1">Имя артиста</span>
+                                 <input id="cfg-performer" class="magic-input text-left" placeholder="Дмитрий Костюк">
+                             </div>
+                             <div class="input-group flex justify-between items-center">
+                                 <span class="label-text">Задаток (%)</span>
+                                 <input id="cfg-deposit" type="number" class="magic-input w-20" placeholder="30">
+                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Logistics Editor -->
+                    <div class="admin-section">
+                        <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Логистика</h4>
+                        <div id="settings-travel-list" class="space-y-2"></div>
+                        <button onclick="Admin.addRegion()" class="btn-add-mini mt-2">+ Добавить регион</button>
+                    </div>
+
+                    <!-- Services Editor -->
+                    <div class="admin-section">
+                        <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Услуги</h4>
+                        <div id="settings-services-list" class="space-y-2"></div>
+                        <button onclick="Admin.addCategory()" class="btn-add-mini mt-2">+ Добавить категорию</button>
+                    </div>
+
+                    <!-- Holidays Editor -->
+                    <div class="admin-section">
+                        <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Праздничные тарифы</h4>
+                        <p class="text-[10px] text-slate-500 mb-2">Даты (ММ-ДД) или диапазоны. К = множитель цены.</p>
+                        
+                        <div id="settings-holidays-list" class="space-y-1 mb-3"></div>
+                        <button onclick="Admin.addHoliday()" class="btn-add-mini mb-4">+ Добавить дату</button>
+
+                        <div id="settings-ranges-list" class="space-y-1 mb-2"></div>
+                        <button onclick="Admin.addRange()" class="btn-add-mini">+ Добавить период</button>
+                    </div>
+
+                     <!-- Quote Details -->
+                     <div class="admin-section">
+                        <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Реквизиты и Ссылки</h4>
+                        <div id="settings-payments-list" class="space-y-2 mb-4"></div>
+                        <button onclick="Admin.addPayment()" class="btn-add-mini mb-4">+ Добавить реквизиты</button>
+
+                        <div id="settings-links-list" class="space-y-2"></div>
+                        <button onclick="Admin.addLink()" class="btn-add-mini mt-2">+ Добавить ссылку</button>
+                    </div>
+
+                    <!-- Reset -->
+                    <div class="pt-4">
+                        <button onclick="Admin.reset()" class="w-full py-3 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 font-bold text-xs uppercase transition">Сброс базы данных</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-slate-900 border border-amber-500/30 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 -translate-y-4 pointer-events-none z-50">
+        <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+        <span id="toast-msg" class="text-sm font-bold">Скопировано!</span>
+    </div>
+
+    <script>
+        // --- DEFAULT DB STRUCTURE ---
+        const DEFAULT_DB = {
+            travel: {
+                "Ярославская": { fee: 1000, cities: {"Ярославль": 0, "Рыбинск": 2000, "Тутаев": 2000, "Углич": 2000, "Ростов": 2000, "Переславль-Залесский": 2000, "Гаврилов-Ям": 2000, "Данилов": 2000, "Пошехонье": 4000, "Мышкин": 2000, "Любим": 2000} },
+                "Костромская": { fee: 3000, cities: {"Кострома": 2000, "Волгореченск": 2000, "Буй": 3000, "Нерехта": 2000, "Шарья": 6000, "Мантурово": 5500, "Галич": 3500} },
+                "Ивановская": { fee: 5000, cities: {"Иваново": 2000, "Плес": 3000, "Кинешма": 3500, "Шуя": 3000, "Тейково": 2500, "Кохма": 2500, "Вичуга": 3000, "Фурманов": 2500, "Родники": 3000, "Приволжск": 2000, "Южа": 4000} },
+                "Владимирская": { fee: 10000, cities: {"Владимир": 10000, "Суздаль": 10000, "Ковров": 10000, "Муром": 17000, "Александров": 10000, "Гусь-Хрустальный": 13500} },
+                "Вологодская": { fee: 9000, cities: {"Вологда": 9000, "Череповец": 15000, "Сокол": 12000} },
+                "Москва и МО": { fee: 15000, cities: {"Москва": 15000, "Химки": 15000, "Балашиха": 15000} }
+            },
+            services: {
+                "Детские шоу": { "Детское шоу (30 мин)": 11250, "Детское шоу (40 мин)": 13750, "Индив. детское шоу": 21250 },
+                "Взрослые шоу": { "Шоу (20 мин)": 17500, "Шоу (30 мин)": 23750, "Шоу (40 мин)": 30000 },
+                "Микромагия": { "Микромагия (30 мин)": 13000, "Микромагия (1 ч)": 20000, "Микромагия (2 ч)": 30000, "Микромагия (3 ч)": 36000 },
+                "Спец-проекты": { "Свадьба (20 мин)": 26250, "Свадьба (30 мин)": 32500, "Корпоратив (20 мин)": 26250, "Корпоратив (30 мин)": 32500, "Юбилей (20 мин)": 23750, "Юбилей (30 мин)": 30000, "Выпускной (20 мин)": 23750, "Выпускной (30 мин)": 30000 },
+                "Концерты": { "Мини-шоу СЕКРЕТ (1 ч)": 150000, "Спектакль СЕКРЕТ (2 ч)": 300000 }
+            },
+            holidays: {"12-31": 2.0, "01-01": 2.0, "02-23": 1.5, "03-08": 1.5},
+            holidayRanges: [{sm:12, sd:15, em:12, ed:30, k:1.5}],
+            payments: [{ title: "Т-Банк", text: "8 909 276 33 86\nДмитрий Павлович К." }],
+            links: [{ label: "Портфолио", url: "" }],
+            config: { performer: "Illusionist", deposit: 30 }
+        };
+
+        let DB = {};
+        let State = { date: new Date().toISOString().split('T')[0], cart: [], serviceQty: 1, holidayK: 1 };
+
+        // --- APP LOGIC ---
+        const App = {
+            init: () => {
+                Storage.load();
+                App.renderParticles();
+                App.updateUI();
+                
+                // Bind Config Inputs
+                const pInp = document.getElementById('cfg-performer');
+                if(pInp) {
+                    pInp.value = DB.config.performer;
+                    pInp.oninput = () => { DB.config.performer = pInp.value; Storage.save(); };
+                }
+                const dInp = document.getElementById('cfg-deposit');
+                if(dInp) {
+                    dInp.value = DB.config.deposit;
+                    dInp.oninput = () => { DB.config.deposit = parseInt(dInp.value)||30; Storage.save(); };
+                }
+
+                document.getElementById('inp-date').value = State.date;
+                App.updateDate();
+                lucide.createIcons();
+            },
+
+            updateUI: () => {
+                // Populate Regions
+                const rSel = document.getElementById('inp-region');
+                const currentR = rSel.value;
+                rSel.innerHTML = '<option disabled selected>Выберите...</option>';
+                for(let r in DB.travel) rSel.add(new Option(r, r));
+                if(currentR && DB.travel[currentR]) rSel.value = currentR;
+
+                // Populate Categories
+                const cSel = document.getElementById('inp-cat');
+                const currentC = cSel.value;
+                cSel.innerHTML = '<option disabled selected>Выберите...</option>';
+                for(let c in DB.services) cSel.add(new Option(c, c));
+                if(currentC && DB.services[currentC]) cSel.value = currentC;
+            },
+
+            updateDate: () => {
+                const val = document.getElementById('inp-date').value;
+                if(!val) return;
+                State.date = val;
+                
+                const [y,m,d] = val.split('-').map(Number);
+                const key = `${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                
+                let k = DB.holidays[key] || 1;
+                
+                // Check Ranges if not exact date match
+                if (k === 1 && DB.holidayRanges) {
+                    const md = m * 100 + d;
+                    for(let r of DB.holidayRanges) {
+                        const start = r.sm * 100 + r.sd;
+                        const end = r.em * 100 + r.ed;
+                        const inRange = start <= end ? (md >= start && md <= end) : (md >= start || md <= end);
+                        if(inRange) { k = r.k; break; }
+                    }
+                }
+                
+                State.holidayK = k;
+                const badge = document.getElementById('holiday-alert');
+                const kSpan = document.getElementById('holiday-k');
+                
+                if(k > 1) {
+                    badge.classList.remove('hidden');
+                    kSpan.innerText = k;
+                } else {
+                    badge.classList.add('hidden');
+                }
+                App.calc();
+            },
+
+            updateRegion: () => {
+                const r = document.getElementById('inp-region').value;
+                const cSel = document.getElementById('inp-city');
+                cSel.innerHTML = '';
+                cSel.disabled = false;
+                
+                if(DB.travel[r]) {
+                    for(let c in DB.travel[r].cities) cSel.add(new Option(c, c));
+                    cSel.add(new Option("Другой", "other"));
+                }
+                App.calc();
+            },
+
+            updateCat: () => {
+                const c = document.getElementById('inp-cat').value;
+                const sSel = document.getElementById('inp-svc');
+                sSel.innerHTML = '';
+                sSel.disabled = false;
+                
+                if(DB.services[c]) {
+                    for(let s in DB.services[c]) sSel.add(new Option(s, s));
+                }
+            },
+
+            changeQty: (delta) => {
+                let n = State.serviceQty + delta;
+                if(n < 1) n = 1;
+                State.serviceQty = n;
+                document.getElementById('svc-qty').innerText = n;
+            },
+
+            addService: () => {
+                const cat = document.getElementById('inp-cat').value;
+                const svc = document.getElementById('inp-svc').value;
+                if(!cat || !svc) return App.showToast('Выберите услугу!');
+                
+                const basePrice = DB.services[cat][svc];
+                State.cart.push({ name: svc, price: basePrice, qty: State.serviceQty });
+                
+                State.serviceQty = 1;
+                document.getElementById('svc-qty').innerText = 1;
+                
+                App.renderCart();
+                App.calc();
+                App.showToast('Услуга добавлена');
+            },
+
+            removeService: (idx) => {
+                State.cart.splice(idx, 1);
+                App.renderCart();
+                App.calc();
+            },
+
+            renderCart: () => {
+                const list = document.getElementById('cart-list');
+                list.innerHTML = '';
+                
+                State.cart.forEach((item, idx) => {
+                    const total = item.price * item.qty * State.holidayK;
+                    list.innerHTML += `
+                        <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5 animate-enter">
+                            <div>
+                                <div class="text-sm font-medium text-white">${item.name} ${item.qty > 1 ? `<span class="text-amber-500 text-xs">x${item.qty}</span>` : ''}</div>
+                                <div class="text-xs text-slate-400 font-mono">${item.price.toLocaleString()} ₽</div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="font-bold text-amber-400 text-sm font-mono">${total.toLocaleString()} ₽</span>
+                                <button onclick="App.removeService(${idx})" class="text-slate-600 hover:text-red-400"><i data-lucide="x" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+                lucide.createIcons();
+            },
+
+            calc: () => {
+                const k = State.holidayK;
+                let sTot = 0;
+                State.cart.forEach(i => sTot += i.price * i.qty * k);
+                
+                let discount = 0;
+                if(State.cart.length > 1) {
+                    discount = Math.round(sTot * 0.1);
+                    document.getElementById('discount-badge').classList.remove('hidden');
+                } else {
+                    document.getElementById('discount-badge').classList.add('hidden');
+                }
+                sTot -= discount;
+
+                const reg = document.getElementById('inp-region').value;
+                const cit = document.getElementById('inp-city').value;
+                let travel = 0;
+                if(reg && cit && DB.travel[reg]) {
+                    const base = cit === 'other' ? DB.travel[reg].fee : DB.travel[reg].cities[cit];
+                    travel = Math.round(base * (k > 1 ? 1.5 : 1)); 
+                }
+
+                const manPrice = parseInt(document.getElementById('inp-manual-price').value) || 0;
+                const guestPrice = parseInt(document.getElementById('inp-guests').value) || 0;
+
+                let preTax = sTot + travel + manPrice + guestPrice;
+                const useTax = document.getElementById('inp-tax').checked;
+                const tax = useTax ? Math.round(preTax * 0.06) : 0;
+                
+                State.finalTotal = preTax + tax;
+                State.finalDetails = { sTot, discount, travel, manPrice, guestPrice, tax, k };
+
+                document.getElementById('total-sum').innerText = State.finalTotal.toLocaleString() + ' ₽';
+            },
+
+            copyQuote: () => {
+                if(!State.finalTotal) return App.showToast('Сумма 0 ₽');
+                
+                const client = document.getElementById('inp-client').value || 'Клиент';
+                const type = document.getElementById('inp-event-type').value;
+                const dateRaw = document.getElementById('inp-date').value;
+                const dateFmt = new Date(dateRaw).toLocaleDateString('ru-RU', {day:'numeric', month:'long', weekday:'short'});
+                const time = document.getElementById('inp-time').value;
+                const city = document.getElementById('inp-city').value || '';
+                const depPct = DB.config.deposit || 30;
+                const deposit = Math.round(State.finalTotal * (depPct/100));
+                
+                let text = `Здравствуйте, ${client}!\n\n`;
+                text += `✨ **РАСЧЕТ: ${type.toUpperCase()}** ✨\n`;
+                text += `📅 ${dateFmt} / ${time}\n`;
+                if(city && city!=='other') text += `📍 ${city}\n`;
+                text += `\n🎩 **Программа:**\n`;
+                
+                State.cart.forEach(i => {
+                    const price = Math.round(i.price * i.qty * State.finalDetails.k);
+                    text += `• ${i.name} — ${price.toLocaleString()} ₽\n`;
+                });
+
+                if(State.finalDetails.discount > 0) text += `🎁 Скидка 10%: -${State.finalDetails.discount.toLocaleString()} ₽\n`;
+                if(State.finalDetails.travel > 0) text += `🚕 Логистика: ${State.finalDetails.travel.toLocaleString()} ₽\n`;
+                if(State.finalDetails.guestPrice > 0) text += `👥 Доплата за гостей: ${State.finalDetails.guestPrice.toLocaleString()} ₽\n`;
+                if(State.finalDetails.manPrice > 0) text += `🔹 Доп: ${State.finalDetails.manPrice.toLocaleString()} ₽\n`;
+                if(State.finalDetails.tax > 0) text += `📄 Договор (+6%): ${State.finalDetails.tax.toLocaleString()} ₽\n`;
+
+                text += `\n💰 **ИТОГО: ${State.finalTotal.toLocaleString()} ₽**\n`;
+                text += `💳 Бронь даты (${depPct}%): ${deposit.toLocaleString()} ₽\n`;
+
+                if(DB.payments && DB.payments.length > 0) {
+                    text += `\n📲 **Реквизиты:**\n`;
+                    DB.payments.forEach(p => text += `${p.title}: ${p.text}\n`);
+                }
+
+                if(DB.links && DB.links.length > 0) {
+                    text += `\n🔗 **Ссылки:**\n`;
+                    DB.links.forEach(l => text += `• ${l.label}: ${l.url}\n`);
+                }
+
+                text += `\nВаш ${DB.config.performer}`;
+
+                navigator.clipboard.writeText(text).then(() => {
+                    App.showToast('КП скопировано!');
+                });
+            },
+
+            toggleSettings: () => {
+                const modal = document.getElementById('view-settings');
+                const isOpen = modal.classList.contains('active');
+                if(!isOpen) {
+                     Admin.render();
+                     modal.classList.add('active');
+                } else {
+                     modal.classList.remove('active');
+                     App.updateUI(); // Refresh main view dropdowns
+                }
+            },
+
+            showToast: (msg) => {
+                const t = document.getElementById('toast');
+                document.getElementById('toast-msg').innerText = msg;
+                t.classList.remove('opacity-0', '-translate-y-4');
+                t.classList.add('opacity-100', 'translate-y-0');
+                setTimeout(() => {
+                    t.classList.add('opacity-0', '-translate-y-4');
+                    t.classList.remove('opacity-100', 'translate-y-0');
+                }, 2000);
+            },
+
+            renderParticles: () => {
+                const canvas = document.getElementById('bg-canvas');
+                const ctx = canvas.getContext('2d');
+                let particles = [];
+                const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+                window.addEventListener('resize', resize);
+                resize();
+                for(let i=0; i<40; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+                        r: Math.random() * 2, d: Math.random() * Math.PI * 2,
+                        s: Math.random() * 0.5 + 0.1, c: Math.random() > 0.5 ? '#f59e0b' : '#64748b'
+                    });
+                }
+                function animate() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    particles.forEach(p => {
+                        p.x += Math.cos(p.d) * p.s; p.y += Math.sin(p.d) * p.s;
+                        if(p.x < 0) p.x = canvas.width; if(p.x > canvas.width) p.x = 0;
+                        if(p.y < 0) p.y = canvas.height; if(p.y > canvas.height) p.y = 0;
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                        ctx.fillStyle = p.c; ctx.globalAlpha = 0.3; ctx.fill();
+                    });
+                    requestAnimationFrame(animate);
+                }
+                animate();
             }
-            if(!Array.isArray(DB.settings.holidayRanges)) {
-                DB.settings.holidayRanges = JSON.parse(JSON.stringify(DEFAULT_DB.settings.holidayRanges || []));
+        };
+
+        const Admin = {
+            render: () => {
+                // LOGISTICS
+                const tDiv = document.getElementById('settings-travel-list');
+                tDiv.innerHTML = '';
+                for (let r in DB.travel) {
+                    const cities = DB.travel[r].cities;
+                    let cHtml = '';
+                    for(let c in cities) {
+                        cHtml += `
+                        <div class="edit-row ml-4">
+                            <input class="edit-input" value="${c}" onchange="Admin.renameCity('${r}','${c}',this.value)">
+                            <input type="number" class="edit-input w-24 text-right" value="${cities[c]}" onchange="Admin.setCityPrice('${r}','${c}',this.value)">
+                            <i onclick="Admin.delCity('${r}','${c}')" data-lucide="x" class="btn-del-mini w-4 h-4"></i>
+                        </div>`;
+                    }
+                    tDiv.innerHTML += `
+                    <div class="bg-white/5 rounded-lg p-3 mb-2">
+                        <div class="admin-header" onclick="Admin.toggleSection(this)">
+                            <span class="font-bold text-sm text-amber-500">${r}</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 transition-transform"></i>
+                        </div>
+                        <div class="admin-content">
+                             <div class="edit-row mb-3 pb-3 border-b border-white/5">
+                                <span class="text-xs text-slate-400 w-full">База:</span>
+                                <input type="number" class="edit-input w-24 text-right" value="${DB.travel[r].fee}" onchange="Admin.setRegionFee('${r}',this.value)">
+                            </div>
+                            ${cHtml}
+                            <button onclick="Admin.addCity('${r}')" class="btn-add-mini mt-1 text-xs">+ Город</button>
+                            <button onclick="Admin.delRegion('${r}')" class="text-[10px] text-red-400 mt-3 w-full text-right opacity-50 hover:opacity-100">Удалить регион</button>
+                        </div>
+                    </div>`;
+                }
+
+                // SERVICES
+                const sDiv = document.getElementById('settings-services-list');
+                sDiv.innerHTML = '';
+                for (let c in DB.services) {
+                    let sHtml = '';
+                    for(let s in DB.services[c]) {
+                        sHtml += `
+                        <div class="edit-row ml-4">
+                            <input class="edit-input" value="${s}" onchange="Admin.renameSvc('${c}','${s}',this.value)">
+                            <input type="number" class="edit-input w-24 text-right" value="${DB.services[c][s]}" onchange="Admin.setSvcPrice('${c}','${s}',this.value)">
+                            <i onclick="Admin.delSvc('${c}','${s}')" data-lucide="x" class="btn-del-mini w-4 h-4"></i>
+                        </div>`;
+                    }
+                    sDiv.innerHTML += `
+                    <div class="bg-white/5 rounded-lg p-3 mb-2">
+                        <div class="admin-header" onclick="Admin.toggleSection(this)">
+                            <span class="font-bold text-sm text-purple-400">${c}</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 transition-transform"></i>
+                        </div>
+                        <div class="admin-content">
+                            ${sHtml}
+                            <button onclick="Admin.addSvc('${c}')" class="btn-add-mini mt-1 text-xs">+ Услуга</button>
+                            <button onclick="Admin.delCat('${c}')" class="text-[10px] text-red-400 mt-3 w-full text-right opacity-50 hover:opacity-100">Удалить категорию</button>
+                        </div>
+                    </div>`;
+                }
+
+                // HOLIDAYS
+                const hDiv = document.getElementById('settings-holidays-list');
+                hDiv.innerHTML = '';
+                Object.keys(DB.holidays).sort().forEach(key => {
+                     hDiv.innerHTML += `
+                     <div class="edit-row">
+                        <input class="edit-input text-center" value="${key}" placeholder="MM-DD" onchange="Admin.updateHolidayKey('${key}', this.value)">
+                        <input class="edit-input w-20 text-center text-amber-400 font-bold" value="${DB.holidays[key]}" onchange="Admin.updateHolidayVal('${key}', this.value)">
+                        <i onclick="Admin.delHoliday('${key}')" data-lucide="x" class="btn-del-mini w-4 h-4"></i>
+                     </div>`;
+                });
+
+                const rDiv = document.getElementById('settings-ranges-list');
+                rDiv.innerHTML = '';
+                if(DB.holidayRanges) {
+                    DB.holidayRanges.forEach((r, i) => {
+                         const start = `${String(r.sm).padStart(2,'0')}-${String(r.sd).padStart(2,'0')}`;
+                         const end = `${String(r.em).padStart(2,'0')}-${String(r.ed).padStart(2,'0')}`;
+                         rDiv.innerHTML += `
+                         <div class="edit-row">
+                            <input class="edit-input text-center text-xs px-1" value="${start}" onchange="Admin.updateRange(${i}, 'start', this.value)">
+                            <span class="text-slate-500">→</span>
+                            <input class="edit-input text-center text-xs px-1" value="${end}" onchange="Admin.updateRange(${i}, 'end', this.value)">
+                            <input class="edit-input w-16 text-center text-amber-400 font-bold" value="${r.k}" onchange="Admin.updateRange(${i}, 'k', this.value)">
+                            <i onclick="Admin.delRange(${i})" data-lucide="x" class="btn-del-mini w-4 h-4"></i>
+                         </div>`;
+                    });
+                }
+
+                // PAYMENTS & LINKS
+                const payDiv = document.getElementById('settings-payments-list');
+                payDiv.innerHTML = '';
+                if(DB.payments) {
+                    DB.payments.forEach((p, i) => {
+                        payDiv.innerHTML += `
+                        <div class="bg-white/5 rounded-lg p-2 mb-2 relative group">
+                            <input class="bg-transparent text-amber-500 font-bold text-xs w-full mb-1 outline-none" value="${p.title}" oninput="Admin.updatePayment(${i}, 'title', this.value)">
+                            <textarea class="bg-transparent text-slate-300 text-xs w-full outline-none resize-none h-auto" rows="1" oninput="Admin.updatePayment(${i}, 'text', this.value)">${p.text}</textarea>
+                            <button onclick="Admin.delPayment(${i})" class="absolute top-2 right-2 text-red-400 opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                        </div>`;
+                    });
+                }
+
+                const linkDiv = document.getElementById('settings-links-list');
+                linkDiv.innerHTML = '';
+                if(DB.links) {
+                    DB.links.forEach((l, i) => {
+                         linkDiv.innerHTML += `
+                         <div class="edit-row">
+                            <input class="edit-input w-1/3" value="${l.label}" oninput="Admin.updateLink(${i}, 'label', this.value)">
+                            <input class="edit-input flex-1" value="${l.url}" placeholder="https://..." oninput="Admin.updateLink(${i}, 'url', this.value)">
+                            <i onclick="Admin.delLink(${i})" data-lucide="x" class="btn-del-mini w-4 h-4"></i>
+                         </div>`;
+                    });
+                }
+
+                lucide.createIcons();
+            },
+
+            // HELPERS
+            toggleSection: (el) => {
+                const content = el.nextElementSibling;
+                const icon = el.querySelector('i');
+                content.classList.toggle('open');
+                icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
+            },
+
+            // --- LOGISTICS ---
+            addRegion: () => { const n = prompt("Название региона:"); if(n && !DB.travel[n]) { DB.travel[n]={fee:0, cities:{}}; Storage.save(); Admin.render(); } },
+            delRegion: (r) => { if(confirm(`Удалить ${r}?`)) { delete DB.travel[r]; Storage.save(); Admin.render(); } },
+            setRegionFee: (r,v) => { DB.travel[r].fee=parseInt(v)||0; Storage.save(); },
+            addCity: (r) => { const n = prompt("Название города:"); if(n) { DB.travel[r].cities[n]=0; Storage.save(); Admin.render(); } },
+            delCity: (r,c) => { delete DB.travel[r].cities[c]; Storage.save(); Admin.render(); },
+            renameCity: (r,oldC,newC) => { if(oldC===newC || !newC) return; const p = DB.travel[r].cities[oldC]; delete DB.travel[r].cities[oldC]; DB.travel[r].cities[newC] = p; Storage.save(); },
+            setCityPrice: (r,c,v) => { DB.travel[r].cities[c]=parseInt(v)||0; Storage.save(); },
+
+            // --- SERVICES ---
+            addCategory: () => { const n = prompt("Название категории:"); if(n && !DB.services[n]) { DB.services[n]={}; Storage.save(); Admin.render(); } },
+            delCat: (c) => { if(confirm(`Удалить ${c}?`)) { delete DB.services[c]; Storage.save(); Admin.render(); } },
+            addSvc: (c) => { const n = prompt("Название услуги:"); if(n) { DB.services[c][n]=0; Storage.save(); Admin.render(); } },
+            delSvc: (c,s) => { delete DB.services[c][s]; Storage.save(); Admin.render(); },
+            renameSvc: (c,oldS,newS) => { if(oldS===newS || !newS) return; const p = DB.services[c][oldS]; delete DB.services[c][oldS]; DB.services[c][newS] = p; Storage.save(); },
+            setSvcPrice: (c,s,v) => { DB.services[c][s]=parseInt(v)||0; Storage.save(); },
+
+            // --- HOLIDAYS ---
+            addHoliday: () => { const d = prompt("Дата (ММ-ДД):", "12-31"); if(d) { DB.holidays[d]=1.5; Storage.save(); Admin.render(); } },
+            delHoliday: (k) => { delete DB.holidays[k]; Storage.save(); Admin.render(); },
+            updateHolidayKey: (oldK, newK) => { if(oldK===newK) return; const v=DB.holidays[oldK]; delete DB.holidays[oldK]; DB.holidays[newK]=v; Storage.save(); Admin.render(); },
+            updateHolidayVal: (k, v) => { DB.holidays[k]=parseFloat(v)||1; Storage.save(); },
+            
+            addRange: () => { if(!DB.holidayRanges) DB.holidayRanges=[]; DB.holidayRanges.push({sm:12, sd:20, em:12, ed:30, k:1.5}); Storage.save(); Admin.render(); },
+            delRange: (i) => { DB.holidayRanges.splice(i, 1); Storage.save(); Admin.render(); },
+            updateRange: (i, field, val) => {
+                const r = DB.holidayRanges[i];
+                if(field==='k') r.k = parseFloat(val)||1;
+                else {
+                    const [m,d] = val.split('-').map(Number);
+                    if(m && d) {
+                        if(field==='start') { r.sm=m; r.sd=d; }
+                        if(field==='end') { r.em=m; r.ed=d; }
+                    }
+                }
+                Storage.save();
+            },
+
+            // --- EXTRAS ---
+            addPayment: () => { if(!DB.payments) DB.payments=[]; DB.payments.push({title:"Банк", text:""}); Storage.save(); Admin.render(); },
+            delPayment: (i) => { DB.payments.splice(i,1); Storage.save(); Admin.render(); },
+            updatePayment: (i, f, v) => { DB.payments[i][f]=v; Storage.save(); },
+
+            addLink: () => { if(!DB.links) DB.links=[]; DB.links.push({label:"Сайт", url:""}); Storage.save(); Admin.render(); },
+            delLink: (i) => { DB.links.splice(i,1); Storage.save(); Admin.render(); },
+            updateLink: (i, f, v) => { DB.links[i][f]=v; Storage.save(); },
+
+            reset: () => {
+                if(confirm('Сбросить базу цен к заводским?')) {
+                    localStorage.removeItem('illusionist_calc_db');
+                    location.reload();
+                }
             }
-        },
-        normalizeMD: (raw) => {
-            const s = String(raw || '').trim().replace(/[./\s]/g, '-');
-            const m = s.match(/^(\d{1,2})-(\d{1,2})$/);
-            if(!m) return null;
-            let mm = Math.max(1, Math.min(12, parseInt(m[1],10)));
-            let dd = Math.max(1, Math.min(31, parseInt(m[2],10)));
-            return `${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
-        },
-        parseK: (v) => {
-            let k = parseFloat(String(v).replace(',','.'));
-            if(Number.isNaN(k)) k = 1;
-            k = Math.max(1, Math.min(5, k));
-            return Math.round(k * 100) / 100;
-        },
-        render: () => {
-            HolidayCfg.ensure();
-            const list = el('settings-holidays-list');
-            const ranges = el('settings-holidayranges-list');
-            if(!list || !ranges) return;
+        };
 
-            const keys = Object.keys(DB.settings.holidays || {}).sort();
-            list.innerHTML = keys.length ? '' : `<div style="padding: 10px 16px; color: rgba(255,255,255,.55); font-size: 13px;">Пока нет дат. Добавь, если у тебя есть “дорогие” дни.</div>`;
-
-            keys.forEach((key) => {
-                const kVal = DB.settings.holidays[key];
-                const row = document.createElement('div');
-                row.className = 'set-row';
-                row.innerHTML = `<input class="set-input-name" value="${esc(key)}" placeholder="ММ-ДД" inputmode="numeric"><input class="set-input-price" value="${esc(kVal)}" placeholder="×1.5" inputmode="decimal"><div class="btn-del-item" title="Удалить">×</div>`;
-                const inpKey = row.children[0];
-                const inpK = row.children[1];
-                const btnDel = row.children[2];
-
-                inpKey.onblur = () => {
-                    const newKey = HolidayCfg.normalizeMD(inpKey.value);
-                    if(!newKey) { inpKey.value = key; return; }
-                    const kNow = HolidayCfg.parseK(inpK.value);
-                    if(newKey !== key) { delete DB.settings.holidays[key]; }
-                    DB.settings.holidays[newKey] = kNow;
-                    Storage.save(); HolidayCfg.render();
-                    try { App.updateDate(); App.calc(); } catch(e){}
-                };
-                inpK.onblur = () => {
-                    const kk = HolidayCfg.parseK(inpK.value);
-                    DB.settings.holidays[key] = kk;
-                    inpK.value = kk;
-                    Storage.save();
-                    try { App.updateDate(); App.calc(); } catch(e){}
-                };
-                btnDel.onclick = () => {
-                    delete DB.settings.holidays[key];
-                    Storage.save(); HolidayCfg.render();
-                    try { App.updateDate(); App.calc(); } catch(e){}
-                };
-                list.appendChild(row);
-            });
-
-            const rs = DB.settings.holidayRanges || [];
-            ranges.innerHTML = rs.length ? '' : `<div style="padding: 10px 16px; color: rgba(255,255,255,.55); font-size: 13px;">Пока нет периодов. Добавь, если у тебя есть сезонные надбавки.</div>`;
-
-            rs.forEach((r, i) => {
-                const start = `${String(r.sm||1).padStart(2,'0')}-${String(r.sd||1).padStart(2,'0')}`;
-                const end = `${String(r.em||1).padStart(2,'0')}-${String(r.ed||1).padStart(2,'0')}`;
-                const kVal = HolidayCfg.parseK(r.k ?? 1);
-
-                const wrap = document.createElement('div');
-                wrap.className = 'set-row'; wrap.style.gap = '8px';
-                wrap.innerHTML = `<input class="set-input-name" style="max-width:92px;" value="${esc(start)}" placeholder="ММ-ДД" inputmode="numeric"><div style="opacity:.6; font-weight:700;">→</div><input class="set-input-name" style="max-width:92px;" value="${esc(end)}" placeholder="ММ-ДД" inputmode="numeric"><input class="set-input-price" style="width:72px;" value="${esc(kVal)}" placeholder="×1.5" inputmode="decimal"><div class="btn-del-item" title="Удалить">×</div>`;
-                const inpStart = wrap.children[0];
-                const inpEnd = wrap.children[2];
-                const inpK = wrap.children[3];
-                const btnDel = wrap.children[4];
-
-                const saveRow = () => {
-                    const s1 = HolidayCfg.normalizeMD(inpStart.value);
-                    const s2 = HolidayCfg.normalizeMD(inpEnd.value);
-                    if(!s1 || !s2) { inpStart.value = start; inpEnd.value = end; return; }
-                    const [sm, sd] = s1.split('-').map(n=>parseInt(n,10));
-                    const [em, ed] = s2.split('-').map(n=>parseInt(n,10));
-                    const kk = HolidayCfg.parseK(inpK.value);
-                    DB.settings.holidayRanges[i] = { sm, sd, em, ed, k: kk };
-                    inpStart.value = s1; inpEnd.value = s2; inpK.value = kk;
-                    Storage.save(); try { App.updateDate(); App.calc(); } catch(e){}
-                };
-                inpStart.onblur = saveRow; inpEnd.onblur = saveRow; inpK.onblur = saveRow;
-                btnDel.onclick = () => {
-                    DB.settings.holidayRanges.splice(i, 1);
-                    Storage.save(); HolidayCfg.render();
-                    try { App.updateDate(); App.calc(); } catch(e){}
-                };
-                ranges.appendChild(wrap);
-            });
-        },
-        addHoliday: () => {
-            HolidayCfg.ensure();
-            const candidates = ['12-31','01-01','03-08','02-23','06-01','09-01'];
-            let key = candidates.find(k => !(k in DB.settings.holidays));
-            if(!key){
-                const d = new Date();
-                key = `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const Storage = {
+            save: () => localStorage.setItem('illusionist_calc_db', JSON.stringify(DB)),
+            load: () => {
+                const s = localStorage.getItem('illusionist_calc_db');
+                if(s) {
+                    try { DB = { ...DEFAULT_DB, ...JSON.parse(s) }; } 
+                    catch(e) { DB = DEFAULT_DB; }
+                } else {
+                    DB = DEFAULT_DB;
+                }
+                // Migration checks
+                if(!DB.holidayRanges) DB.holidayRanges = DEFAULT_DB.holidayRanges;
+                if(!DB.payments) DB.payments = DEFAULT_DB.payments;
+                if(!DB.links) DB.links = DEFAULT_DB.links;
             }
-            DB.settings.holidays[key] = 1.5;
-            Storage.save(); HolidayCfg.render(); try { App.updateDate(); App.calc(); } catch(e){}
-        },
-        addRange: () => {
-            HolidayCfg.ensure();
-            DB.settings.holidayRanges.push({ sm: 12, sd: 15, em: 12, ed: 30, k: 1.5 });
-            Storage.save(); HolidayCfg.render(); try { App.updateDate(); App.calc(); } catch(e){}
-        }
-    };
+        };
 
-    Storage.load();
-
-    // --- expose functions for inline handlers ---
-    try {
-      window.switchTab = switchTab;
-      window.App = App;
-      window.Admin = Admin;
-      window.HolidayCfg = HolidayCfg;
-    } catch(e) {}
-</script>
-
-<script>
-/* === v36 viewport stabilizer (iOS / PWA) === */
-(function(){
-  const root = document.documentElement;
-  function isStandalone(){ return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches || (window.navigator && window.navigator.standalone); }
-  function updateVV(){
-    const vv = window.visualViewport;
-    if(!vv){
-      root.style.setProperty('--vvh', window.innerHeight + 'px');
-      root.style.setProperty('--vv-offset', '0px');
-      root.style.setProperty('--kb', '0px');
-      return;
-    }
-    root.style.setProperty('--vvh', vv.height + 'px');
-    root.style.setProperty('--vv-offset', vv.offsetTop + 'px');
-    const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-    root.style.setProperty('--kb', kb + 'px');
-  }
-  updateVV();
-  window.addEventListener('resize', updateVV, {passive:true});
-  if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', updateVV, {passive:true});
-    window.visualViewport.addEventListener('scroll', updateVV, {passive:true});
-  }
-  if(isStandalone()){ root.classList.add('pwa-fixed'); document.body.classList.add('pwa-fixed'); }
-})();
-</script>
-
-<!-- TABS -->
-<div class="tabs">
-<div class="tab-btn active" data-tab="calc" onclick="switchTab('calc', this)"><svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>Калькулятор</div>
-<div class="tab-btn" data-tab="settings" onclick="switchTab('settings', this)"><svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>Настройки</div>
-</div>
-
-</div>
-</div>
+        window.onload = App.init;
+    </script>
 </body>
 </html>
