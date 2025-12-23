@@ -38,7 +38,6 @@
             font-family: 'Cinzel', serif;
         }
 
-        /* Background Effects */
         .noise-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 0; opacity: 0.03;
@@ -46,7 +45,6 @@
         }
         #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
 
-        /* UI Components */
         .glass-panel {
             background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.6) 100%);
             backdrop-filter: blur(24px);
@@ -121,7 +119,6 @@
         }
         .btn-icon:hover { background: rgba(255,255,255,0.1); color: white; }
 
-        /* Toggle Switch */
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
@@ -135,7 +132,6 @@
         input:checked + .slider { background-color: var(--gold-primary); }
         input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
@@ -143,36 +139,42 @@
         .animate-enter { animation: fade-in-up 0.4s ease-out forwards; }
         @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Modal */
         .modal-backdrop {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px);
-            z-index: 100; display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            padding:
+              calc(env(safe-area-inset-top, 0px) + 12px)
+              12px
+              calc(env(safe-area-inset-bottom, 0px) + 12px);
         }
         .modal-backdrop.active { opacity: 1; pointer-events: auto; }
 
-        /* ✅ FIX: modal behaves like a real full-screen iOS screen (header sticky + body scroll) */
         .modal-content {
             background: #0f172a;
             border: 1px solid rgba(245, 158, 11, 0.2);
             width: 100%;
             max-width: 420px;
-            height: 100dvh;
-            max-height: 100dvh;
-            overflow: hidden; /* body scroll inside */
+            height: auto;
+            max-height: calc(100dvh - 24px);
+            overflow: hidden;
             box-shadow: 0 0 50px rgba(0,0,0,0.8);
             transform: translateY(20px);
             transition: transform 0.3s;
+            border-radius: 20px;
         }
         @supports not (height: 100dvh) {
-            .modal-content { height: 100vh; max-height: 100vh; }
+            .modal-content { max-height: calc(100vh - 24px); }
         }
         @media(min-width: 640px) {
-            .modal-content {
-                height: auto;
-                max-height: 85vh;
-                border-radius: 20px;
-            }
+            .modal-content { max-height: 85vh; }
         }
         .modal-backdrop.active .modal-content { transform: translateY(0); }
 
@@ -181,33 +183,18 @@
             top: 0;
             z-index: 5;
             padding: 16px 24px 8px 24px;
-            padding-top: calc(env(safe-area-inset-top, 20px) + 16px);
             background: linear-gradient(180deg, rgba(15,23,42,0.98) 0%, rgba(15,23,42,0.86) 100%);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid rgba(255,255,255,0.08);
         }
-        @media(min-width: 640px) {
-            .modal-header {
-                padding-top: 16px; /* desktop */
-                border-bottom: none;
-                background: transparent;
-                backdrop-filter: none;
-                -webkit-backdrop-filter: none;
-            }
-        }
 
         .modal-body {
             padding: 12px 24px 24px 24px;
-            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 28px);
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
-        @media(min-width: 640px) {
-            .modal-body { padding-bottom: 24px; }
-        }
 
-        /* Admin Settings Specifics */
         .admin-section { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 12px; }
         .admin-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 8px 0; }
         .admin-content { display: none; padding-top: 8px; }
@@ -217,7 +204,7 @@
         .edit-input:focus { border-color: var(--gold-primary); }
         .btn-add-mini { width: 100%; padding: 8px; border: 1px dashed rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); border-radius: 8px; font-size: 12px; transition: 0.2s; }
         .btn-add-mini:hover { border-color: var(--gold-primary); color: var(--gold-primary); }
-        
+
         .btn-del-mini { 
             color: #ef4444; 
             padding: 8px; 
@@ -235,7 +222,6 @@
             min-height: 40px;
         }
         .btn-del-mini:hover { opacity: 1; background: rgba(239, 68, 68, 0.2); }
-
     </style>
 </head>
 <body class="flex flex-col items-center">
@@ -243,7 +229,6 @@
     <div class="noise-overlay"></div>
     <canvas id="bg-canvas"></canvas>
     
-    <!-- Top Bar -->
     <header class="w-full max-w-lg p-6 flex justify-between items-center z-10 animate-enter">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500/20 to-transparent border border-amber-500/30 flex items-center justify-center shadow-lg shadow-amber-900/20">
@@ -259,13 +244,10 @@
         </button>
     </header>
 
-    <!-- Main Content -->
     <main class="w-full max-w-lg px-4 pb-24 z-10 flex-1 overflow-y-auto no-scrollbar">
         
-        <!-- CALCULATOR VIEW -->
         <div id="view-calc" class="view-section active space-y-4 animate-enter" style="animation-delay: 0.1s;">
             
-            <!-- Card: Client Info -->
             <div class="glass-panel p-5 space-y-4">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
                     <i data-lucide="user" class="w-3 h-3 text-amber-500"></i> Клиент
@@ -294,7 +276,6 @@
                 </div>
             </div>
 
-            <!-- Card: Logistics -->
             <div class="glass-panel p-5 space-y-4">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
                     <i data-lucide="map-pin" class="w-3 h-3 text-amber-500"></i> Логистика
@@ -326,7 +307,6 @@
                 </div>
             </div>
 
-            <!-- Card: Services -->
             <div class="glass-panel p-5 space-y-4">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
                     <i data-lucide="sparkles" class="w-3 h-3 text-amber-500"></i> Услуги
@@ -352,11 +332,9 @@
                     <i data-lucide="plus" class="w-4 h-4"></i> Добавить в смету
                 </button>
 
-                <!-- Cart List -->
                 <div id="cart-list" class="space-y-2 pt-2"></div>
             </div>
 
-            <!-- Card: Extras -->
             <div class="glass-panel p-5 space-y-4">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
                     <i data-lucide="wallet" class="w-3 h-3 text-amber-500"></i> Дополнительно
@@ -381,7 +359,6 @@
                 </div>
             </div>
 
-            <!-- Total Panel -->
             <div class="glass-panel p-6 border-amber-500/20 shadow-[0_0_30px_rgba(245,158,11,0.1)] relative overflow-hidden">
                 <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
                     <span class="text-sm font-medium text-slate-300">Договор (+6%)</span>
@@ -410,10 +387,8 @@
             </div>
         </div>
 
-        <!-- SETTINGS VIEW (Overlay) -->
         <div id="view-settings" class="modal-backdrop">
             <div class="modal-content glass-panel p-0 animate-enter flex flex-col">
-                <!-- ✅ Modal Header (Sticky + Safe Area) -->
                 <div class="modal-header">
                     <div class="flex justify-between items-center mb-2">
                         <h2 class="text-xl font-display text-white">Настройки</h2>
@@ -424,7 +399,6 @@
                     <p class="text-xs text-slate-500">Настройка цен, городов и услуг</p>
                 </div>
 
-                <!-- ✅ Modal Body (iOS scroll + safe bottom) -->
                 <div class="modal-body space-y-6">
                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Профиль</h4>
@@ -442,7 +416,7 @@
 
                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Бонусы от суммы</h4>
-                        <p class="text-[10px] text-slate-500 mb-2">Автоматические подарки при достижении суммы.</p>
+                        <p class="text-[10px] text-slate-500 mb-2">Бонусы появятся в КП только если ты добавишь их тут.</p>
                         <div id="settings-bonuses-list" class="space-y-2 mb-3"></div>
                         <button onclick="Admin.addBonus()" class="btn-add-mini">+ Добавить бонус</button>
                     </div>
@@ -512,10 +486,7 @@
             },
             holidays: {"12-31": 2.0, "01-01": 2.0, "02-23": 1.5, "03-08": 1.5},
             holidayRanges: [{sm:12, sd:15, em:12, ed:30, k:1.5}],
-            bonuses: [
-                { threshold: 15000, text: "🎁 2 билета на шоу" },
-                { threshold: 30000, text: "🎩 Персональный фокус в подарок" }
-            ],
+            bonuses: [],
             payments: [{ title: "Т-Банк", text: "8 909 276 33 86\nДмитрий Павлович К." }],
             links: [{ label: "Портфолио", url: "" }],
             config: { performer: "Illusionist", deposit: 30 }
@@ -569,6 +540,7 @@
                 const key = `${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 
                 let k = DB.holidays[key] || 1;
+                
                 if (k === 1 && DB.holidayRanges) {
                     const md = m * 100 + d;
                     for(let r of DB.holidayRanges) {
@@ -704,8 +676,8 @@
                 document.getElementById('total-sum').innerText = State.finalTotal.toLocaleString() + ' ₽';
 
                 State.activeBonuses = [];
-                if(DB.bonuses && DB.bonuses.length > 0) {
-                    State.activeBonuses = DB.bonuses.filter(b => State.finalTotal >= b.threshold);
+                if(Array.isArray(DB.bonuses) && DB.bonuses.length > 0) {
+                    State.activeBonuses = DB.bonuses.filter(b => State.finalTotal >= (parseInt(b.threshold)||0));
                 }
                 
                 const bonusListEl = document.getElementById('bonus-list');
@@ -721,21 +693,25 @@
             },
 
             copyQuote: () => {
+                // ✅ FIX: перед КП всегда пересчитываем, чтобы бонусы успели учесться
+                App.calc();
+
                 if(!State.finalTotal) return App.showToast('Сумма 0 ₽');
+                
                 const client = document.getElementById('inp-client').value || 'Клиент';
                 const type = document.getElementById('inp-event-type').value;
                 const dateRaw = document.getElementById('inp-date').value;
-                const dateFmt = new Date(dateRaw).toLocaleDateString('ru-RU', {day:'numeric', month:'long', weekday:'short'});
+                const dateFmt = new Date(dateRaw).toLocaleDateString('ru-RU', {weekday:'short', day:'numeric', month:'long'});
                 const time = document.getElementById('inp-time').value;
                 const city = document.getElementById('inp-city').value || '';
                 const depPct = DB.config.deposit || 30;
                 const deposit = Math.round(State.finalTotal * (depPct/100));
                 
-                let text = `Здравствуйте, ${client}!\n\n`;
-                text += `✨ **РАСЧЕТ: ${type.toUpperCase()}** ✨\n`;
+                let text = `${client}!\n\n`;
+                text += `✨ РАСЧЕТ: ${type.toUpperCase()} ✨\n`;
                 text += `📅 ${dateFmt} / ${time}\n`;
                 if(city && city!=='other') text += `📍 ${city}\n`;
-                text += `\n🎩 **Программа:**\n`;
+                text += `\n🎩 Программа:\n`;
                 
                 State.cart.forEach(i => {
                     const price = Math.round(i.price * i.qty * State.finalDetails.k);
@@ -749,20 +725,20 @@
                 if(State.finalDetails.tax > 0) text += `📄 Договор (+6%): ${State.finalDetails.tax.toLocaleString()} ₽\n`;
 
                 if(State.activeBonuses.length > 0) {
-                     text += `\n🎁 **ВАШИ БОНУСЫ:**\n`;
+                     text += `\n🎁 ВАШИ БОНУСЫ:\n`;
                      State.activeBonuses.forEach(b => text += `✅ ${b.text}\n`);
                 }
 
-                text += `\n💰 **ИТОГО: ${State.finalTotal.toLocaleString()} ₽**\n`;
+                text += `\n💰 ИТОГО: ${State.finalTotal.toLocaleString()} ₽\n`;
                 text += `💳 Бронь даты (${depPct}%): ${deposit.toLocaleString()} ₽\n`;
 
                 if(DB.payments && DB.payments.length > 0) {
-                    text += `\n📲 **Реквизиты:**\n`;
+                    text += `\n📲 Реквизиты:\n`;
                     DB.payments.forEach(p => text += `${p.title}: ${p.text}\n`);
                 }
 
                 if(DB.links && DB.links.length > 0) {
-                    text += `\n🔗 **Ссылки:**\n`;
+                    text += `\n🔗 Ссылки:\n`;
                     DB.links.forEach(l => text += `• ${l.label}: ${l.url}\n`);
                 }
 
@@ -782,6 +758,8 @@
                 } else {
                      modal.classList.remove('active');
                      App.updateUI();
+                     // ✅ FIX: после настроек пересчитываем сразу
+                     App.calc();
                 }
             },
 
@@ -914,7 +892,7 @@
 
                 const bDiv = document.getElementById('settings-bonuses-list');
                 bDiv.innerHTML = '';
-                if(DB.bonuses) {
+                if(Array.isArray(DB.bonuses)) {
                     DB.bonuses.forEach((b, i) => {
                         bDiv.innerHTML += `
                         <div class="edit-row">
@@ -964,13 +942,13 @@
                 icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
             },
 
-            addRegion: () => { const n = prompt("Название региона:"); if(n && !DB.travel[n]) { DB.travel[n]={fee:0, cities:{}}; Storage.save(); Admin.render(); } },
-            delRegion: (r) => { if(confirm(`Удалить ${r}?`)) { delete DB.travel[r]; Storage.save(); Admin.render(); } },
-            setRegionFee: (r,v) => { DB.travel[r].fee=parseInt(v)||0; Storage.save(); },
-            addCity: (r) => { const n = prompt("Название города:"); if(n) { DB.travel[r].cities[n]=0; Storage.save(); Admin.render(); } },
-            delCity: (r,c) => { delete DB.travel[r].cities[c]; Storage.save(); Admin.render(); },
-            renameCity: (r,oldC,newC) => { if(oldC===newC || !newC) return; const p = DB.travel[r].cities[oldC]; delete DB.travel[r].cities[oldC]; DB.travel[r].cities[newC] = p; Storage.save(); },
-            setCityPrice: (r,c,v) => { DB.travel[r].cities[c]=parseInt(v)||0; Storage.save(); },
+            addRegion: () => { const n = prompt("Название региона:"); if(n && !DB.travel[n]) { DB.travel[n]={fee:0, cities:{}}; Storage.save(); Admin.render(); App.calc(); } },
+            delRegion: (r) => { if(confirm(`Удалить ${r}?`)) { delete DB.travel[r]; Storage.save(); Admin.render(); App.calc(); } },
+            setRegionFee: (r,v) => { DB.travel[r].fee=parseInt(v)||0; Storage.save(); App.calc(); },
+            addCity: (r) => { const n = prompt("Название города:"); if(n) { DB.travel[r].cities[n]=0; Storage.save(); Admin.render(); App.calc(); } },
+            delCity: (r,c) => { delete DB.travel[r].cities[c]; Storage.save(); Admin.render(); App.calc(); },
+            renameCity: (r,oldC,newC) => { if(oldC===newC || !newC) return; const p = DB.travel[r].cities[oldC]; delete DB.travel[r].cities[oldC]; DB.travel[r].cities[newC] = p; Storage.save(); App.calc(); },
+            setCityPrice: (r,c,v) => { DB.travel[r].cities[c]=parseInt(v)||0; Storage.save(); App.calc(); },
 
             addCategory: () => { const n = prompt("Название категории:"); if(n && !DB.services[n]) { DB.services[n]={}; Storage.save(); Admin.render(); } },
             delCat: (c) => { if(confirm(`Удалить ${c}?`)) { delete DB.services[c]; Storage.save(); Admin.render(); } },
@@ -979,13 +957,13 @@
             renameSvc: (c,oldS,newS) => { if(oldS===newS || !newS) return; const p = DB.services[c][oldS]; delete DB.services[c][oldS]; DB.services[c][newS] = p; Storage.save(); },
             setSvcPrice: (c,s,v) => { DB.services[c][s]=parseInt(v)||0; Storage.save(); },
 
-            addHoliday: () => { const d = prompt("Дата (ММ-ДД):", "12-31"); if(d) { DB.holidays[d]=1.5; Storage.save(); Admin.render(); } },
-            delHoliday: (k) => { delete DB.holidays[k]; Storage.save(); Admin.render(); },
-            updateHolidayKey: (oldK, newK) => { if(oldK===newK) return; const v=DB.holidays[oldK]; delete DB.holidays[oldK]; DB.holidays[newK]=v; Storage.save(); Admin.render(); },
-            updateHolidayVal: (k, v) => { DB.holidays[k]=parseFloat(v)||1; Storage.save(); },
+            addHoliday: () => { const d = prompt("Дата (ММ-ДД):", "12-31"); if(d) { DB.holidays[d]=1.5; Storage.save(); Admin.render(); App.calc(); } },
+            delHoliday: (k) => { delete DB.holidays[k]; Storage.save(); Admin.render(); App.calc(); },
+            updateHolidayKey: (oldK, newK) => { if(oldK===newK) return; const v=DB.holidays[oldK]; delete DB.holidays[oldK]; DB.holidays[newK]=v; Storage.save(); Admin.render(); App.calc(); },
+            updateHolidayVal: (k, v) => { DB.holidays[k]=parseFloat(v)||1; Storage.save(); App.calc(); },
             
-            addRange: () => { if(!DB.holidayRanges) DB.holidayRanges=[]; DB.holidayRanges.push({sm:12, sd:20, em:12, ed:30, k:1.5}); Storage.save(); Admin.render(); },
-            delRange: (i) => { DB.holidayRanges.splice(i, 1); Storage.save(); Admin.render(); },
+            addRange: () => { if(!DB.holidayRanges) DB.holidayRanges=[]; DB.holidayRanges.push({sm:12, sd:20, em:12, ed:30, k:1.5}); Storage.save(); Admin.render(); App.calc(); },
+            delRange: (i) => { DB.holidayRanges.splice(i, 1); Storage.save(); Admin.render(); App.calc(); },
             updateRange: (i, field, val) => {
                 const r = DB.holidayRanges[i];
                 if(field==='k') r.k = parseFloat(val)||1;
@@ -997,14 +975,17 @@
                     }
                 }
                 Storage.save();
+                App.calc();
             },
 
-            addBonus: () => { if(!DB.bonuses) DB.bonuses=[]; DB.bonuses.push({threshold: 10000, text: "Бонус"}); Storage.save(); Admin.render(); },
-            delBonus: (i) => { DB.bonuses.splice(i, 1); Storage.save(); Admin.render(); },
+            // ✅ FIX: бонусы теперь сразу пересчитываются и попадут в КП
+            addBonus: () => { if(!Array.isArray(DB.bonuses)) DB.bonuses=[]; DB.bonuses.push({threshold: 10000, text: "Бонус"}); Storage.save(); Admin.render(); App.calc(); },
+            delBonus: (i) => { DB.bonuses.splice(i, 1); Storage.save(); Admin.render(); App.calc(); },
             updateBonus: (i, field, val) => { 
                 if(field === 'threshold') DB.bonuses[i].threshold = parseInt(val) || 0;
                 else DB.bonuses[i].text = val;
                 Storage.save();
+                App.calc();
             },
 
             addPayment: () => { if(!DB.payments) DB.payments=[]; DB.payments.push({title:"Банк", text:""}); Storage.save(); Admin.render(); },
@@ -1036,7 +1017,7 @@
                 if(!DB.holidayRanges) DB.holidayRanges = DEFAULT_DB.holidayRanges;
                 if(!DB.payments) DB.payments = DEFAULT_DB.payments;
                 if(!DB.links) DB.links = DEFAULT_DB.links;
-                if(!DB.bonuses) DB.bonuses = DEFAULT_DB.bonuses;
+                if(!Array.isArray(DB.bonuses)) DB.bonuses = [];
             }
         };
 
