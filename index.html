@@ -157,10 +157,14 @@
             box-shadow: 0 0 50px rgba(0,0,0,0.8);
             transform: translateY(20px); transition: transform 0.3s;
             /* Safe area for modal content if needed */
+            padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
         }
         @media(min-width: 640px) {
-            .modal-content { height: auto; max-height: 85vh; border-radius: 20px; }
+            .modal-content { 
+                height: auto; max-height: 85vh; border-radius: 20px;
+                padding-top: 0; /* Reset for desktop */
+            }
         }
         .modal-backdrop.active .modal-content { transform: translateY(0); }
 
