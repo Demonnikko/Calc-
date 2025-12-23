@@ -23,6 +23,9 @@
             --text-muted: #94a3b8;
         }
 
+        /* ✅ FIX: чтобы ничего не "вылазило" из-за border/padding */
+        *, *::before, *::after { box-sizing: border-box; }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--dark-bg);
@@ -38,6 +41,7 @@
             font-family: 'Cinzel', serif;
         }
 
+        /* Background Effects */
         .noise-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 0; opacity: 0.03;
@@ -45,6 +49,7 @@
         }
         #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
 
+        /* UI Components */
         .glass-panel {
             background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.6) 100%);
             backdrop-filter: blur(24px);
@@ -119,6 +124,7 @@
         }
         .btn-icon:hover { background: rgba(255,255,255,0.1); color: white; }
 
+        /* Toggle Switch */
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
@@ -132,13 +138,15 @@
         input:checked + .slider { background-color: var(--gold-primary); }
         input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
 
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
 
         .animate-enter { animation: fade-in-up 0.4s ease-out forwards; }
         @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
+        
+        /* ✅ Modal (compact + no overflow) */
         .modal-backdrop {
             position: fixed; inset: 0;
             background: rgba(0,0,0,0.9);
@@ -150,31 +158,40 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s;
+
+            /* ✅ больше “воздуха”, чтобы окно выглядело меньше */
             padding:
-              calc(env(safe-area-inset-top, 0px) + 12px)
-              12px
-              calc(env(safe-area-inset-bottom, 0px) + 12px);
+              calc(env(safe-area-inset-top, 0px) + 16px)
+              14px
+              calc(env(safe-area-inset-bottom, 0px) + 16px);
         }
         .modal-backdrop.active { opacity: 1; pointer-events: auto; }
 
         .modal-content {
             background: #0f172a;
             border: 1px solid rgba(245, 158, 11, 0.2);
-            width: 100%;
-            max-width: 420px;
+
+            /* ✅ гарантированно не шире экрана */
+            width: min(420px, calc(100vw - 28px));
+            max-width: min(420px, calc(100vw - 28px));
+
+            /* ✅ гарантированно не выше экрана с учетом safe-area */
+            max-height: calc(100dvh - (env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px) + 32px));
             height: auto;
-            max-height: calc(100dvh - 24px);
+
             overflow: hidden;
             box-shadow: 0 0 50px rgba(0,0,0,0.8);
             transform: translateY(20px);
             transition: transform 0.3s;
-            border-radius: 20px;
+            border-radius: 18px;
         }
         @supports not (height: 100dvh) {
-            .modal-content { max-height: calc(100vh - 24px); }
+            .modal-content {
+                max-height: calc(100vh - (env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px) + 32px));
+            }
         }
         @media(min-width: 640px) {
-            .modal-content { max-height: 85vh; }
+            .modal-content { max-height: 85vh; width: 420px; max-width: 420px; border-radius: 20px; }
         }
         .modal-backdrop.active .modal-content { transform: translateY(0); }
 
@@ -195,6 +212,7 @@
             -webkit-overflow-scrolling: touch;
         }
 
+        /* Admin Settings Specifics */
         .admin-section { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 12px; }
         .admin-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 8px 0; }
         .admin-content { display: none; padding-top: 8px; }
@@ -229,6 +247,7 @@
     <div class="noise-overlay"></div>
     <canvas id="bg-canvas"></canvas>
     
+    <!-- Top Bar -->
     <header class="w-full max-w-lg p-6 flex justify-between items-center z-10 animate-enter">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500/20 to-transparent border border-amber-500/30 flex items-center justify-center shadow-lg shadow-amber-900/20">
@@ -244,25 +263,24 @@
         </button>
     </header>
 
+    <!-- Main Content -->
     <main class="w-full max-w-lg px-4 pb-24 z-10 flex-1 overflow-y-auto no-scrollbar">
         
+        <!-- CALCULATOR VIEW -->
         <div id="view-calc" class="view-section active space-y-4 animate-enter" style="animation-delay: 0.1s;">
-            
+            <!-- Card: Client Info -->
             <div class="glass-panel p-5 space-y-4">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
                     <i data-lucide="user" class="w-3 h-3 text-amber-500"></i> Клиент
                 </h3>
-                
                 <div class="input-group flex items-center justify-between">
                     <span class="label-text">Имя</span>
                     <input type="text" id="inp-client" class="magic-input" placeholder="Введите имя...">
                 </div>
-                
                 <div class="input-group flex items-center justify-between">
                     <span class="label-text">Телефон</span>
                     <input type="tel" id="inp-phone" class="magic-input" placeholder="8 (999)...">
                 </div>
-
                 <div class="input-group flex items-center justify-between">
                     <span class="label-text">Событие</span>
                     <select id="inp-event-type" class="magic-select text-right">
@@ -276,6 +294,7 @@
                 </div>
             </div>
 
+            <!-- Card: Logistics -->
             <div class="glass-panel p-5 space-y-4">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
                     <i data-lucide="map-pin" class="w-3 h-3 text-amber-500"></i> Логистика
@@ -307,6 +326,7 @@
                 </div>
             </div>
 
+            <!-- Card: Services -->
             <div class="glass-panel p-5 space-y-4">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
                     <i data-lucide="sparkles" class="w-3 h-3 text-amber-500"></i> Услуги
@@ -332,9 +352,11 @@
                     <i data-lucide="plus" class="w-4 h-4"></i> Добавить в смету
                 </button>
 
+                <!-- Cart List -->
                 <div id="cart-list" class="space-y-2 pt-2"></div>
             </div>
 
+            <!-- Card: Extras -->
             <div class="glass-panel p-5 space-y-4">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
                     <i data-lucide="wallet" class="w-3 h-3 text-amber-500"></i> Дополнительно
@@ -359,6 +381,7 @@
                 </div>
             </div>
 
+            <!-- Total Panel -->
             <div class="glass-panel p-6 border-amber-500/20 shadow-[0_0_30px_rgba(245,158,11,0.1)] relative overflow-hidden">
                 <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
                     <span class="text-sm font-medium text-slate-300">Договор (+6%)</span>
@@ -387,19 +410,19 @@
             </div>
         </div>
 
+        <!-- SETTINGS VIEW (Overlay) -->
         <div id="view-settings" class="modal-backdrop">
             <div class="modal-content glass-panel p-0 animate-enter flex flex-col">
                 <div class="modal-header">
                     <div class="flex justify-between items-center mb-2">
                         <h2 class="text-xl font-display text-white">Настройки</h2>
-                        <button onclick="App.toggleSettings()" class="text-slate-400 hover:text-white">
-                            <i data-lucide="x" class="w-6 h-6"></i>
-                        </button>
+                        <button onclick="App.toggleSettings()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
                     </div>
                     <p class="text-xs text-slate-500">Настройка цен, городов и услуг</p>
                 </div>
 
                 <div class="modal-body space-y-6">
+                    <!-- Config Section -->
                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Профиль</h4>
                         <div class="space-y-3">
@@ -414,6 +437,7 @@
                         </div>
                     </div>
 
+                    <!-- Bonuses Section -->
                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Бонусы от суммы</h4>
                         <p class="text-[10px] text-slate-500 mb-2">Бонусы появятся в КП только если ты добавишь их тут.</p>
@@ -421,18 +445,21 @@
                         <button onclick="Admin.addBonus()" class="btn-add-mini">+ Добавить бонус</button>
                     </div>
 
+                    <!-- Logistics Editor -->
                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Логистика</h4>
                         <div id="settings-travel-list" class="space-y-2"></div>
                         <button onclick="Admin.addRegion()" class="btn-add-mini mt-2">+ Добавить регион</button>
                     </div>
 
+                    <!-- Services Editor -->
                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Услуги</h4>
                         <div id="settings-services-list" class="space-y-2"></div>
                         <button onclick="Admin.addCategory()" class="btn-add-mini mt-2">+ Добавить категорию</button>
                     </div>
 
+                    <!-- Holidays Editor -->
                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Праздничные тарифы</h4>
                         <p class="text-[10px] text-slate-500 mb-2">Даты (ММ-ДД) или диапазоны. К = множитель цены.</p>
@@ -444,6 +471,7 @@
                         <button onclick="Admin.addRange()" class="btn-add-mini">+ Добавить период</button>
                     </div>
 
+                    <!-- Quote Details -->
                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Реквизиты и Ссылки</h4>
                         <div id="settings-payments-list" class="space-y-2 mb-4"></div>
@@ -453,6 +481,7 @@
                         <button onclick="Admin.addLink()" class="btn-add-mini mt-2">+ Добавить ссылку</button>
                     </div>
 
+                    <!-- Reset -->
                     <div class="pt-4">
                         <button onclick="Admin.reset()" class="w-full py-3 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 font-bold text-xs uppercase transition">Сброс базы данных</button>
                     </div>
@@ -462,12 +491,14 @@
 
     </main>
 
+    <!-- Toast Notification -->
     <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-slate-900 border border-amber-500/30 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 -translate-y-4 pointer-events-none z-50">
         <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
         <span id="toast-msg" class="text-sm font-bold">Скопировано!</span>
     </div>
 
     <script>
+        // --- DEFAULT DB STRUCTURE ---
         const DEFAULT_DB = {
             travel: {
                 "Ярославская": { fee: 1000, cities: {"Ярославль": 0, "Рыбинск": 2000, "Тутаев": 2000, "Углич": 2000, "Ростов": 2000, "Переславль-Залесский": 2000, "Гаврилов-Ям": 2000, "Данилов": 2000, "Пошехонье": 4000, "Мышкин": 2000, "Любим": 2000} },
@@ -495,6 +526,7 @@
         let DB = {};
         let State = { date: new Date().toISOString().split('T')[0], cart: [], serviceQty: 1, holidayK: 1, activeBonuses: [] };
 
+        // --- APP LOGIC ---
         const App = {
             init: () => {
                 Storage.load();
@@ -631,9 +663,7 @@
                             </div>
                             <div class="flex items-center gap-3">
                                 <span class="font-bold text-amber-400 text-sm font-mono">${total.toLocaleString()} ₽</span>
-                                <button onclick="App.removeService(${idx})" class="btn-del-mini" aria-label="Удалить">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
+                                <button onclick="App.removeService(${idx})" class="btn-del-mini" aria-label="Удалить"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                             </div>
                         </div>
                     `;
@@ -693,7 +723,6 @@
             },
 
             copyQuote: () => {
-                // ✅ FIX: перед КП всегда пересчитываем, чтобы бонусы успели учесться
                 App.calc();
 
                 if(!State.finalTotal) return App.showToast('Сумма 0 ₽');
@@ -758,7 +787,6 @@
                 } else {
                      modal.classList.remove('active');
                      App.updateUI();
-                     // ✅ FIX: после настроек пересчитываем сразу
                      App.calc();
                 }
             },
@@ -805,6 +833,7 @@
 
         const Admin = {
             render: () => {
+                // LOGISTICS
                 const tDiv = document.getElementById('settings-travel-list');
                 tDiv.innerHTML = '';
                 for (let r in DB.travel) {
@@ -836,6 +865,7 @@
                     </div>`;
                 }
 
+                // SERVICES
                 const sDiv = document.getElementById('settings-services-list');
                 sDiv.innerHTML = '';
                 for (let c in DB.services) {
@@ -862,6 +892,7 @@
                     </div>`;
                 }
 
+                // HOLIDAYS
                 const hDiv = document.getElementById('settings-holidays-list');
                 hDiv.innerHTML = '';
                 Object.keys(DB.holidays).sort().forEach(key => {
@@ -890,6 +921,7 @@
                     });
                 }
 
+                // BONUSES
                 const bDiv = document.getElementById('settings-bonuses-list');
                 bDiv.innerHTML = '';
                 if(Array.isArray(DB.bonuses)) {
@@ -904,6 +936,7 @@
                     });
                 }
 
+                // PAYMENTS & LINKS
                 const payDiv = document.getElementById('settings-payments-list');
                 payDiv.innerHTML = '';
                 if(DB.payments) {
@@ -912,9 +945,7 @@
                         <div class="bg-white/5 rounded-lg p-2 mb-2 relative">
                             <input class="bg-transparent text-amber-500 font-bold text-xs w-full mb-1 outline-none" value="${p.title}" oninput="Admin.updatePayment(${i}, 'title', this.value)">
                             <textarea class="bg-transparent text-slate-300 text-xs w-full outline-none resize-none h-auto" rows="1" oninput="Admin.updatePayment(${i}, 'text', this.value)">${p.text}</textarea>
-                            <button onclick="Admin.delPayment(${i})" class="absolute top-2 right-2 btn-del-mini" aria-label="Удалить">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
+                            <button onclick="Admin.delPayment(${i})" class="absolute top-2 right-2 btn-del-mini" aria-label="Удалить"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>`;
                     });
                 }
@@ -978,7 +1009,6 @@
                 App.calc();
             },
 
-            // ✅ FIX: бонусы теперь сразу пересчитываются и попадут в КП
             addBonus: () => { if(!Array.isArray(DB.bonuses)) DB.bonuses=[]; DB.bonuses.push({threshold: 10000, text: "Бонус"}); Storage.save(); Admin.render(); App.calc(); },
             delBonus: (i) => { DB.bonuses.splice(i, 1); Storage.save(); Admin.render(); App.calc(); },
             updateBonus: (i, field, val) => { 
