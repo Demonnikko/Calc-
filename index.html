@@ -30,7 +30,6 @@
             min-height: 100vh;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
-            /* Учитываем челку и нижний бар для основного экрана */
             padding-top: env(safe-area-inset-top, 20px);
             padding-bottom: env(safe-area-inset-bottom, 20px);
         }
@@ -156,15 +155,16 @@
             width: 100%; max-width: 420px; height: 100%; max-height: 100vh; overflow-y: auto;
             box-shadow: 0 0 50px rgba(0,0,0,0.8);
             transform: translateY(20px); transition: transform 0.3s;
-            
-            /* FIX: Safe area + extra spacing for notch */
-            padding-top: calc(env(safe-area-inset-top) + 24px); 
-            padding-bottom: env(safe-area-inset-bottom);
+
+            /* FIX: Safe area for iPhone notch */
+            padding-top: calc(env(safe-area-inset-top, 20px) + 16px);
+            padding-bottom: env(safe-area-inset-bottom, 20px);
         }
         @media(min-width: 640px) {
             .modal-content { 
                 height: auto; max-height: 85vh; border-radius: 20px;
-                padding-top: 0; /* Reset extra padding on desktop */
+                padding-top: 0;
+                padding-bottom: 0;
             }
         }
         .modal-backdrop.active .modal-content { transform: translateY(0); }
@@ -180,20 +180,22 @@
         .btn-add-mini { width: 100%; padding: 8px; border: 1px dashed rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); border-radius: 8px; font-size: 12px; transition: 0.2s; }
         .btn-add-mini:hover { border-color: var(--gold-primary); color: var(--gold-primary); }
         
-        /* Updated Delete Button (Trash Icon) */
+        /* Delete Button (Trash Icon) */
         .btn-del-mini { 
             color: #ef4444; 
             padding: 8px; 
             cursor: pointer; 
-            opacity: 0.7; 
+            opacity: 0.8; 
             display: flex; 
             align-items: center; 
             justify-content: center;
             background: rgba(239, 68, 68, 0.1); 
-            border-radius: 8px;
+            border-radius: 10px;
             border: none;
             transition: all 0.2s;
             flex-shrink: 0;
+            min-width: 40px;
+            min-height: 40px;
         }
         .btn-del-mini:hover { 
             opacity: 1; 
@@ -407,7 +409,7 @@
                         </div>
                     </div>
 
-                    <!-- Bonuses Section (NEW) -->
+                    <!-- Bonuses Section -->
                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Бонусы от суммы</h4>
                         <p class="text-[10px] text-slate-500 mb-2">Автоматические подарки при достижении суммы.</p>
@@ -640,7 +642,10 @@
                             </div>
                             <div class="flex items-center gap-3">
                                 <span class="font-bold text-amber-400 text-sm font-mono">${total.toLocaleString()} ₽</span>
-                                <button onclick="App.removeService(${idx})" class="text-slate-600 hover:text-red-400"><i data-lucide="x" class="w-4 h-4"></i></button>
+                                <!-- FIX: delete = trash icon + bigger tap target -->
+                                <button onclick="App.removeService(${idx})" class="btn-del-mini" aria-label="Удалить">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
                             </div>
                         </div>
                     `;
@@ -917,10 +922,13 @@
                 if(DB.payments) {
                     DB.payments.forEach((p, i) => {
                         payDiv.innerHTML += `
-                        <div class="bg-white/5 rounded-lg p-2 mb-2 relative group">
+                        <div class="bg-white/5 rounded-lg p-2 mb-2 relative">
                             <input class="bg-transparent text-amber-500 font-bold text-xs w-full mb-1 outline-none" value="${p.title}" oninput="Admin.updatePayment(${i}, 'title', this.value)">
                             <textarea class="bg-transparent text-slate-300 text-xs w-full outline-none resize-none h-auto" rows="1" oninput="Admin.updatePayment(${i}, 'text', this.value)">${p.text}</textarea>
-                            <button onclick="Admin.delPayment(${i})" class="absolute top-2 right-2 btn-del-mini opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <!-- FIX: always visible trash button on mobile -->
+                            <button onclick="Admin.delPayment(${i})" class="absolute top-2 right-2 btn-del-mini" aria-label="Удалить">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
                         </div>`;
                     });
                 }
@@ -987,7 +995,7 @@
                 Storage.save();
             },
 
-            // --- BONUSES (NEW) ---
+            // --- BONUSES ---
             addBonus: () => { if(!DB.bonuses) DB.bonuses=[]; DB.bonuses.push({threshold: 10000, text: "Бонус"}); Storage.save(); Admin.render(); },
             delBonus: (i) => { DB.bonuses.splice(i, 1); Storage.save(); Admin.render(); },
             updateBonus: (i, field, val) => { 
