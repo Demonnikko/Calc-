@@ -1,10 +1,11 @@
+<!-- /index.html -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Illusionist OS</title>
-    
+
     <meta name="theme-color" content="#050507">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -22,9 +23,6 @@
             --text-main: #e2e8f0;
             --text-muted: #94a3b8;
         }
-
-        /* ✅ FIX: чтобы ничего не "вылазило" из-за border/padding */
-        *, *::before, *::after { box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -79,7 +77,7 @@
             text-align: right;
         }
         .magic-input::placeholder { color: rgba(255,255,255,0.2); }
-        
+
         .magic-select {
             background: transparent;
             border: none;
@@ -89,7 +87,7 @@
             outline: none;
             appearance: none;
             text-align: right;
-            direction: rtl; 
+            direction: rtl;
         }
         .magic-select option { background: #1e293b; color: white; text-align: left; }
 
@@ -145,69 +143,30 @@
 
         .animate-enter { animation: fade-in-up 0.4s ease-out forwards; }
         @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* ✅ Modal (compact + no overflow) */
-        .modal-backdrop {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(8px);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
 
-            padding:
-              calc(env(safe-area-inset-top, 0px) + 16px)
-              14px
-              calc(env(safe-area-inset-bottom, 0px) + 16px);
+        /* Modal */
+        .modal-backdrop {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px);
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         .modal-backdrop.active { opacity: 1; pointer-events: auto; }
-
         .modal-content {
-            background: #0f172a;
-            border: 1px solid rgba(245, 158, 11, 0.2);
-
-            width: min(420px, calc(100vw - 28px));
-            max-width: min(420px, calc(100vw - 28px));
-
-            max-height: calc(100dvh - (env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px) + 32px));
-            height: auto;
-
-            overflow: hidden;
+            background: #0f172a; border: 1px solid rgba(245, 158, 11, 0.2);
+            width: 100%; max-width: 420px; height: 100%; max-height: 100vh; overflow-y: auto;
             box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            transform: translateY(20px);
-            transition: transform 0.3s;
-            border-radius: 18px;
-        }
-        @supports not (height: 100dvh) {
-            .modal-content {
-                max-height: calc(100vh - (env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px) + 32px));
-            }
+            transform: translateY(20px); transition: transform 0.3s;
+
+            padding-top: calc(env(safe-area-inset-top) + 24px);
+            padding-bottom: env(safe-area-inset-bottom);
         }
         @media(min-width: 640px) {
-            .modal-content { max-height: 85vh; width: 420px; max-width: 420px; border-radius: 20px; }
+            .modal-content {
+                height: auto; max-height: 85vh; border-radius: 20px;
+                padding-top: 0;
+            }
         }
         .modal-backdrop.active .modal-content { transform: translateY(0); }
-
-        .modal-header {
-            position: sticky;
-            top: 0;
-            z-index: 5;
-            padding: 16px 24px 8px 24px;
-            background: linear-gradient(180deg, rgba(15,23,42,0.98) 0%, rgba(15,23,42,0.86) 100%);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .modal-body {
-            padding: 12px 24px 24px 24px;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
 
         /* Admin Settings Specifics */
         .admin-section { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 12px; }
@@ -220,35 +179,318 @@
         .btn-add-mini { width: 100%; padding: 8px; border: 1px dashed rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); border-radius: 8px; font-size: 12px; transition: 0.2s; }
         .btn-add-mini:hover { border-color: var(--gold-primary); color: var(--gold-primary); }
 
-        .btn-del-mini { 
-            color: #ef4444; 
-            padding: 8px; 
-            cursor: pointer; 
-            opacity: 0.8; 
-            display: flex; 
-            align-items: center; 
+        .btn-del-mini {
+            color: #ef4444;
+            padding: 8px;
+            cursor: pointer;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            background: rgba(239, 68, 68, 0.1); 
-            border-radius: 10px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
             border: none;
             transition: all 0.2s;
             flex-shrink: 0;
-            min-width: 40px;
-            min-height: 40px;
         }
-        .btn-del-mini:hover { opacity: 1; background: rgba(239, 68, 68, 0.2); }
+        .btn-del-mini:hover {
+            opacity: 1;
+            background: rgba(239, 68, 68, 0.2);
+        }
 
-        /* ✅ FIX: Toast ниже челки */
-        #toast {
-            top: calc(env(safe-area-inset-top, 0px) + 14px) !important;
+        /* ========= SPLASH (NEW) ========= */
+        .splash {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            background:
+                radial-gradient(1200px 900px at 50% 45%, rgba(245,158,11,0.10), transparent 55%),
+                radial-gradient(900px 700px at 30% 70%, rgba(100,116,139,0.12), transparent 60%),
+                radial-gradient(1200px 900px at 70% 20%, rgba(245,158,11,0.06), transparent 55%),
+                linear-gradient(180deg, #050507 0%, #04060b 100%);
+            overflow: hidden;
+            opacity: 1;
+            transition: opacity 520ms ease, transform 520ms ease;
+            transform: translateZ(0);
         }
+        .splash.hide {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.02);
+        }
+        .splash::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background:
+                radial-gradient(closest-side, rgba(245,158,11,0.16), transparent 70%),
+                radial-gradient(closest-side, rgba(245,158,11,0.10), transparent 72%),
+                radial-gradient(closest-side, rgba(255,255,255,0.05), transparent 68%);
+            filter: blur(28px);
+            opacity: 0.55;
+            animation: splashGlowMove 4.8s ease-in-out infinite;
+        }
+        .splash::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.08;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+        }
+        @keyframes splashGlowMove {
+            0%   { transform: translate(-4%, -3%) rotate(0deg); }
+            50%  { transform: translate(4%, 3%) rotate(8deg); }
+            100% { transform: translate(-4%, -3%) rotate(0deg); }
+        }
+
+        .splash-stage {
+            position: relative;
+            width: min(92vw, 420px);
+            height: min(92vh, 720px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 26px;
+            padding: 28px 20px;
+        }
+
+        .splash-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            font-size: clamp(22px, 5.2vw, 34px);
+            color: transparent;
+            background-clip: text;
+            -webkit-background-clip: text;
+            background-image: linear-gradient(135deg, #fde68a 0%, #f59e0b 55%, #d97706 100%);
+            text-shadow:
+                0 0 20px rgba(245,158,11,0.25),
+                0 0 40px rgba(245,158,11,0.12);
+            animation: titlePulse 2.4s ease-in-out infinite;
+            text-align: center;
+        }
+        @keyframes titlePulse {
+            0%,100% { filter: brightness(1); transform: translateY(0); }
+            50% { filter: brightness(1.15); transform: translateY(-1px); }
+        }
+
+        .splash-sub {
+            margin-top: -16px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.34em;
+            text-transform: uppercase;
+            color: rgba(148,163,184,0.85);
+            text-align: center;
+        }
+
+        .splash-emblem {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            display: grid;
+            place-items: center;
+            transform: translateZ(0);
+        }
+
+        .splash-orbit {
+            position: absolute;
+            inset: -18px;
+            border-radius: 999px;
+            background:
+                conic-gradient(from 180deg,
+                    rgba(245,158,11,0.00) 0deg,
+                    rgba(245,158,11,0.25) 60deg,
+                    rgba(245,158,11,0.00) 140deg,
+                    rgba(245,158,11,0.18) 220deg,
+                    rgba(245,158,11,0.00) 360deg
+                );
+            filter: blur(0.2px);
+            animation: orbitSpin 2.8s linear infinite;
+            opacity: 0.9;
+            mask: radial-gradient(circle at center, transparent 58%, #000 62%);
+            -webkit-mask: radial-gradient(circle at center, transparent 58%, #000 62%);
+        }
+        @keyframes orbitSpin { to { transform: rotate(360deg); } }
+
+        .splash-sparks {
+            position: absolute;
+            inset: -40px;
+            pointer-events: none;
+            opacity: 0.9;
+            filter: blur(0.2px);
+            animation: sparksFloat 3.6s ease-in-out infinite;
+        }
+        @keyframes sparksFloat {
+            0%,100% { transform: translateY(0px); opacity: 0.75; }
+            50% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        .splash-card {
+            position: relative;
+            width: 118px;
+            height: 118px;
+            border-radius: 26px;
+            background:
+                radial-gradient(120px 120px at 30% 20%, rgba(255,255,255,0.10), transparent 55%),
+                linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            border: 1px solid rgba(245,158,11,0.22);
+            box-shadow:
+                0 18px 50px rgba(0,0,0,0.65),
+                0 0 0 1px rgba(255,255,255,0.05) inset,
+                0 0 30px rgba(245,158,11,0.12);
+            display: grid;
+            place-items: center;
+            animation: emblemBreathe 2.8s ease-in-out infinite;
+        }
+        @keyframes emblemBreathe {
+            0%,100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-4px) scale(1.02); }
+        }
+
+        .splash-star {
+            position: absolute;
+            right: 14px;
+            bottom: 14px;
+            width: 34px;
+            height: 34px;
+            opacity: 0.55;
+            filter: drop-shadow(0 0 14px rgba(245,158,11,0.18));
+            animation: starTwinkle 2.2s ease-in-out infinite;
+        }
+        @keyframes starTwinkle {
+            0%,100% { transform: rotate(0deg) scale(1); opacity: 0.40; }
+            50% { transform: rotate(12deg) scale(1.08); opacity: 0.75; }
+        }
+
+        .splash-hint {
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: rgba(226,232,240,0.72);
+            text-align: center;
+        }
+        .splash-hint small {
+            display: block;
+            margin-top: 6px;
+            color: rgba(148,163,184,0.70);
+            font-weight: 600;
+        }
+
+        .splash-progress {
+            margin-top: 8px;
+            width: min(72vw, 260px);
+            height: 5px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .splash-progress > div {
+            height: 100%;
+            width: 35%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(245,158,11,0.20), rgba(245,158,11,0.95), rgba(245,158,11,0.20));
+            animation: progressSweep 1.6s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(245,158,11,0.18));
+        }
+        @keyframes progressSweep {
+            0% { transform: translateX(-110%); }
+            100% { transform: translateX(310%); }
+        }
+        /* ========= /SPLASH ========= */
     </style>
 </head>
 <body class="flex flex-col items-center">
 
     <div class="noise-overlay"></div>
     <canvas id="bg-canvas"></canvas>
-    
+
+    <!-- SPLASH (NEW) -->
+    <div id="splash" class="splash" aria-hidden="true">
+        <div class="splash-stage">
+            <div class="splash-title">Illusionist OS</div>
+            <div class="splash-sub">Калькулятор</div>
+
+            <div class="splash-emblem">
+                <div class="splash-orbit"></div>
+
+                <!-- subtle sparks (svg) -->
+                <svg class="splash-sparks" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g opacity="0.85">
+                        <circle cx="58" cy="72" r="1.6" fill="rgba(245,158,11,0.9)"/>
+                        <circle cx="188" cy="84" r="1.2" fill="rgba(255,255,255,0.45)"/>
+                        <circle cx="176" cy="162" r="1.4" fill="rgba(245,158,11,0.65)"/>
+                        <circle cx="72" cy="168" r="1.1" fill="rgba(255,255,255,0.35)"/>
+                        <circle cx="118" cy="44" r="1.0" fill="rgba(245,158,11,0.55)"/>
+                        <circle cx="206" cy="128" r="1.0" fill="rgba(245,158,11,0.45)"/>
+                        <circle cx="36" cy="128" r="1.0" fill="rgba(245,158,11,0.45)"/>
+                    </g>
+                </svg>
+
+                <div class="splash-card">
+                    <!-- Calendar+gear emblem (inline SVG, gold) -->
+                    <svg width="86" height="86" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="g" x1="16" y1="10" x2="80" y2="90" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#FDE68A"/>
+                                <stop offset="0.52" stop-color="#F59E0B"/>
+                                <stop offset="1" stop-color="#D97706"/>
+                            </linearGradient>
+                            <filter id="gl" x="-40%" y="-40%" width="180%" height="180%">
+                                <feGaussianBlur stdDeviation="2" result="b"/>
+                                <feMerge>
+                                    <feMergeNode in="b"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+
+                        <!-- calendar -->
+                        <g filter="url(#gl)">
+                            <path d="M22 26c0-4.4 3.6-8 8-8h36c4.4 0 8 3.6 8 8v34c0 4.4-3.6 8-8 8H30c-4.4 0-8-3.6-8-8V26Z"
+                                  fill="rgba(0,0,0,0.25)" stroke="url(#g)" stroke-width="3.2" />
+                            <path d="M22 34h52" stroke="rgba(245,158,11,0.45)" stroke-width="2.4"/>
+                            <path d="M34 14v10" stroke="url(#g)" stroke-width="5.2" stroke-linecap="round"/>
+                            <path d="M62 14v10" stroke="url(#g)" stroke-width="5.2" stroke-linecap="round"/>
+
+                            <text x="48" y="58" text-anchor="middle" font-family="Cinzel, serif" font-size="28" font-weight="800" fill="url(#g)">24</text>
+                        </g>
+
+                        <!-- gear -->
+                        <g transform="translate(58,60)" filter="url(#gl)">
+                            <path d="M18.5 8.8l-2-0.7c-0.2-0.6-0.5-1.2-0.9-1.7l1-1.9c0.2-0.4 0.1-0.9-0.2-1.2l-1.6-1.6c-0.3-0.3-0.8-0.4-1.2-0.2l-1.9 1c-0.5-0.4-1.1-0.7-1.7-0.9l-0.7-2C7.4 0.3 7 0 6.6 0H4.4C4 0 3.6 0.3 3.5 0.7l-0.7 2c-0.6 0.2-1.2 0.5-1.7 0.9l-1.9-1c-0.4-0.2-0.9-0.1-1.2 0.2L-3.6 4.4c-0.3 0.3-0.4 0.8-0.2 1.2l1 1.9c-0.4 0.5-0.7 1.1-0.9 1.7l-2 0.7C-6.3 10-6.6 10.4-6.6 10.8v2.2c0 0.4 0.3 0.8 0.7 0.9l2 0.7c0.2 0.6 0.5 1.2 0.9 1.7l-1 1.9c-0.2 0.4-0.1 0.9 0.2 1.2l1.6 1.6c0.3 0.3 0.8 0.4 1.2 0.2l1.9-1c0.5 0.4 1.1 0.7 1.7 0.9l0.7 2c0.1 0.4 0.5 0.7 0.9 0.7h2.2c0.4 0 0.8-0.3 0.9-0.7l0.7-2c0.6-0.2 1.2-0.5 1.7-0.9l1.9 1c0.4 0.2 0.9 0.1 1.2-0.2l1.6-1.6c0.3-0.3 0.4-0.8 0.2-1.2l-1-1.9c0.4-0.5 0.7-1.1 0.9-1.7l2-0.7c0.4-0.1 0.7-0.5 0.7-0.9v-2.2c0-0.4-0.3-0.8-0.7-0.9Z"
+                                  fill="rgba(0,0,0,0.25)" stroke="url(#g)" stroke-width="2.4"/>
+                            <circle cx="5.5" cy="12" r="4.6" fill="rgba(0,0,0,0.25)" stroke="url(#g)" stroke-width="2.2"/>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="splash-hint">
+                Премиальный калькулятор для фокусника
+                <small>Собираю магию…</small>
+            </div>
+
+            <div class="splash-progress"><div></div></div>
+
+            <!-- маленькая "звезда" как в рефе -->
+            <svg class="splash-star" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 6l6.2 16.8L55 29l-16.8 6.2L32 52l-6.2-16.8L9 29l16.8-6.2L32 6Z"
+                      fill="rgba(245,158,11,0.28)" stroke="rgba(245,158,11,0.35)" stroke-width="1.2"/>
+            </svg>
+        </div>
+    </div>
+    <!-- /SPLASH -->
+
     <!-- Top Bar -->
     <header class="w-full max-w-lg p-6 flex justify-between items-center z-10 animate-enter">
         <div class="flex items-center gap-3">
@@ -267,22 +509,25 @@
 
     <!-- Main Content -->
     <main class="w-full max-w-lg px-4 pb-24 z-10 flex-1 overflow-y-auto no-scrollbar">
-        
+
         <!-- CALCULATOR VIEW -->
         <div id="view-calc" class="view-section active space-y-4 animate-enter" style="animation-delay: 0.1s;">
-            
+
             <!-- Card: Client Info -->
             <div class="glass-panel p-5 space-y-4">
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
                     <i data-lucide="user" class="w-3 h-3 text-amber-500"></i> Клиент
                 </h3>
-                
+
                 <div class="input-group flex items-center justify-between">
                     <span class="label-text">Имя</span>
                     <input type="text" id="inp-client" class="magic-input" placeholder="Введите имя...">
                 </div>
 
-                <!-- ✅ Телефон убран полностью -->
+                <div class="input-group flex items-center justify-between">
+                    <span class="label-text">Телефон</span>
+                    <input type="tel" id="inp-phone" class="magic-input" placeholder="8 (999)...">
+                </div>
 
                 <div class="input-group flex items-center justify-between">
                     <span class="label-text">Событие</span>
@@ -313,7 +558,7 @@
                         <input type="time" id="inp-time" class="magic-input text-left" style="padding-top:0; padding-bottom:0;" value="18:00">
                     </div>
                 </div>
-                
+
                 <div id="holiday-alert" class="hidden bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs px-3 py-2 rounded-lg text-center font-bold">
                     🔥 Праздничный тариф (x<span id="holiday-k">1</span>)
                 </div>
@@ -364,7 +609,7 @@
                 <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
                     <i data-lucide="wallet" class="w-3 h-3 text-amber-500"></i> Дополнительно
                 </h3>
-                
+
                 <div class="flex gap-3">
                     <div class="input-group flex-1">
                         <input id="inp-manual-name" class="magic-input text-left" placeholder="Доп. расход (напр. такси)">
@@ -400,8 +645,9 @@
                     </span>
                 </div>
 
-                <!-- ✅ бонусы должны исчезать, если сумма упала -->
-                <div id="bonus-list" class="flex flex-col gap-2 items-center mb-4 text-center"></div>
+                <div id="bonus-list" class="flex flex-col gap-2 items-center mb-4 text-center empty:hidden">
+                    <!-- Bonuses will appear here -->
+                </div>
 
                 <div class="text-center mb-6">
                     <div class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-2">Итоговая смета</div>
@@ -414,10 +660,12 @@
             </div>
         </div>
 
+
         <!-- SETTINGS VIEW (Overlay) -->
         <div id="view-settings" class="modal-backdrop">
-            <div class="modal-content glass-panel p-0 animate-enter flex flex-col">
-                <div class="modal-header">
+            <div class="modal-content glass-panel p-0 animate-enter flex flex-col h-full">
+                <!-- Modal Header -->
+                <div class="p-6 pb-2 shrink-0">
                     <div class="flex justify-between items-center mb-2">
                         <h2 class="text-xl font-display text-white">Настройки</h2>
                         <button onclick="App.toggleSettings()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
@@ -425,7 +673,9 @@
                     <p class="text-xs text-slate-500">Настройка цен, городов и услуг</p>
                 </div>
 
-                <div class="modal-body space-y-6">
+                <!-- Modal Body (Scrollable) -->
+                <div class="p-6 pt-2 flex-1 overflow-y-auto space-y-6">
+
                     <!-- Config Section -->
                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Профиль</h4>
@@ -441,10 +691,10 @@
                         </div>
                     </div>
 
-                    <!-- Bonuses Section -->
+                    <!-- Bonuses Section (NEW) -->
                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Бонусы от суммы</h4>
-                        <p class="text-[10px] text-slate-500 mb-2">Бонусы появятся в КП только если ты добавишь их тут.</p>
+                        <p class="text-[10px] text-slate-500 mb-2">Автоматические подарки при достижении суммы.</p>
                         <div id="settings-bonuses-list" class="space-y-2 mb-3"></div>
                         <button onclick="Admin.addBonus()" class="btn-add-mini">+ Добавить бонус</button>
                     </div>
@@ -467,7 +717,7 @@
                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Праздничные тарифы</h4>
                         <p class="text-[10px] text-slate-500 mb-2">Даты (ММ-ДД) или диапазоны. К = множитель цены.</p>
-                        
+
                         <div id="settings-holidays-list" class="space-y-1 mb-3"></div>
                         <button onclick="Admin.addHoliday()" class="btn-add-mini mb-4">+ Добавить дату</button>
 
@@ -475,8 +725,8 @@
                         <button onclick="Admin.addRange()" class="btn-add-mini">+ Добавить период</button>
                     </div>
 
-                    <!-- Quote Details -->
-                    <div class="admin-section">
+                     <!-- Quote Details -->
+                     <div class="admin-section">
                         <h4 class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">Реквизиты и Ссылки</h4>
                         <div id="settings-payments-list" class="space-y-2 mb-4"></div>
                         <button onclick="Admin.addPayment()" class="btn-add-mini mb-4">+ Добавить реквизиты</button>
@@ -496,7 +746,7 @@
     </main>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed left-1/2 -translate-x-1/2 bg-slate-900 border border-amber-500/30 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 -translate-y-4 pointer-events-none z-50">
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-slate-900 border border-amber-500/30 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 opacity-0 -translate-y-4 pointer-events-none z-50">
         <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
         <span id="toast-msg" class="text-sm font-bold">Скопировано!</span>
     </div>
@@ -521,7 +771,10 @@
             },
             holidays: {"12-31": 2.0, "01-01": 2.0, "02-23": 1.5, "03-08": 1.5},
             holidayRanges: [{sm:12, sd:15, em:12, ed:30, k:1.5}],
-            bonuses: [],
+            bonuses: [
+                { threshold: 15000, text: "🎁 2 билета на шоу" },
+                { threshold: 30000, text: "🎩 Персональный фокус в подарок" }
+            ],
             payments: [{ title: "Т-Банк", text: "8 909 276 33 86\nДмитрий Павлович К." }],
             links: [{ label: "Портфолио", url: "" }],
             config: { performer: "Illusionist", deposit: 30 }
@@ -530,13 +783,42 @@
         let DB = {};
         let State = { date: new Date().toISOString().split('T')[0], cart: [], serviceQty: 1, holidayK: 1, activeBonuses: [] };
 
+        // SPLASH (NEW)
+        const Splash = {
+            minMs: 3600, // дольше и премиальнее
+            shownAt: 0,
+            start: () => {
+                const el = document.getElementById('splash');
+                if (!el) return;
+                Splash.shownAt = performance.now();
+                el.classList.remove('hide');
+            },
+            finishWhenReady: () => {
+                const el = document.getElementById('splash');
+                if (!el) return;
+
+                const fontsReady = (document.fonts && document.fonts.ready) ? document.fonts.ready.catch(() => {}) : Promise.resolve();
+
+                Promise.all([fontsReady]).then(() => {
+                    const elapsed = performance.now() - Splash.shownAt;
+                    const remaining = Math.max(0, Splash.minMs - elapsed);
+
+                    setTimeout(() => {
+                        el.classList.add('hide');
+                        setTimeout(() => el.remove(), 650);
+                    }, remaining);
+                });
+            }
+        };
+
         // --- APP LOGIC ---
         const App = {
             init: () => {
                 Storage.load();
                 App.renderParticles();
                 App.updateUI();
-                
+
+                // Bind Config Inputs
                 const pInp = document.getElementById('cfg-performer');
                 if(pInp) {
                     pInp.value = DB.config.performer;
@@ -554,12 +836,14 @@
             },
 
             updateUI: () => {
+                // Populate Regions
                 const rSel = document.getElementById('inp-region');
                 const currentR = rSel.value;
                 rSel.innerHTML = '<option disabled selected>Выберите...</option>';
                 for(let r in DB.travel) rSel.add(new Option(r, r));
                 if(currentR && DB.travel[currentR]) rSel.value = currentR;
 
+                // Populate Categories
                 const cSel = document.getElementById('inp-cat');
                 const currentC = cSel.value;
                 cSel.innerHTML = '<option disabled selected>Выберите...</option>';
@@ -571,12 +855,13 @@
                 const val = document.getElementById('inp-date').value;
                 if(!val) return;
                 State.date = val;
-                
+
                 const [y,m,d] = val.split('-').map(Number);
                 const key = `${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                
+
                 let k = DB.holidays[key] || 1;
-                
+
+                // Check Ranges if not exact date match
                 if (k === 1 && DB.holidayRanges) {
                     const md = m * 100 + d;
                     for(let r of DB.holidayRanges) {
@@ -586,11 +871,11 @@
                         if(inRange) { k = r.k; break; }
                     }
                 }
-                
+
                 State.holidayK = k;
                 const badge = document.getElementById('holiday-alert');
                 const kSpan = document.getElementById('holiday-k');
-                
+
                 if(k > 1) {
                     badge.classList.remove('hidden');
                     kSpan.innerText = k;
@@ -605,7 +890,7 @@
                 const cSel = document.getElementById('inp-city');
                 cSel.innerHTML = '';
                 cSel.disabled = false;
-                
+
                 if(DB.travel[r]) {
                     for(let c in DB.travel[r].cities) cSel.add(new Option(c, c));
                     cSel.add(new Option("Другой", "other"));
@@ -618,7 +903,7 @@
                 const sSel = document.getElementById('inp-svc');
                 sSel.innerHTML = '';
                 sSel.disabled = false;
-                
+
                 if(DB.services[c]) {
                     for(let s in DB.services[c]) sSel.add(new Option(s, s));
                 }
@@ -635,13 +920,13 @@
                 const cat = document.getElementById('inp-cat').value;
                 const svc = document.getElementById('inp-svc').value;
                 if(!cat || !svc) return App.showToast('Выберите услугу!');
-                
+
                 const basePrice = DB.services[cat][svc];
                 State.cart.push({ name: svc, price: basePrice, qty: State.serviceQty });
-                
+
                 State.serviceQty = 1;
                 document.getElementById('svc-qty').innerText = 1;
-                
+
                 App.renderCart();
                 App.calc();
                 App.showToast('Услуга добавлена');
@@ -650,13 +935,13 @@
             removeService: (idx) => {
                 State.cart.splice(idx, 1);
                 App.renderCart();
-                App.calc(); // ✅ пересчет обязателен
+                App.calc();
             },
 
             renderCart: () => {
                 const list = document.getElementById('cart-list');
                 list.innerHTML = '';
-                
+
                 State.cart.forEach((item, idx) => {
                     const total = item.price * item.qty * State.holidayK;
                     list.innerHTML += `
@@ -667,7 +952,7 @@
                             </div>
                             <div class="flex items-center gap-3">
                                 <span class="font-bold text-amber-400 text-sm font-mono">${total.toLocaleString()} ₽</span>
-                                <button onclick="App.removeService(${idx})" class="btn-del-mini" aria-label="Удалить"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <button onclick="App.removeService(${idx})" class="text-slate-600 hover:text-red-400"><i data-lucide="x" class="w-4 h-4"></i></button>
                             </div>
                         </div>
                     `;
@@ -679,7 +964,7 @@
                 const k = State.holidayK;
                 let sTot = 0;
                 State.cart.forEach(i => sTot += i.price * i.qty * k);
-                
+
                 let discount = 0;
                 if(State.cart.length > 1) {
                     discount = Math.round(sTot * 0.1);
@@ -694,7 +979,7 @@
                 let travel = 0;
                 if(reg && cit && DB.travel[reg]) {
                     const base = cit === 'other' ? DB.travel[reg].fee : DB.travel[reg].cities[cit];
-                    travel = Math.round(base * (k > 1 ? 1.5 : 1)); 
+                    travel = Math.round(base * (k > 1 ? 1.5 : 1));
                 }
 
                 const manPrice = parseInt(document.getElementById('inp-manual-price').value) || 0;
@@ -703,56 +988,48 @@
                 let preTax = sTot + travel + manPrice + guestPrice;
                 const useTax = document.getElementById('inp-tax').checked;
                 const tax = useTax ? Math.round(preTax * 0.06) : 0;
-                
+
                 State.finalTotal = preTax + tax;
                 State.finalDetails = { sTot, discount, travel, manPrice, guestPrice, tax, k };
 
                 document.getElementById('total-sum').innerText = State.finalTotal.toLocaleString() + ' ₽';
 
-                // ✅ Бонусы строго от текущей суммы (если сумма упала — бонусы исчезают)
+                // Check Bonuses
                 State.activeBonuses = [];
-                if(Array.isArray(DB.bonuses) && DB.bonuses.length > 0) {
-                    State.activeBonuses = DB.bonuses
-                        .filter(b => State.finalTotal >= (parseInt(b.threshold)||0));
+                if(DB.bonuses && DB.bonuses.length > 0) {
+                    State.activeBonuses = DB.bonuses.filter(b => State.finalTotal >= b.threshold);
                 }
 
                 const bonusListEl = document.getElementById('bonus-list');
                 bonusListEl.innerHTML = '';
-
                 if(State.activeBonuses.length > 0) {
-                    bonusListEl.classList.remove('hidden');
                     State.activeBonuses.forEach(b => {
                         bonusListEl.innerHTML += `
                         <div class="inline-block bg-amber-500/10 text-amber-400 border border-amber-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider animate-enter">
                            ${b.text}
                         </div>`;
                     });
-                } else {
-                    bonusListEl.classList.add('hidden');
                 }
             },
 
             copyQuote: () => {
-                // ✅ на всякий случай: всегда актуальный расчет перед КП
-                App.calc();
-
                 if(!State.finalTotal) return App.showToast('Сумма 0 ₽');
-                
+
                 const client = document.getElementById('inp-client').value || 'Клиент';
                 const type = document.getElementById('inp-event-type').value;
                 const dateRaw = document.getElementById('inp-date').value;
-                const dateFmt = new Date(dateRaw).toLocaleDateString('ru-RU', {weekday:'short', day:'numeric', month:'long'});
+                const dateFmt = new Date(dateRaw).toLocaleDateString('ru-RU', {day:'numeric', month:'long', weekday:'short'});
                 const time = document.getElementById('inp-time').value;
                 const city = document.getElementById('inp-city').value || '';
                 const depPct = DB.config.deposit || 30;
                 const deposit = Math.round(State.finalTotal * (depPct/100));
-                
-                let text = `${client}!\n\n`;
-                text += `✨ РАСЧЕТ: ${type.toUpperCase()} ✨\n`;
+
+                let text = `Здравствуйте, ${client}!\n\n`;
+                text += `✨ **РАСЧЕТ: ${type.toUpperCase()}** ✨\n`;
                 text += `📅 ${dateFmt} / ${time}\n`;
                 if(city && city!=='other') text += `📍 ${city}\n`;
-                text += `\n🎩 Программа:\n`;
-                
+                text += `\n🎩 **Программа:**\n`;
+
                 State.cart.forEach(i => {
                     const price = Math.round(i.price * i.qty * State.finalDetails.k);
                     text += `• ${i.name} — ${price.toLocaleString()} ₽\n`;
@@ -765,20 +1042,20 @@
                 if(State.finalDetails.tax > 0) text += `📄 Договор (+6%): ${State.finalDetails.tax.toLocaleString()} ₽\n`;
 
                 if(State.activeBonuses.length > 0) {
-                     text += `\n🎁 ВАШИ БОНУСЫ:\n`;
+                     text += `\n🎁 **ВАШИ БОНУСЫ:**\n`;
                      State.activeBonuses.forEach(b => text += `✅ ${b.text}\n`);
                 }
 
-                text += `\n💰 ИТОГО: ${State.finalTotal.toLocaleString()} ₽\n`;
+                text += `\n💰 **ИТОГО: ${State.finalTotal.toLocaleString()} ₽**\n`;
                 text += `💳 Бронь даты (${depPct}%): ${deposit.toLocaleString()} ₽\n`;
 
                 if(DB.payments && DB.payments.length > 0) {
-                    text += `\n📲 Реквизиты:\n`;
+                    text += `\n📲 **Реквизиты:**\n`;
                     DB.payments.forEach(p => text += `${p.title}: ${p.text}\n`);
                 }
 
                 if(DB.links && DB.links.length > 0) {
-                    text += `\n🔗 Ссылки:\n`;
+                    text += `\n🔗 **Ссылки:**\n`;
                     DB.links.forEach(l => text += `• ${l.label}: ${l.url}\n`);
                 }
 
@@ -797,8 +1074,7 @@
                      modal.classList.add('active');
                 } else {
                      modal.classList.remove('active');
-                     App.updateUI();
-                     App.calc();
+                     App.updateUI(); // Refresh main view dropdowns
                 }
             },
 
@@ -935,7 +1211,7 @@
                 // BONUSES
                 const bDiv = document.getElementById('settings-bonuses-list');
                 bDiv.innerHTML = '';
-                if(Array.isArray(DB.bonuses)) {
+                if(DB.bonuses) {
                     DB.bonuses.forEach((b, i) => {
                         bDiv.innerHTML += `
                         <div class="edit-row">
@@ -953,10 +1229,10 @@
                 if(DB.payments) {
                     DB.payments.forEach((p, i) => {
                         payDiv.innerHTML += `
-                        <div class="bg-white/5 rounded-lg p-2 mb-2 relative">
+                        <div class="bg-white/5 rounded-lg p-2 mb-2 relative group">
                             <input class="bg-transparent text-amber-500 font-bold text-xs w-full mb-1 outline-none" value="${p.title}" oninput="Admin.updatePayment(${i}, 'title', this.value)">
                             <textarea class="bg-transparent text-slate-300 text-xs w-full outline-none resize-none h-auto" rows="1" oninput="Admin.updatePayment(${i}, 'text', this.value)">${p.text}</textarea>
-                            <button onclick="Admin.delPayment(${i})" class="absolute top-2 right-2 btn-del-mini" aria-label="Удалить"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <button onclick="Admin.delPayment(${i})" class="absolute top-2 right-2 btn-del-mini opacity-0 group-hover:opacity-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>`;
                     });
                 }
@@ -977,6 +1253,7 @@
                 lucide.createIcons();
             },
 
+            // HELPERS
             toggleSection: (el) => {
                 const content = el.nextElementSibling;
                 const icon = el.querySelector('i');
@@ -984,14 +1261,16 @@
                 icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
             },
 
-            addRegion: () => { const n = prompt("Название региона:"); if(n && !DB.travel[n]) { DB.travel[n]={fee:0, cities:{}}; Storage.save(); Admin.render(); App.calc(); } },
-            delRegion: (r) => { if(confirm(`Удалить ${r}?`)) { delete DB.travel[r]; Storage.save(); Admin.render(); App.calc(); } },
-            setRegionFee: (r,v) => { DB.travel[r].fee=parseInt(v)||0; Storage.save(); App.calc(); },
-            addCity: (r) => { const n = prompt("Название города:"); if(n) { DB.travel[r].cities[n]=0; Storage.save(); Admin.render(); App.calc(); } },
-            delCity: (r,c) => { delete DB.travel[r].cities[c]; Storage.save(); Admin.render(); App.calc(); },
-            renameCity: (r,oldC,newC) => { if(oldC===newC || !newC) return; const p = DB.travel[r].cities[oldC]; delete DB.travel[r].cities[oldC]; DB.travel[r].cities[newC] = p; Storage.save(); App.calc(); },
-            setCityPrice: (r,c,v) => { DB.travel[r].cities[c]=parseInt(v)||0; Storage.save(); App.calc(); },
+            // --- LOGISTICS ---
+            addRegion: () => { const n = prompt("Название региона:"); if(n && !DB.travel[n]) { DB.travel[n]={fee:0, cities:{}}; Storage.save(); Admin.render(); } },
+            delRegion: (r) => { if(confirm(`Удалить ${r}?`)) { delete DB.travel[r]; Storage.save(); Admin.render(); } },
+            setRegionFee: (r,v) => { DB.travel[r].fee=parseInt(v)||0; Storage.save(); },
+            addCity: (r) => { const n = prompt("Название города:"); if(n) { DB.travel[r].cities[n]=0; Storage.save(); Admin.render(); } },
+            delCity: (r,c) => { delete DB.travel[r].cities[c]; Storage.save(); Admin.render(); },
+            renameCity: (r,oldC,newC) => { if(oldC===newC || !newC) return; const p = DB.travel[r].cities[oldC]; delete DB.travel[r].cities[oldC]; DB.travel[r].cities[newC] = p; Storage.save(); },
+            setCityPrice: (r,c,v) => { DB.travel[r].cities[c]=parseInt(v)||0; Storage.save(); },
 
+            // --- SERVICES ---
             addCategory: () => { const n = prompt("Название категории:"); if(n && !DB.services[n]) { DB.services[n]={}; Storage.save(); Admin.render(); } },
             delCat: (c) => { if(confirm(`Удалить ${c}?`)) { delete DB.services[c]; Storage.save(); Admin.render(); } },
             addSvc: (c) => { const n = prompt("Название услуги:"); if(n) { DB.services[c][n]=0; Storage.save(); Admin.render(); } },
@@ -999,13 +1278,14 @@
             renameSvc: (c,oldS,newS) => { if(oldS===newS || !newS) return; const p = DB.services[c][oldS]; delete DB.services[c][oldS]; DB.services[c][newS] = p; Storage.save(); },
             setSvcPrice: (c,s,v) => { DB.services[c][s]=parseInt(v)||0; Storage.save(); },
 
-            addHoliday: () => { const d = prompt("Дата (ММ-ДД):", "12-31"); if(d) { DB.holidays[d]=1.5; Storage.save(); Admin.render(); App.calc(); } },
-            delHoliday: (k) => { delete DB.holidays[k]; Storage.save(); Admin.render(); App.calc(); },
-            updateHolidayKey: (oldK, newK) => { if(oldK===newK) return; const v=DB.holidays[oldK]; delete DB.holidays[oldK]; DB.holidays[newK]=v; Storage.save(); Admin.render(); App.calc(); },
-            updateHolidayVal: (k, v) => { DB.holidays[k]=parseFloat(v)||1; Storage.save(); App.calc(); },
-            
-            addRange: () => { if(!DB.holidayRanges) DB.holidayRanges=[]; DB.holidayRanges.push({sm:12, sd:20, em:12, ed:30, k:1.5}); Storage.save(); Admin.render(); App.calc(); },
-            delRange: (i) => { DB.holidayRanges.splice(i, 1); Storage.save(); Admin.render(); App.calc(); },
+            // --- HOLIDAYS ---
+            addHoliday: () => { const d = prompt("Дата (ММ-ДД):", "12-31"); if(d) { DB.holidays[d]=1.5; Storage.save(); Admin.render(); } },
+            delHoliday: (k) => { delete DB.holidays[k]; Storage.save(); Admin.render(); },
+            updateHolidayKey: (oldK, newK) => { if(oldK===newK) return; const v=DB.holidays[oldK]; delete DB.holidays[oldK]; DB.holidays[newK]=v; Storage.save(); Admin.render(); },
+            updateHolidayVal: (k, v) => { DB.holidays[k]=parseFloat(v)||1; Storage.save(); },
+
+            addRange: () => { if(!DB.holidayRanges) DB.holidayRanges=[]; DB.holidayRanges.push({sm:12, sd:20, em:12, ed:30, k:1.5}); Storage.save(); Admin.render(); },
+            delRange: (i) => { DB.holidayRanges.splice(i, 1); Storage.save(); Admin.render(); },
             updateRange: (i, field, val) => {
                 const r = DB.holidayRanges[i];
                 if(field==='k') r.k = parseFloat(val)||1;
@@ -1017,18 +1297,18 @@
                     }
                 }
                 Storage.save();
-                App.calc();
             },
 
-            addBonus: () => { if(!Array.isArray(DB.bonuses)) DB.bonuses=[]; DB.bonuses.push({threshold: 10000, text: "Бонус"}); Storage.save(); Admin.render(); App.calc(); },
-            delBonus: (i) => { DB.bonuses.splice(i, 1); Storage.save(); Admin.render(); App.calc(); },
-            updateBonus: (i, field, val) => { 
+            // --- BONUSES (NEW) ---
+            addBonus: () => { if(!DB.bonuses) DB.bonuses=[]; DB.bonuses.push({threshold: 10000, text: "Бонус"}); Storage.save(); Admin.render(); },
+            delBonus: (i) => { DB.bonuses.splice(i, 1); Storage.save(); Admin.render(); },
+            updateBonus: (i, field, val) => {
                 if(field === 'threshold') DB.bonuses[i].threshold = parseInt(val) || 0;
                 else DB.bonuses[i].text = val;
                 Storage.save();
-                App.calc();
             },
 
+            // --- EXTRAS ---
             addPayment: () => { if(!DB.payments) DB.payments=[]; DB.payments.push({title:"Банк", text:""}); Storage.save(); Admin.render(); },
             delPayment: (i) => { DB.payments.splice(i,1); Storage.save(); Admin.render(); },
             updatePayment: (i, f, v) => { DB.payments[i][f]=v; Storage.save(); },
@@ -1050,19 +1330,25 @@
             load: () => {
                 const s = localStorage.getItem('illusionist_calc_db');
                 if(s) {
-                    try { DB = { ...DEFAULT_DB, ...JSON.parse(s) }; } 
+                    try { DB = { ...DEFAULT_DB, ...JSON.parse(s) }; }
                     catch(e) { DB = DEFAULT_DB; }
                 } else {
                     DB = DEFAULT_DB;
                 }
+                // Migration checks
                 if(!DB.holidayRanges) DB.holidayRanges = DEFAULT_DB.holidayRanges;
                 if(!DB.payments) DB.payments = DEFAULT_DB.payments;
                 if(!DB.links) DB.links = DEFAULT_DB.links;
-                if(!Array.isArray(DB.bonuses)) DB.bonuses = [];
+                if(!DB.bonuses) DB.bonuses = DEFAULT_DB.bonuses;
             }
         };
 
-        window.onload = App.init;
+        // IMPORTANT: keep init, but show splash premium + longer
+        window.addEventListener('load', () => {
+            Splash.start();
+            App.init();
+            Splash.finishWhenReady();
+        });
     </script>
 </body>
 </html>
