@@ -31,15 +31,40 @@
       --gold:#f59e0b;
       --muted:#94a3b8;
       --text:#e5e7eb;
+
+      /* Safe-area vars */
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+      --safe-left: env(safe-area-inset-left);
+      --safe-right: env(safe-area-inset-right);
     }
 
-    html,body{height:100%; background:var(--bg); color:var(--text);}
-    body{font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; overflow-x:hidden;}
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden !important;
+      max-width: 100vw !important;
+      height: -webkit-fill-available;
+      scroll-behavior: smooth;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body{
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      overflow-x:hidden;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+      padding-left: var(--safe-left);
+      padding-right: var(--safe-right);
+      overscroll-behavior: none;
+    }
 
     .font-cinzel{font-family:Cinzel, serif;}
     .mono{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
 
-    /* subtle glass panels */
     .glass{
       background: var(--panel);
       border: 1px solid var(--stroke);
@@ -47,10 +72,41 @@
       -webkit-backdrop-filter: blur(12px);
     }
 
-    /* Splash */
+    header{
+      padding-top: calc(12px + env(safe-area-inset-top)) !important;
+      padding-left: max(16px, env(safe-area-inset-left)) !important;
+      padding-right: max(16px, env(safe-area-inset-right)) !important;
+    }
+
+    main{
+      padding-left: max(12px, env(safe-area-inset-left)) !important;
+      padding-right: max(12px, env(safe-area-inset-right)) !important;
+      overflow-x: hidden !important;
+    }
+
+    button, .btn, .btn-gold, .btn-add-mini, .btn-del-mini, .btn-icon, .btn-data, .rounding-btn, .rounding-btn-reset {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    @media (max-width: 768px) {
+      input[type="text"],
+      input[type="number"],
+      input[type="date"],
+      input[type="time"],
+      select,
+      textarea {
+        font-size: 16px !important;
+      }
+    }
+
     #splash{
       position:fixed; inset:0;
       display:flex; align-items:center; justify-content:center;
+      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom) 16px;
+      box-sizing: border-box;
       background: radial-gradient(800px 600px at 30% 20%, rgba(245,158,11,.10), transparent 60%),
                   radial-gradient(700px 500px at 70% 80%, rgba(99,102,241,.10), transparent 60%),
                   var(--bg);
@@ -59,24 +115,75 @@
     }
     #splash.hide{opacity:0; transform: translateY(-6px); pointer-events:none;}
 
-    /* Settings modal */
+    #toast{
+      position: fixed;
+      top: calc(16px + env(safe-area-inset-top));
+      left: 16px;
+      right: 16px;
+      z-index: 60;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity .3s ease, transform .3s ease;
+      pointer-events: none;
+    }
+    #toast.show{
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    @media (min-width: 640px){
+      #toast{
+        left: 50%;
+        right: auto;
+        width: 420px;
+        max-width: calc(100vw - 32px);
+        transform: translateX(-50%) translateY(-10px);
+      }
+      #toast.show{
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
     #view-settings{
       position:fixed; inset:0;
       background: rgba(0,0,0,.65);
       display:none;
       z-index:40;
+      overflow: hidden !important;
     }
     #view-settings.active{display:block;}
+
     #view-settings .panel{
-      position:absolute; left:50%; top:50%;
-      transform: translate(-50%,-50%);
-      width:min(980px, calc(100% - 24px));
-      max-height: calc(100% - 24px);
-      overflow:auto;
-      border-radius: 18px;
+      position: fixed !important;
+      left: 0 !important;
+      right: 0 !important;
+      top: env(safe-area-inset-top) !important;
+      bottom: env(safe-area-inset-bottom) !important;
+      transform: none !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      max-height: none !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      -webkit-overflow-scrolling: touch;
+    }
+    @media (min-width: 768px) {
+      #view-settings .panel{
+        position:absolute !important;
+        left:50% !important;
+        top:50% !important;
+        right:auto !important;
+        bottom:auto !important;
+        transform: translate(-50%,-50%) !important;
+        width: min(900px, calc(100% - 48px)) !important;
+        max-width: min(900px, calc(100% - 48px)) !important;
+        max-height: calc(100vh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+        border-radius: 18px !important;
+      }
     }
 
-    /* Admin accordion */
     .admin-header{
       display:flex;
       justify-content:space-between;
@@ -96,7 +203,6 @@
       padding-top:10px;
     }
 
-    /* small controls */
     .edit-row{
       display:flex;
       align-items:center;
@@ -111,6 +217,8 @@
       font-size: 12px;
       color: #e2e8f0;
       outline: none;
+      max-width: 100% !important;
+      min-width: 0 !important;
     }
     .edit-input:focus{border-color: rgba(245,158,11,.35); box-shadow: 0 0 0 3px rgba(245,158,11,.10);}
 
@@ -162,79 +270,29 @@
     .animate-enter{animation: enter .25s ease both;}
     @keyframes enter{from{opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;}}
 
-    /* Canvas bg */
     #bg-canvas{position:fixed; inset:0; z-index:0; pointer-events:none;}
 
-    /* Error styles (ВАЖНО) */
-    .error-input {
-      border-color: #ef4444 !important;
-      animation: shake 0.3s;
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
+    .error-input { border-color: #ef4444 !important; animation: shake 0.3s; }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
-    /* ============================================
-       ЧАСТЬ 1: Data reliability styles (NEW)
-       ============================================ */
-
-    /* Backup status indicator */
-    .backup-status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 10px;
-      color: var(--muted);
-    }
-    .backup-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #22c55e;
-      animation: pulse 2s infinite;
-    }
+    .backup-status { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--muted); }
+    .backup-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; }
     .backup-dot.warning { background: #f59e0b; }
     .backup-dot.error { background: #ef4444; }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-    /* Data management buttons */
     .btn-data {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 11px;
-      font-weight: 700;
-      transition: all 0.2s;
-      user-select: none;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 14px; border-radius: 12px; font-size: 11px; font-weight: 700;
+      transition: all 0.2s; user-select: none;
     }
-    .btn-export {
-      background: rgba(34, 197, 94, 0.12);
-      border: 1px solid rgba(34, 197, 94, 0.25);
-      color: rgba(34, 197, 94, 0.95);
-    }
+    .btn-export { background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.25); color: rgba(34, 197, 94, 0.95); }
     .btn-export:hover { background: rgba(34, 197, 94, 0.18); }
-    .btn-import {
-      background: rgba(59, 130, 246, 0.12);
-      border: 1px solid rgba(59, 130, 246, 0.25);
-      color: rgba(59, 130, 246, 0.95);
-    }
+    .btn-import { background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.25); color: rgba(59, 130, 246, 0.95); }
     .btn-import:hover { background: rgba(59, 130, 246, 0.18); }
-    .btn-backup {
-      background: rgba(168, 85, 247, 0.12);
-      border: 1px solid rgba(168, 85, 247, 0.25);
-      color: rgba(168, 85, 247, 0.95);
-    }
+    .btn-backup { background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.25); color: rgba(168, 85, 247, 0.95); }
     .btn-backup:hover { background: rgba(168, 85, 247, 0.18); }
 
-    /* Backup slots */
     .backup-slot {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.08);
@@ -244,30 +302,289 @@
       transition: all 0.2s;
       min-height: 56px;
     }
-    .backup-slot:hover {
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(245,158,11,0.3);
+    .backup-slot:hover { background: rgba(255,255,255,0.06); border-color: rgba(245,158,11,0.3); }
+    .backup-slot.empty { opacity: 0.4; cursor: default; }
+    .backup-slot.empty:hover { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); }
+
+    #import-file-input { display: none; }
+
+    @media (max-width: 640px) {
+      .grid-cols-2.md\:grid-cols-4 { grid-template-columns: repeat(2, 1fr) !important; }
+      .grid-cols-5 { grid-template-columns: repeat(3, 1fr) !important; }
+      .grid-cols-3 { grid-template-columns: 1fr !important; gap: 4px !important; }
     }
-    .backup-slot.empty {
-      opacity: 0.4;
-      cursor: default;
+    @media (max-width: 480px) {
+      .btn-gold { padding: 10px 12px !important; font-size: 13px !important; }
+      .btn-add-mini { padding: 6px 8px !important; font-size: 10px !important; }
+      .btn-data { padding: 8px 10px !important; font-size: 10px !important; }
+      .edit-row { flex-wrap: wrap !important; gap: 6px !important; }
+      .edit-row input:not([type="number"]) { width: 100% !important; flex: none !important; }
+      .edit-row input[type="number"] { width: 80px !important; flex: none !important; }
+      #cart-list > div { padding: 8px 10px !important; }
+      #cart-list .text-sm { font-size: 12px !important; }
+      #cart-list .text-xs { font-size: 10px !important; }
+      .backup-slot { padding: 6px 8px !important; min-height: 44px !important; }
+      .backup-slot .text-\[10px\] { font-size: 9px !important; }
+      .backup-slot .text-\[9px\] { font-size: 8px !important; }
     }
-    .backup-slot.empty:hover {
-      background: rgba(255,255,255,0.03);
-      border-color: rgba(255,255,255,0.08);
+    @media (max-width: 768px) {
+      .lg\:grid-cols-2 { grid-template-columns: 1fr !important; }
+      .lg\:col-span-2 { grid-column: span 1 !important; }
+    }
+    @media (max-width: 380px) {
+      header .font-cinzel { font-size: 14px !important; }
+      header .text-xs { font-size: 9px !important; }
+      .backup-status { display: none !important; }
+    }
+    @media (max-width: 480px) {
+      #view-settings .panel > .flex:first-child { flex-wrap: wrap; gap: 8px; }
+      #view-settings .panel .font-cinzel { font-size: 16px !important; }
     }
 
-    /* Hidden file input */
-    #import-file-input {
+    /* ============================================
+       МОДУЛЬ 1: БЫСТРЫЕ ШАБЛОНЫ (CSS)
+       ============================================ */
+    .template-card {
+      background: rgba(245, 158, 11, 0.06);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .template-card:hover {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.35);
+      transform: translateY(-1px);
+    }
+    .template-card:active { transform: translateY(0); }
+    .template-card .template-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: #f59e0b;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .template-card .template-info { font-size: 9px; color: #64748b; }
+    .template-card .template-price {
+      font-size: 10px;
+      font-weight: 800;
+      color: #e2e8f0;
+      font-family: "JetBrains Mono", monospace;
+      margin-top: 4px;
+    }
+    .template-card .template-delete {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      background: rgba(239, 68, 68, 0.15);
+      color: rgba(239, 68, 68, 0.7);
+      opacity: 0;
+      transition: all 0.2s;
+    }
+    .template-card:hover .template-delete { opacity: 1; }
+    .template-card .template-delete:hover { background: rgba(239, 68, 68, 0.3); color: #ef4444; }
+
+    #templates-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
       display: none;
+      z-index: 45;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    #templates-modal.active { display: flex; align-items: center; justify-content: center; }
+    #templates-modal .modal-content {
+      background: #0a0a0c;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      width: min(420px, calc(100% - 32px));
+      max-height: calc(100vh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ============================================
+       МОДУЛЬ 2: ОКРУГЛЕНИЕ СУММЫ (CSS)
+       ============================================ */
+    .rounding-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #94a3b8;
+      font-size: 10px;
+      font-weight: 600;
+      font-family: "JetBrains Mono", monospace;
+      transition: all 0.2s;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .rounding-btn:hover {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.25);
+      color: #f59e0b;
+    }
+    .rounding-btn:active { transform: scale(0.96); }
+    .rounding-btn-main {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+    .rounding-btn-main:hover { background: rgba(245, 158, 11, 0.18); }
+
+    .rounding-btn-reset {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border-radius: 6px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: rgba(239, 68, 68, 0.7);
+      transition: all 0.2s;
+    }
+    .rounding-btn-reset:hover { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+    @keyframes roundPulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    .round-pulse { animation: roundPulse 0.3s ease; }
+
+    /* ============================================
+       МОДУЛЬ 3: ТРИ ВАРИАНТА КП (CSS)
+       ============================================ */
+    #variants-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      z-index: 45;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    #variants-modal.active {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: max(24px, env(safe-area-inset-top));
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+    .variants-modal-content {
+      background: #0a0a0c;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      width: min(520px, calc(100% - 32px));
+      max-height: calc(100vh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      overflow: auto;
+      margin: auto 0;
+    }
+
+    .variant-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .variant-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .variant-card.variant-base { border-color: rgba(100, 116, 139, 0.3); }
+    .variant-card.variant-base:hover { border-color: rgba(100, 116, 139, 0.5); }
+
+    .variant-card.variant-optimal { border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); }
+    .variant-card.variant-optimal:hover { border-color: rgba(245, 158, 11, 0.5); background: rgba(245, 158, 11, 0.1); }
+
+    .variant-card.variant-premium { border-color: rgba(168, 85, 247, 0.3); background: rgba(168, 85, 247, 0.05); }
+    .variant-card.variant-premium:hover { border-color: rgba(168, 85, 247, 0.5); background: rgba(168, 85, 247, 0.1); }
+
+    .variant-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .variant-badge {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .variant-badge.badge-base { background: rgba(100, 116, 139, 0.2); color: #94a3b8; }
+    .variant-badge.badge-optimal { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    .variant-badge.badge-premium { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
+
+    .variant-price { font-size: 18px; font-weight: 800; font-family: "JetBrains Mono", monospace; }
+    .variant-price.price-base { color: #94a3b8; }
+    .variant-price.price-optimal { color: #f59e0b; }
+    .variant-price.price-premium { color: #a855f7; }
+
+    .variant-items { font-size: 11px; color: #94a3b8; line-height: 1.5; }
+    .variant-items li { padding: 2px 0; padding-left: 12px; position: relative; }
+    .variant-items li::before { content: "•"; position: absolute; left: 0; color: #64748b; }
+
+    .variant-bonuses { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+    .variant-bonus-tag {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 4px;
+      margin-bottom: 4px;
+    }
+
+    .variant-copy-hint {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      opacity: 0;
+      transition: opacity 0.2s;
+      color: #64748b;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .variant-card:hover .variant-copy-hint { opacity: 1; }
+
+    .variant-recommended {
+      position: absolute;
+      top: -8px;
+      right: 12px;
+      font-size: 8px;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      color: #000;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
     }
   </style>
 </head>
 
 <body class="min-h-screen">
-  <!-- 1) hidden import input (NEW) -->
   <input type="file" id="import-file-input" accept=".json,.backup" />
-
   <canvas id="bg-canvas"></canvas>
 
   <!-- Splash -->
@@ -283,7 +600,7 @@
   </div>
 
   <!-- Toast -->
-  <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 opacity-0 -translate-y-4 transition-all duration-300">
+  <div id="toast">
     <div class="glass rounded-2xl px-4 py-3 shadow-xl">
       <div class="flex items-center gap-2">
         <i data-lucide="bell" class="w-4 h-4 text-amber-400"></i>
@@ -293,7 +610,7 @@
   </div>
 
   <!-- Header -->
-  <header class="relative z-10 px-4 pt-5">
+  <header class="relative z-10">
     <div class="max-w-4xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-2xl glass flex items-center justify-center">
@@ -302,7 +619,6 @@
         <div>
           <div class="font-cinzel text-white tracking-wide">Illusionist OS</div>
 
-          <!-- 2) subtitle + indicator (REPLACED) -->
           <div class="flex items-center gap-2">
             <span class="text-xs text-slate-400 font-semibold">Умный калькулятор</span>
             <div id="backup-indicator" class="backup-status">
@@ -323,7 +639,7 @@
   <main class="relative z-10 px-4 pb-10">
     <div class="max-w-4xl mx-auto mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-      <!-- Left: inputs -->
+      <!-- Left -->
       <section class="glass rounded-2xl p-4">
         <div class="flex items-center justify-between mb-3">
           <div class="text-sm font-extrabold text-white tracking-wide">Данные</div>
@@ -448,33 +764,95 @@
           </button>
         </div>
 
-      </section>
-
-      <!-- Right: cart & result -->
-      <section class="glass rounded-2xl p-4">
-        <div class="flex items-center justify-between mb-2">
-          <div class="text-sm font-extrabold text-white tracking-wide">Корзина</div>
-          <div id="discount-badge" class="hidden text-[11px] font-extrabold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
-            Скидка 10% за комплект
-          </div>
+        <div class="mt-3">
+          <button id="btn-open-variants" class="glass rounded-2xl px-4 py-3 font-extrabold text-slate-100 border border-white/10 hover:bg-white/10 transition w-full">
+            <span class="flex items-center justify-center gap-2">
+              <i data-lucide="layers" class="w-4 h-4 text-amber-400"></i>
+              3 варианта КП
+            </span>
+          </button>
         </div>
 
-        <div id="cart-list" class="space-y-2"></div>
+      </section>
+
+      <!-- Right -->
+      <section class="glass rounded-2xl p-4">
+        <!-- Templates -->
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-sm font-extrabold text-white tracking-wide">Шаблоны</div>
+          <button id="btn-open-templates-modal" class="text-[11px] font-extrabold text-slate-300 hover:text-white">
+            Управлять
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2" id="templates-list"></div>
+        <div id="templates-empty" class="hidden text-xs text-slate-500 bg-white/5 border border-white/10 rounded-xl p-3">
+          Пока нет шаблонов. Собери корзину и нажми “Сохранить как шаблон”.
+        </div>
+
+        <div class="mt-2 grid grid-cols-2 gap-2">
+          <button id="btn-save-as-template" class="btn-add-mini hidden text-xs">
+            + Сохранить как шаблон
+          </button>
+          <button id="btn-manage-templates" class="glass rounded-xl px-3 py-2 text-xs font-extrabold text-slate-200 border border-white/10 hover:bg-white/10">
+            Подсказка
+          </button>
+        </div>
 
         <div class="mt-4 border-t border-white/10 pt-4">
-          <div class="flex items-baseline justify-between">
-            <div class="text-slate-300 font-bold">Итого</div>
-            <div id="total-sum" class="text-2xl font-extrabold text-amber-400 mono">0 ₽</div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="text-sm font-extrabold text-white tracking-wide">Корзина</div>
+            <div id="discount-badge" class="hidden text-[11px] font-extrabold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
+              Скидка 10% за комплект
+            </div>
           </div>
 
-          <div class="mt-3">
-            <div class="text-xs text-slate-400 font-bold mb-2">Бонусы (что клиент получает)</div>
-            <div id="bonus-list" class="flex flex-wrap gap-2"></div>
-          </div>
+          <div id="cart-list" class="space-y-2"></div>
 
-          <div class="mt-4 text-[12px] text-slate-500 leading-relaxed">
-            Клиенту не нужен “Smart Calc”. Клиенту нужен ответ: <span class="text-slate-300 font-bold">сколько</span> и
-            <span class="text-slate-300 font-bold">что он получит</span>. Поэтому бонусы всегда видны по сумме.
+          <div class="mt-4 border-t border-white/10 pt-4">
+            <div class="flex items-baseline justify-between">
+              <div class="text-slate-300 font-bold">Итого</div>
+              <div id="total-sum" class="text-2xl font-extrabold text-amber-400 mono">0 ₽</div>
+            </div>
+
+            <!-- Rounding controls -->
+            <div id="rounding-controls" class="hidden mt-3">
+              <div class="flex items-center justify-between">
+                <div class="text-xs text-slate-400 font-bold">Округлить</div>
+                <div id="rounding-applied" class="hidden text-[10px] text-slate-400 font-bold flex items-center gap-2">
+                  <span>Разница:</span>
+                  <span id="rounding-diff" class="text-amber-400 mono">+0 ₽</span>
+                  <button id="btn-round-reset" class="rounding-btn-reset hidden" title="Сбросить">
+                    <i data-lucide="x" class="w-3 h-3"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-2 flex flex-wrap gap-2">
+                <button id="btn-round-down" class="rounding-btn">
+                  <i data-lucide="corner-down-left" class="w-3 h-3"></i>
+                  <span id="round-down-value">0</span>
+                </button>
+                <button id="btn-round-nearest" class="rounding-btn rounding-btn-main">
+                  <i data-lucide="target" class="w-3 h-3"></i>
+                  <span id="round-nearest-value">0</span>
+                </button>
+                <button id="btn-round-up" class="rounding-btn">
+                  <i data-lucide="corner-up-right" class="w-3 h-3"></i>
+                  <span id="round-up-value">0</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <div class="text-xs text-slate-400 font-bold mb-2">Бонусы (что клиент получает)</div>
+              <div id="bonus-list" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <div class="mt-4 text-[12px] text-slate-500 leading-relaxed">
+              Клиенту не нужен “Smart Calc”. Клиенту нужен ответ: <span class="text-slate-300 font-bold">сколько</span> и
+              <span class="text-slate-300 font-bold">что он получит</span>. Поэтому бонусы всегда видны по сумме.
+            </div>
           </div>
         </div>
       </section>
@@ -491,13 +869,12 @@
           <div class="text-xs text-slate-400 font-semibold">Админка базы цен • реквизиты • бонусы</div>
         </div>
 
-        <!-- ВАЖНО: id для закрытия -->
         <button id="btn-close-settings" class="text-slate-400 hover:text-white btn-icon" aria-label="Закрыть">
           <i data-lucide="x" class="w-6 h-6"></i>
         </button>
       </div>
 
-      <!-- ============ DATA MANAGEMENT SECTION (NEW) ============ -->
+      <!-- DATA MANAGEMENT -->
       <div class="glass rounded-2xl p-4 mb-4 border-2 border-emerald-500/20">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-2">
@@ -545,7 +922,6 @@
           </div>
         </div>
       </div>
-      <!-- ============ END DATA MANAGEMENT ============ -->
 
       <!-- Profile -->
       <div class="glass rounded-2xl p-4 mb-4">
@@ -614,31 +990,68 @@
     </div>
   </div>
 
-  <!-- SCRIPT (единый) -->
+  <!-- Templates modal -->
+  <div id="templates-modal" aria-hidden="true">
+    <div class="modal-content glass p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <div class="font-cinzel text-white text-lg">Шаблоны</div>
+          <div class="text-xs text-slate-400 font-semibold">Нажми по карточке — применить. ✕ — удалить.</div>
+        </div>
+        <button id="btn-close-templates-modal" class="text-slate-400 hover:text-white btn-icon" aria-label="Закрыть">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2" id="templates-list-modal"></div>
+      <div id="templates-empty-modal" class="hidden text-xs text-slate-500 bg-white/5 border border-white/10 rounded-xl p-3">
+        Пока нет шаблонов. Собери корзину и нажми “Сохранить как шаблон”.
+      </div>
+
+      <div class="mt-3">
+        <button id="btn-save-as-template-modal" class="btn-add-mini text-xs w-full">
+          + Сохранить текущую корзину как шаблон
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Variants modal -->
+  <div id="variants-modal" aria-hidden="true">
+    <div class="variants-modal-content glass p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <div class="font-cinzel text-white text-lg">3 варианта КП</div>
+          <div class="text-xs text-slate-400 font-semibold">Нажми по варианту — КП скопируется.</div>
+        </div>
+        <button id="btn-close-variants" class="text-slate-400 hover:text-white btn-icon" aria-label="Закрыть">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3" id="variants-container"></div>
+
+      <div class="mt-4 text-[12px] text-slate-500 leading-relaxed">
+        Оптимальный — обычно “самый продающий”: не дешевит, но и не пугает. Премиум — чтобы было куда “дотягивать”.
+      </div>
+    </div>
+  </div>
+
   <script>
     'use strict';
 
-    /* ============================================
-       ЧАСТЬ 3: Константы (NEW)
-       ============================================ */
     const DB_VERSION = '2.0';
     const STORAGE_KEY = 'illusionist_calc_db';
     const BACKUP_KEY = 'illusionist_backups';
     const MAX_BACKUPS = 5;
     const AUTO_BACKUP_INTERVAL = 5 * 60 * 1000; // 5 минут
 
-    // ============================================================================
-    // ЧАСТЬ 1: УТИЛИТЫ И БЕЗОПАСНОСТЬ (part1-utils-security.js)
-    // ============================================================================
-
     const Utils = {
-      // SANITIZATION & VALIDATION
       escapeHtml: (text) => {
         if (!text) return '';
         const map = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'};
         return String(text).replace(/[&<>"']/g, (m) => map[m]);
       },
-
       sanitizeText: (text, maxLength = 1000) => {
         if (!text) return '';
         return String(text)
@@ -646,19 +1059,16 @@
           .substring(0, maxLength)
           .trim();
       },
-
       sanitizeNumber: (value, min = 0, max = 999999, defaultValue = null) => {
         const num = parseInt(value, 10);
         if (isNaN(num)) return defaultValue !== null ? defaultValue : min;
         return Math.max(min, Math.min(max, num));
       },
-
       sanitizeFloat: (value, min = 0, max = 100, defaultValue = null) => {
         const num = parseFloat(value);
         if (isNaN(num)) return defaultValue !== null ? defaultValue : min;
         return Math.max(min, Math.min(max, num));
       },
-
       validateDateKey: (key) => {
         if (!key || typeof key !== 'string') return false;
         const regex = /^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
@@ -667,33 +1077,32 @@
         const daysInMonth = [31,29,31,30,31,30,31,31,30,31,30,31];
         return d <= daysInMonth[m - 1];
       },
-
+      parseMonthDay: (mmdd) => {
+        const s = String(mmdd || '').trim();
+        if (!Utils.validateDateKey(s)) return null;
+        const [mm, dd] = s.split('-').map(n => parseInt(n, 10));
+        return { mm, dd };
+      },
       formatPrice: (num) => {
         if (typeof num !== 'number' || isNaN(num)) return '0';
         return Math.round(num).toLocaleString('ru-RU');
       },
-
-      // DOM HELPERS
       createElement: (tag, className = '', textContent = '') => {
         const el = document.createElement(tag);
         if (className) el.className = className;
         if (textContent) el.textContent = textContent;
         return el;
       },
-
       clearElement: (element) => {
         if (!element) return;
         while (element.firstChild) element.removeChild(element.firstChild);
       },
-
       addOption: (select, value, text) => {
         const option = document.createElement('option');
         option.value = value;
         option.textContent = text;
         select.appendChild(option);
       },
-
-      // CLIPBOARD
       copyToClipboard: async (text) => {
         if (!text) return false;
         if (navigator.clipboard && window.isSecureContext) {
@@ -719,8 +1128,6 @@
           return false;
         }
       },
-
-      // PERFORMANCE
       debounce: (func, wait = 300) => {
         let timeout;
         return function executedFunction(...args) {
@@ -729,7 +1136,6 @@
           timeout = setTimeout(later, wait);
         };
       },
-
       throttle: (func, limit = 300) => {
         let inThrottle;
         return function(...args) {
@@ -740,8 +1146,6 @@
           }
         };
       },
-
-      // DATE
       formatDate: (dateString) => {
         if (!dateString) return '';
         try {
@@ -753,10 +1157,6 @@
           return dateString;
         }
       },
-
-      /* ============================================
-         NEW: formatDateTime + simpleHash
-         ============================================ */
       formatDateTime: (timestamp) => {
         if (!timestamp) return '—';
         try {
@@ -767,11 +1167,8 @@
             hour: '2-digit',
             minute: '2-digit'
           });
-        } catch (e) {
-          return '—';
-        }
+        } catch (e) { return '—'; }
       },
-
       simpleHash: (str) => {
         let hash = 0;
         for (let i = 0; i < str.length; i++) {
@@ -781,13 +1178,10 @@
         }
         return Math.abs(hash).toString(16);
       },
-
-      // STORAGE HELPERS
       saveToStorage: (key, value) => {
         try { localStorage.setItem(key, JSON.stringify(value)); return true; }
         catch (err) { console.error('Storage save error:', err); return false; }
       },
-
       loadFromStorage: (key, defaultValue = null) => {
         try {
           const item = localStorage.getItem(key);
@@ -798,26 +1192,7 @@
           return defaultValue;
         }
       },
-
-      // VALIDATION HELPERS
       isValidObject: (obj) => obj !== null && typeof obj === 'object' && !Array.isArray(obj),
-
-      deepMerge: (target, source) => {
-        const output = { ...target };
-        if (Utils.isValidObject(target) && Utils.isValidObject(source)) {
-          Object.keys(source).forEach(key => {
-            if (Utils.isValidObject(source[key])) {
-              output[key] = (key in target) ? Utils.deepMerge(target[key], source[key]) : source[key];
-            } else {
-              output[key] = source[key];
-            }
-          });
-        }
-        return output;
-      },
-
-      tryCatch: (fn, fallback = null) => { try { return fn(); } catch (err) { console.error(err); return fallback; } },
-
       validateInput: (input, validator, errorClass = 'error-input') => {
         if (!input) return false;
         const isValid = validator(input.value);
@@ -828,11 +1203,6 @@
         return isValid;
       }
     };
-
-    // ============================================================================
-    // ОРИГИНАЛ: DEFAULT_DB (нужен!)
-    // + добавлен version: DB_VERSION
-    // ============================================================================
 
     const DEFAULT_DB = {
       version: DB_VERSION,
@@ -854,33 +1224,17 @@
           "Детское шоу (60 минут)": 35000
         }
       },
-      holidays: {
-        "12-31": 2.0,
-        "01-01": 2.0
-      },
-      holidayRanges: [
-        { sm: 12, sd: 20, em: 12, ed: 30, k: 1.5 }
-      ],
+      holidays: { "12-31": 2.0, "01-01": 2.0 },
+      holidayRanges: [ { sm: 12, sd: 20, em: 12, ed: 30, k: 1.5 } ],
       bonuses: [
         { threshold: 30000, text: "Мини-сувенир гостям" },
         { threshold: 50000, text: "Фото/видео с фишкой шоу" },
         { threshold: 70000, text: "Доп. интерактив / сюрприз эффект" }
       ],
-      payments: [
-        { title: "Перевод", text: "СБП / карта: +7 (___) ___-__-__" }
-      ],
-      links: [
-        { label: "Портфолио", url: "https://example.com" }
-      ],
-      config: {
-        performer: "Illusionist",
-        deposit: 30
-      }
+      payments: [ { title: "Перевод", text: "СБП / карта: +7 (___) ___-__-__" } ],
+      links: [ { label: "Портфолио", url: "https://example.com" } ],
+      config: { performer: "Illusionist", deposit: 30 }
     };
-
-    // ============================================================================
-    // ОРИГИНАЛ: DB / State
-    // ============================================================================
 
     let DB = {};
     let State = {
@@ -899,39 +1253,21 @@
       activeBonuses: []
     };
 
-    /* ============================================
-       ЧАСТЬ 4: DataManager (NEW)
-       (после DEFAULT_DB, перед App)
-       ============================================ */
     const DataManager = {
-      calculateChecksum: (data) => {
-        const str = JSON.stringify(data);
-        return Utils.simpleHash(str);
-      },
+      calculateChecksum: (data) => Utils.simpleHash(JSON.stringify(data)),
 
       validateData: (data) => {
-        if (!data || typeof data !== 'object') {
-          return { valid: false, error: 'Некорректный формат данных' };
-        }
-
-        // минимально требуемые поля (holidayRanges допускаем опционально)
+        if (!data || typeof data !== 'object') return { valid: false, error: 'Некорректный формат данных' };
         const required = ['travel', 'services', 'holidays', 'bonuses', 'payments', 'links', 'config'];
-        for (const key of required) {
-          if (!(key in data)) return { valid: false, error: `Отсутствует поле: ${key}` };
-        }
+        for (const key of required) if (!(key in data)) return { valid: false, error: `Отсутствует поле: ${key}` };
 
         if (!Utils.isValidObject(data.travel)) return { valid: false, error: 'Некорректная структура travel' };
         if (!Utils.isValidObject(data.services)) return { valid: false, error: 'Некорректная структура services' };
         if (!Utils.isValidObject(data.holidays)) return { valid: false, error: 'Некорректная структура holidays' };
-
         if (!Array.isArray(data.bonuses)) return { valid: false, error: 'bonuses должен быть массивом' };
         if (!Array.isArray(data.payments)) return { valid: false, error: 'payments должен быть массивом' };
         if (!Array.isArray(data.links)) return { valid: false, error: 'links должен быть массивом' };
-
-        // holidayRanges опционально, но если есть — должен быть массивом
-        if ('holidayRanges' in data && !Array.isArray(data.holidayRanges)) {
-          return { valid: false, error: 'holidayRanges должен быть массивом' };
-        }
+        if ('holidayRanges' in data && !Array.isArray(data.holidayRanges)) return { valid: false, error: 'holidayRanges должен быть массивом' };
 
         return { valid: true };
       },
@@ -957,7 +1293,6 @@
           URL.revokeObjectURL(url);
 
           App.showToast('Данные экспортированы!');
-          console.log('✅ Data exported');
           return true;
         } catch (err) {
           console.error('❌ Export error:', err);
@@ -966,78 +1301,59 @@
         }
       },
 
-      importData: (file) => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
+      importData: (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
 
-          reader.onload = (e) => {
-            try {
-              const data = JSON.parse(e.target.result);
-              const validation = DataManager.validateData(data);
+        reader.onload = (e) => {
+          try {
+            const data = JSON.parse(e.target.result);
+            const validation = DataManager.validateData(data);
 
-              if (!validation.valid) {
-                App.showToast(validation.error);
-                reject(new Error(validation.error));
-                return;
-              }
+            if (!validation.valid) { App.showToast(validation.error); reject(new Error(validation.error)); return; }
 
-              // Verify checksum if present
-              if (data.checksum) {
-                const { checksum, exportedAt, ...cleanData } = data;
-                const calculated = DataManager.calculateChecksum(cleanData);
-                if (checksum !== calculated) {
-                  if (!confirm('Контрольная сумма не совпадает. Данные могли быть изменены. Продолжить?')) {
-                    reject(new Error('Cancelled'));
-                    return;
-                  }
+            if (data.checksum) {
+              const { checksum, exportedAt, ...cleanData } = data;
+              const calculated = DataManager.calculateChecksum(cleanData);
+              if (checksum !== calculated) {
+                if (!confirm('Контрольная сумма не совпадает. Данные могли быть изменены. Продолжить?')) {
+                  reject(new Error('Cancelled'));
+                  return;
                 }
               }
-
-              // Create backup before import
-              DataManager.createBackup('Перед импортом');
-
-              // Remove metadata and apply
-              const { checksum, exportedAt, ...importedData } = data;
-
-              // гарантируем поля по дефолту
-              DB = {
-                ...JSON.parse(JSON.stringify(DEFAULT_DB)),
-                ...importedData,
-                version: DB_VERSION
-              };
-
-              // если holidayRanges отсутствует — подставим дефолт
-              if (!Array.isArray(DB.holidayRanges)) DB.holidayRanges = JSON.parse(JSON.stringify(DEFAULT_DB.holidayRanges));
-
-              Storage.save();
-
-              App.updateUI();
-              if (typeof Admin !== 'undefined') Admin.render();
-              DataManager.updateStats();
-
-              App.showToast('Данные импортированы!');
-              console.log('✅ Data imported');
-              resolve(true);
-            } catch (err) {
-              console.error('❌ Import error:', err);
-              App.showToast('Ошибка чтения файла');
-              reject(err);
             }
-          };
 
-          reader.onerror = () => {
+            DataManager.createBackup('Перед импортом');
+
+            const { checksum, exportedAt, ...importedData } = data;
+
+            DB = {
+              ...JSON.parse(JSON.stringify(DEFAULT_DB)),
+              ...importedData,
+              version: DB_VERSION
+            };
+            if (!Array.isArray(DB.holidayRanges)) DB.holidayRanges = JSON.parse(JSON.stringify(DEFAULT_DB.holidayRanges));
+
+            Storage.save();
+            App.updateUI();
+            Admin.render();
+            DataManager.updateStats();
+
+            App.showToast('Данные импортированы!');
+            resolve(true);
+          } catch (err) {
+            console.error('❌ Import error:', err);
             App.showToast('Ошибка чтения файла');
-            reject(new Error('File read error'));
-          };
+            reject(err);
+          }
+        };
 
-          reader.readAsText(file);
-        });
-      },
+        reader.onerror = () => { App.showToast('Ошибка чтения файла'); reject(new Error('File read error')); };
+        reader.readAsText(file);
+      }),
 
       createBackup: (label = null) => {
         try {
           const backups = Utils.loadFromStorage(BACKUP_KEY, []);
-
           const backup = {
             id: Date.now(),
             label: label || `Бэкап ${backups.length + 1}`,
@@ -1051,9 +1367,7 @@
 
           Utils.saveToStorage(BACKUP_KEY, backups);
           DataManager.renderBackupSlots();
-
           App.showToast('Бэкап создан!');
-          console.log('✅ Backup created:', backup.label);
           return true;
         } catch (err) {
           console.error('❌ Backup error:', err);
@@ -1066,15 +1380,9 @@
         try {
           const backups = Utils.loadFromStorage(BACKUP_KEY, []);
           const backup = backups.find(b => b.id === backupId);
+          if (!backup) { App.showToast('Бэкап не найден'); return false; }
 
-          if (!backup) {
-            App.showToast('Бэкап не найден');
-            return false;
-          }
-
-          if (!confirm(`Восстановить "${backup.label}"?\nТекущие данные будут заменены.`)) {
-            return false;
-          }
+          if (!confirm(`Восстановить "${backup.label}"?\nТекущие данные будут заменены.`)) return false;
 
           const calculated = DataManager.calculateChecksum(backup.data);
           if (backup.checksum !== calculated) {
@@ -1089,13 +1397,11 @@
           if (!Array.isArray(DB.holidayRanges)) DB.holidayRanges = JSON.parse(JSON.stringify(DEFAULT_DB.holidayRanges));
 
           Storage.save();
-
           App.updateUI();
-          if (typeof Admin !== 'undefined') Admin.render();
+          Admin.render();
           DataManager.updateStats();
 
           App.showToast('Данные восстановлены!');
-          console.log('✅ Restored:', backup.label);
           return true;
         } catch (err) {
           console.error('❌ Restore error:', err);
@@ -1124,7 +1430,7 @@
 
         if (lastBackup) {
           const currentChecksum = DataManager.calculateChecksum(DB);
-          if (lastBackup.checksum === currentChecksum) return; // no changes
+          if (lastBackup.checksum === currentChecksum) return;
         }
 
         try {
@@ -1142,7 +1448,6 @@
           Utils.saveToStorage(BACKUP_KEY, allBackups);
 
           DataManager.renderBackupSlots();
-          console.log('✅ Auto-backup created');
         } catch (err) {
           console.error('❌ Auto-backup error:', err);
         }
@@ -1168,9 +1473,7 @@
             slot.addEventListener('click', () => DataManager.restoreBackup(backup.id));
             slot.addEventListener('contextmenu', (e) => {
               e.preventDefault();
-              if (confirm(`Удалить "${backup.label}"?`)) {
-                DataManager.deleteBackup(backup.id);
-              }
+              if (confirm(`Удалить "${backup.label}"?`)) DataManager.deleteBackup(backup.id);
             });
           } else {
             slot.innerHTML = `
@@ -1183,16 +1486,12 @@
         }
 
         const lastBackupEl = document.getElementById('last-backup-time');
-        if (lastBackupEl && backups[0]) {
-          lastBackupEl.textContent = `Последний: ${Utils.formatDateTime(backups[0].timestamp)}`;
-        } else if (lastBackupEl) {
-          lastBackupEl.textContent = '—';
-        }
+        if (lastBackupEl && backups[0]) lastBackupEl.textContent = `Последний: ${Utils.formatDateTime(backups[0].timestamp)}`;
+        else if (lastBackupEl) lastBackupEl.textContent = '—';
       },
 
       updateStats: () => {
-        const servicesCount = Object.values(DB.services || {})
-          .reduce((sum, cat) => sum + Object.keys(cat || {}).length, 0);
+        const servicesCount = Object.values(DB.services || {}).reduce((sum, cat) => sum + Object.keys(cat || {}).length, 0);
         const regionsCount = Object.keys(DB.travel || {}).length;
         const bonusesCount = (DB.bonuses || []).length;
 
@@ -1236,7 +1535,6 @@
       },
 
       init: () => {
-        // File input handler
         const fileInput = document.getElementById('import-file-input');
         if (fileInput) {
           fileInput.addEventListener('change', (e) => {
@@ -1248,52 +1546,758 @@
           });
         }
 
-        // Export button
-        const exportBtn = document.getElementById('btn-export-data');
-        if (exportBtn) exportBtn.addEventListener('click', DataManager.exportData);
+        document.getElementById('btn-export-data')?.addEventListener('click', DataManager.exportData);
+        document.getElementById('btn-import-data')?.addEventListener('click', () => document.getElementById('import-file-input')?.click());
+        document.getElementById('btn-create-backup')?.addEventListener('click', () => {
+          const label = prompt('Название бэкапа:', `Бэкап ${new Date().toLocaleDateString('ru-RU')}`);
+          if (label !== null) DataManager.createBackup(label || undefined);
+        });
 
-        // Import button
-        const importBtn = document.getElementById('btn-import-data');
-        if (importBtn) {
-          importBtn.addEventListener('click', () => {
-            document.getElementById('import-file-input')?.click();
-          });
-        }
-
-        // Manual backup button
-        const backupBtn = document.getElementById('btn-create-backup');
-        if (backupBtn) {
-          backupBtn.addEventListener('click', () => {
-            const label = prompt('Название бэкапа:', `Бэкап ${new Date().toLocaleDateString('ru-RU')}`);
-            if (label !== null) DataManager.createBackup(label || undefined);
-          });
-        }
-
-        // Render initial state
         DataManager.renderBackupSlots();
         DataManager.updateStats();
         DataManager.updateBackupIndicator('saved');
 
-        // Setup auto-backup every 5 minutes
         setInterval(DataManager.autoBackup, AUTO_BACKUP_INTERVAL);
-
-        console.log('✅ DataManager initialized');
       }
     };
 
-    // ============================================================================
-    // ЧАСТЬ 2: APP MODULE (part2-app-module.js) + биндинги админ-кнопок
-    // ============================================================================
+    /* ============================================
+       МОДУЛЬ 1: БЫСТРЫЕ ШАБЛОНЫ (JS)
+       ============================================ */
+    const TEMPLATES_KEY = 'illusionist_templates';
+
+    const Templates = {
+      load: () => Utils.loadFromStorage(TEMPLATES_KEY, []),
+      save: (templates) => Utils.saveToStorage(TEMPLATES_KEY, templates),
+
+      createFromCart: () => {
+        if (State.cart.length === 0) { App.showToast('Корзина пуста'); return false; }
+
+        const name = prompt('Название шаблона:', 'Мой шаблон');
+        if (!name) return false;
+
+        const sanitizedName = Utils.sanitizeText(name, 50);
+        if (!sanitizedName) { App.showToast('Некорректное название'); return false; }
+
+        const templates = Templates.load();
+
+        if (templates.some(t => t.name === sanitizedName)) {
+          if (!confirm(`Шаблон "${sanitizedName}" уже существует. Заменить?`)) return false;
+          const idx = templates.findIndex(t => t.name === sanitizedName);
+          if (idx >= 0) templates.splice(idx, 1);
+        }
+
+        const baseTotal = State.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+        const template = {
+          id: Date.now(),
+          name: sanitizedName,
+          items: JSON.parse(JSON.stringify(State.cart)),
+          baseTotal: baseTotal,
+          createdAt: new Date().toISOString()
+        };
+
+        templates.unshift(template);
+        if (templates.length > 10) templates.pop();
+
+        Templates.save(templates);
+        Templates.render();
+        Templates.updateSaveButton();
+
+        App.showToast(`Шаблон "${sanitizedName}" сохранён`);
+        return true;
+      },
+
+      apply: (templateId) => {
+        const templates = Templates.load();
+        const template = templates.find(t => t.id === templateId);
+
+        if (!template) { App.showToast('Шаблон не найден'); return false; }
+
+        let mode = 'replace';
+        if (State.cart.length > 0) {
+          const action = confirm(`Корзина не пуста.\n\nOK = Заменить корзину\nОтмена = Добавить к текущей`);
+          mode = action ? 'replace' : 'add';
+        }
+
+        if (mode === 'replace') State.cart = JSON.parse(JSON.stringify(template.items));
+        else template.items.forEach(item => State.cart.push(JSON.parse(JSON.stringify(item))));
+
+        App.renderCart();
+        App.calc();
+        Templates.updateSaveButton();
+
+        App.showToast(`Шаблон "${template.name}" применён`);
+        return true;
+      },
+
+      delete: (templateId) => {
+        const templates = Templates.load();
+        const template = templates.find(t => t.id === templateId);
+        if (!template) return false;
+
+        if (!confirm(`Удалить шаблон "${template.name}"?`)) return false;
+
+        Templates.save(templates.filter(t => t.id !== templateId));
+        Templates.render();
+        Templates.updateSaveButton();
+        App.showToast('Шаблон удалён');
+        return true;
+      },
+
+      pluralize: (n, forms) => {
+        const n10 = n % 10;
+        const n100 = n % 100;
+        if (n10 === 1 && n100 !== 11) return forms[0];
+        if (n10 >= 2 && n10 <= 4 && (n100 < 10 || n100 >= 20)) return forms[1];
+        return forms[2];
+      },
+
+      renderTo: (containerId, emptyId) => {
+        const container = document.getElementById(containerId);
+        const emptyMsg = document.getElementById(emptyId);
+        if (!container) return;
+
+        const templates = Templates.load();
+        Utils.clearElement(container);
+
+        if (templates.length === 0) {
+          container.classList.add('hidden');
+          if (emptyMsg) emptyMsg.classList.remove('hidden');
+          return;
+        }
+
+        container.classList.remove('hidden');
+        if (emptyMsg) emptyMsg.classList.add('hidden');
+
+        templates.forEach(template => {
+          const card = Utils.createElement('div', 'template-card');
+          card.dataset.id = template.id;
+
+          const itemsCount = template.items.reduce((sum, item) => sum + item.qty, 0);
+          const itemsWord = Templates.pluralize(itemsCount, ['услуга', 'услуги', 'услуг']);
+
+          card.innerHTML = `
+            <div class="template-name">${Utils.escapeHtml(template.name)}</div>
+            <div class="template-info">${itemsCount} ${itemsWord}</div>
+            <div class="template-price">${Utils.formatPrice(template.baseTotal)} ₽</div>
+            <button class="template-delete" title="Удалить">
+              <i data-lucide="x" class="w-3 h-3"></i>
+            </button>
+          `;
+
+          card.addEventListener('click', (e) => {
+            if (e.target.closest('.template-delete')) return;
+            Templates.apply(template.id);
+          });
+
+          const delBtn = card.querySelector('.template-delete');
+          if (delBtn) {
+            delBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              Templates.delete(template.id);
+            });
+          }
+
+          container.appendChild(card);
+        });
+
+        if (window.lucide) lucide.createIcons();
+      },
+
+      render: () => {
+        Templates.renderTo('templates-list', 'templates-empty');
+        Templates.renderTo('templates-list-modal', 'templates-empty-modal');
+      },
+
+      updateSaveButton: () => {
+        const btn = document.getElementById('btn-save-as-template');
+        if (btn) State.cart.length > 0 ? btn.classList.remove('hidden') : btn.classList.add('hidden');
+      },
+
+      openModal: () => {
+        const modal = document.getElementById('templates-modal');
+        if (!modal) return;
+        Templates.render();
+        modal.classList.add('active');
+        if (window.lucide) lucide.createIcons();
+      },
+      closeModal: () => {
+        const modal = document.getElementById('templates-modal');
+        if (!modal) return;
+        modal.classList.remove('active');
+      },
+
+      init: () => {
+        document.getElementById('btn-save-as-template')?.addEventListener('click', Templates.createFromCart);
+        document.getElementById('btn-save-as-template-modal')?.addEventListener('click', () => {
+          const ok = Templates.createFromCart();
+          if (ok) Templates.openModal();
+        });
+
+        document.getElementById('btn-manage-templates')?.addEventListener('click', () => {
+          App.showToast('Карточка = применить • ✕ = удалить');
+        });
+
+        document.getElementById('btn-open-templates-modal')?.addEventListener('click', Templates.openModal);
+        document.getElementById('btn-open-templates-modal')?.addEventListener('touchstart', Templates.openModal, {passive:true});
+
+        document.getElementById('btn-close-templates-modal')?.addEventListener('click', Templates.closeModal);
+        document.getElementById('templates-modal')?.addEventListener('click', (e) => {
+          if (e.target && e.target.id === 'templates-modal') Templates.closeModal();
+        });
+
+        Templates.render();
+        Templates.updateSaveButton();
+        console.log('✅ Templates module initialized');
+      }
+    };
+
+    /* ============================================
+       МОДУЛЬ 2: ОКРУГЛЕНИЕ СУММЫ (JS)
+       ============================================ */
+    const Rounding = {
+      step: 1000,
+
+      state: {
+        isApplied: false,
+        originalTotal: 0,
+        roundedTotal: 0,
+        diff: 0
+      },
+
+      calculate: (total) => {
+        if (total <= 0) return { down: 0, nearest: 0, up: 0 };
+        const step = Rounding.step;
+        const down = Math.floor(total / step) * step;
+        const up = Math.ceil(total / step) * step;
+        const nearest = (total - down) < (up - total) ? down : up;
+
+        if (total === down) {
+          return { down: down - step, nearest: down, up: down + step };
+        }
+        return { down, nearest, up };
+      },
+
+      apply: (roundedValue) => {
+        const originalTotal = Rounding.state.isApplied ? Rounding.state.originalTotal : State.finalTotal;
+
+        if (roundedValue === originalTotal) { Rounding.reset(); return; }
+
+        Rounding.state.isApplied = true;
+        Rounding.state.originalTotal = originalTotal;
+        Rounding.state.roundedTotal = roundedValue;
+        Rounding.state.diff = roundedValue - originalTotal;
+
+        State.finalTotal = roundedValue;
+
+        const totalEl = document.getElementById('total-sum');
+        if (totalEl) {
+          totalEl.classList.add('round-pulse');
+          totalEl.textContent = `${Utils.formatPrice(roundedValue)} ₽`;
+          setTimeout(() => totalEl.classList.remove('round-pulse'), 300);
+        }
+
+        Rounding.updateUI();
+        App.updateBonuses();
+
+        const diffStr = Rounding.state.diff >= 0 ? `+${Utils.formatPrice(Rounding.state.diff)}` : Utils.formatPrice(Rounding.state.diff);
+        App.showToast(`Округлено: ${diffStr} ₽`);
+      },
+
+      reset: () => {
+        if (!Rounding.state.isApplied) return;
+
+        State.finalTotal = Rounding.state.originalTotal;
+
+        const totalEl = document.getElementById('total-sum');
+        if (totalEl) totalEl.textContent = `${Utils.formatPrice(State.finalTotal)} ₽`;
+
+        Rounding.state = { isApplied:false, originalTotal:0, roundedTotal:0, diff:0 };
+        Rounding.updateUI();
+        App.updateBonuses();
+
+        App.showToast('Округление сброшено');
+      },
+
+      clearStateSilently: () => {
+        Rounding.state = { isApplied:false, originalTotal:0, roundedTotal:0, diff:0 };
+      },
+
+      updateUI: () => {
+        const controls = document.getElementById('rounding-controls');
+        const applied = document.getElementById('rounding-applied');
+        const resetBtn = document.getElementById('btn-round-reset');
+        const diffEl = document.getElementById('rounding-diff');
+
+        const baseTotal = Rounding.state.isApplied ? Rounding.state.originalTotal : State.finalTotal;
+
+        if (baseTotal > 0) {
+          if (controls) controls.classList.remove('hidden');
+
+          const options = Rounding.calculate(baseTotal);
+
+          const downEl = document.getElementById('round-down-value');
+          const nearestEl = document.getElementById('round-nearest-value');
+          const upEl = document.getElementById('round-up-value');
+
+          if (downEl) downEl.textContent = Utils.formatPrice(options.down);
+          if (nearestEl) nearestEl.textContent = Utils.formatPrice(options.nearest);
+          if (upEl) upEl.textContent = Utils.formatPrice(options.up);
+        } else {
+          if (controls) controls.classList.add('hidden');
+        }
+
+        if (Rounding.state.isApplied) {
+          if (applied) applied.classList.remove('hidden');
+          if (resetBtn) resetBtn.classList.remove('hidden');
+
+          if (diffEl) {
+            const diffStr = Rounding.state.diff >= 0 ? `+${Utils.formatPrice(Rounding.state.diff)} ₽` : `${Utils.formatPrice(Rounding.state.diff)} ₽`;
+            diffEl.textContent = diffStr;
+          }
+        } else {
+          if (applied) applied.classList.add('hidden');
+          if (resetBtn) resetBtn.classList.add('hidden');
+        }
+
+        if (window.lucide) lucide.createIcons();
+      },
+
+      setStep: (step) => {
+        Rounding.step = Utils.sanitizeNumber(step, 100, 100000, 1000);
+        Rounding.updateUI();
+      },
+
+      init: () => {
+        const downBtn = document.getElementById('btn-round-down');
+        const nearestBtn = document.getElementById('btn-round-nearest');
+        const upBtn = document.getElementById('btn-round-up');
+        const resetBtn = document.getElementById('btn-round-reset');
+
+        if (downBtn) {
+          downBtn.addEventListener('click', () => {
+            const baseTotal = Rounding.state.isApplied ? Rounding.state.originalTotal : State.finalTotal;
+            const options = Rounding.calculate(baseTotal);
+            Rounding.apply(options.down);
+          });
+        }
+
+        if (nearestBtn) {
+          nearestBtn.addEventListener('click', () => {
+            const baseTotal = Rounding.state.isApplied ? Rounding.state.originalTotal : State.finalTotal;
+            const options = Rounding.calculate(baseTotal);
+            Rounding.apply(options.nearest);
+          });
+        }
+
+        if (upBtn) {
+          upBtn.addEventListener('click', () => {
+            const baseTotal = Rounding.state.isApplied ? Rounding.state.originalTotal : State.finalTotal;
+            const options = Rounding.calculate(baseTotal);
+            Rounding.apply(options.up);
+          });
+        }
+
+        if (resetBtn) resetBtn.addEventListener('click', Rounding.reset);
+
+        console.log('✅ Rounding module initialized');
+      }
+    };
+
+    /* ============================================
+       МОДУЛЬ 3: ТРИ ВАРИАНТА КП (JS)
+       ============================================ */
+    const Variants = {
+      current: { base:null, optimal:null, premium:null },
+
+      open: () => {
+        const modal = document.getElementById('variants-modal');
+        if (!modal) return;
+
+        const v = Variants.generate();
+        if (!v) return;
+
+        Variants.renderModal(v);
+        modal.classList.add('active');
+        if (window.lucide) lucide.createIcons();
+      },
+
+      close: () => {
+        const modal = document.getElementById('variants-modal');
+        if (!modal) return;
+        modal.classList.remove('active');
+      },
+
+      findUpgrade: (item, multiplier = 1.2) => {
+        if (!item || typeof item.price !== 'number') return null;
+
+        const target = item.price * multiplier;
+        let candidates = [];
+
+        const scanAll = () => {
+          if (!DB.services || !Utils.isValidObject(DB.services)) return;
+          Object.keys(DB.services).forEach(cat => {
+            const services = DB.services[cat];
+            if (!Utils.isValidObject(services)) return;
+            Object.keys(services).forEach(name => {
+              const price = services[name];
+              if (typeof price !== 'number' || isNaN(price)) return;
+              candidates.push({ name, price });
+            });
+          });
+        };
+
+        scanAll();
+
+        const above = candidates
+          .filter(c => c.price >= target)
+          .sort((a,b) => a.price - b.price);
+
+        if (above.length === 0) return null;
+
+        const best = above[0];
+        return {
+          name: Utils.sanitizeText(best.name, 200),
+          price: best.price,
+          qty: item.qty
+        };
+      },
+
+      findExtraService: (existingItems) => {
+        const existingNames = new Set((existingItems || []).map(i => i.name));
+        let all = [];
+        if (DB.services && Utils.isValidObject(DB.services)) {
+          Object.keys(DB.services).forEach(cat => {
+            const services = DB.services[cat];
+            if (!Utils.isValidObject(services)) return;
+            Object.keys(services).forEach(name => {
+              const price = services[name];
+              if (typeof price !== 'number' || isNaN(price)) return;
+              all.push({ name, price });
+            });
+          });
+        }
+        all = all.filter(s => !existingNames.has(s.name)).sort((a,b) => b.price - a.price);
+        if (all.length === 0) return null;
+        return { name: Utils.sanitizeText(all[0].name, 200), price: all[0].price, qty: 1 };
+      },
+
+      computeTravel: (k) => {
+        const regionSelect = document.getElementById('inp-region');
+        const citySelect = document.getElementById('inp-city');
+        let travel = 0;
+
+        if (regionSelect && citySelect) {
+          const region = regionSelect.value;
+          const city = citySelect.value;
+
+          if (region && city && DB.travel?.[region]) {
+            const baseTravel = city === 'other'
+              ? (DB.travel[region].fee || 0)
+              : (DB.travel[region].cities?.[city] || 0);
+
+            travel = Math.round(baseTravel * (k > 1 ? 1.5 : 1));
+          }
+        }
+        return travel;
+      },
+
+      computeExtras: (k) => {
+        const manualPriceInput = document.getElementById('inp-manual-price');
+        const manPrice = manualPriceInput ? Utils.sanitizeNumber(manualPriceInput.value, 0, 999999, 0) : 0;
+
+        const guestsSelect = document.getElementById('inp-guests');
+        const guestPrice = guestsSelect ? Utils.sanitizeNumber(guestsSelect.value, 0, 999999, 0) : 0;
+
+        const taxCheckbox = document.getElementById('inp-tax');
+        const useTax = taxCheckbox ? taxCheckbox.checked : false;
+
+        const travel = Variants.computeTravel(k);
+
+        return { manPrice, guestPrice, travel, useTax };
+      },
+
+      calcTotalForItems: (items, k) => {
+        let servicesTotal = items.reduce((acc, item) => acc + (item.price * item.qty * k), 0);
+        let discount = 0;
+        if (items.length > 1) {
+          discount = Math.round(servicesTotal * 0.1);
+          servicesTotal -= discount;
+        }
+
+        const ex = Variants.computeExtras(k);
+        const preTax = servicesTotal + ex.travel + ex.manPrice + ex.guestPrice;
+        const tax = ex.useTax ? Math.round(preTax * 0.06) : 0;
+        const total = Math.round(preTax + tax);
+
+        return { total, servicesTotal, discount, travel: ex.travel, manPrice: ex.manPrice, guestPrice: ex.guestPrice, tax, k };
+      },
+
+      generate: () => {
+        if (State.cart.length === 0) { App.showToast('Добавьте услуги в корзину'); return null; }
+
+        const k = State.holidayK || 1;
+
+        const baseItems = JSON.parse(JSON.stringify(State.cart));
+        const optimalItems = JSON.parse(JSON.stringify(State.cart));
+        const premiumItems = JSON.parse(JSON.stringify(State.cart));
+
+        optimalItems.forEach((item, idx) => {
+          const upgraded = Variants.findUpgrade(item, 1.2);
+          if (upgraded) optimalItems[idx] = upgraded;
+        });
+
+        premiumItems.forEach((item, idx) => {
+          const upgraded = Variants.findUpgrade(item, 1.5);
+          if (upgraded) premiumItems[idx] = upgraded;
+        });
+
+        if (premiumItems.length === baseItems.length) {
+          const extra = Variants.findExtraService(premiumItems);
+          if (extra) premiumItems.push(extra);
+        }
+
+        const base = Variants.calcTotalForItems(baseItems, k);
+        let optimal = Variants.calcTotalForItems(optimalItems, k);
+        let premium = Variants.calcTotalForItems(premiumItems, k);
+
+        if (optimal.total <= base.total) optimal.total = Math.round(base.total * 1.15);
+        if (premium.total <= optimal.total) premium.total = Math.round(optimal.total * 1.2);
+
+        const pack = {
+          base: { label:'Базовый', badge:'badge-base', cls:'variant-base', priceCls:'price-base', items: baseItems, totals: base, total: base.total },
+          optimal: { label:'Оптимальный', badge:'badge-optimal', cls:'variant-optimal', priceCls:'price-optimal', items: optimalItems, totals: optimal, total: optimal.total, recommended:true },
+          premium: { label:'Премиум', badge:'badge-premium', cls:'variant-premium', priceCls:'price-premium', items: premiumItems, totals: premium, total: premium.total }
+        };
+
+        Variants.current = pack;
+        return pack;
+      },
+
+      buildQuoteTextFor: (variantKey) => {
+        const v = Variants.current?.[variantKey];
+        if (!v) return '';
+
+        const client = Utils.sanitizeText(document.getElementById('inp-client')?.value, 100) || 'Клиент';
+        const type = document.getElementById('inp-event-type')?.value || 'Мероприятие';
+
+        const dateRaw = document.getElementById('inp-date')?.value || '';
+        const dateFmt = Utils.formatDate(dateRaw) || dateRaw;
+
+        const time = document.getElementById('inp-time')?.value || '18:00';
+        const city = document.getElementById('inp-city')?.value || '';
+
+        const depPct = DB.config?.deposit || 30;
+        const deposit = Math.round(v.total * (depPct / 100));
+
+        let text = `${client}\n\n`;
+        text += `КП (${v.label.toUpperCase()}): ${type.toUpperCase()}\n`;
+        text += `${dateFmt} / ${time}\n`;
+        if (city && city !== 'other') text += `${Utils.sanitizeText(city, 100)}\n`;
+        text += `\nПрограмма:\n`;
+
+        const k = State.holidayK || 1;
+        v.items.forEach(item => {
+          const price = Math.round(item.price * item.qty * k);
+          const safeName = Utils.sanitizeText(item.name, 200);
+          text += `• ${safeName}${item.qty > 1 ? ` x${item.qty}` : ''} — ${Utils.formatPrice(price)} ₽\n`;
+        });
+
+        const details = Variants.calcTotalForItems(v.items, k);
+        if (details.discount > 0) text += `Скидка 10%: -${Utils.formatPrice(details.discount)} ₽\n`;
+        if (details.travel > 0) text += `Логистика: ${Utils.formatPrice(details.travel)} ₽\n`;
+        if (details.guestPrice > 0) text += `Доплата за гостей: ${Utils.formatPrice(details.guestPrice)} ₽\n`;
+        if (details.manPrice > 0) {
+          const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Доп';
+          text += `${manName}: ${Utils.formatPrice(details.manPrice)} ₽\n`;
+        }
+        if (details.tax > 0) text += `Договор (+6%): ${Utils.formatPrice(details.tax)} ₽\n`;
+
+        const earned = App.getBonusesForTotal(v.total);
+        if (earned.length > 0) {
+          text += `\nБонусы:\n`;
+          earned.forEach(b => { text += `• ${Utils.sanitizeText(b.text, 200)}\n`; });
+        }
+
+        text += `\nИТОГО: ${Utils.formatPrice(v.total)} ₽\n`;
+        text += `Бронь даты (${depPct}%): ${Utils.formatPrice(deposit)} ₽\n`;
+
+        if (DB.payments && Array.isArray(DB.payments)) {
+          text += `\nРеквизиты:\n`;
+          DB.payments.forEach(p => {
+            if (Utils.isValidObject(p)) {
+              const title = Utils.sanitizeText(p.title, 100);
+              const payText = Utils.sanitizeText(p.text, 500);
+              text += `${title}: ${payText}\n`;
+            }
+          });
+        }
+
+        if (DB.links && Array.isArray(DB.links)) {
+          text += `\nСсылки:\n`;
+          DB.links.forEach(l => {
+            if (Utils.isValidObject(l)) {
+              const label = Utils.sanitizeText(l.label, 100);
+              const url = Utils.sanitizeText(l.url, 500);
+              text += `• ${label}: ${url}\n`;
+            }
+          });
+        }
+
+        const performer = Utils.sanitizeText(DB.config?.performer || 'Illusionist', 100);
+        text += `\nВаш ${performer}`;
+        return text;
+      },
+
+      renderModal: (pack) => {
+        const container = document.getElementById('variants-container');
+        if (!container) return;
+        Utils.clearElement(container);
+
+        const order = ['base','optimal','premium'];
+
+        order.forEach(key => {
+          const v = pack[key];
+          if (!v) return;
+
+          const card = Utils.createElement('div', `variant-card ${v.cls}`);
+          if (v.recommended) {
+            const rec = Utils.createElement('div', 'variant-recommended', 'Рекомендуем');
+            card.appendChild(rec);
+          }
+
+          const header = Utils.createElement('div', 'variant-header');
+          header.innerHTML = `
+            <span class="variant-badge ${v.badge}">${Utils.escapeHtml(v.label)}</span>
+            <span class="variant-price ${v.priceCls}">${Utils.formatPrice(v.total)} ₽</span>
+          `;
+
+          const list = document.createElement('ul');
+          list.className = 'variant-items';
+          v.items.forEach(it => {
+            const li = document.createElement('li');
+            li.textContent = `${it.name}${it.qty > 1 ? ` x${it.qty}` : ''}`;
+            list.appendChild(li);
+          });
+
+          const bonuses = App.getBonusesForTotal(v.total);
+          const bonusesWrap = Utils.createElement('div', 'variant-bonuses');
+          if (bonuses.length > 0) {
+            bonuses.forEach(b => {
+              const tag = Utils.createElement('span', 'variant-bonus-tag', Utils.sanitizeText(b.text, 60));
+              bonusesWrap.appendChild(tag);
+            });
+          } else {
+            bonusesWrap.innerHTML = `<div class="text-[10px] text-slate-500">Бонусы: пока не активны</div>`;
+          }
+
+          const hint = Utils.createElement('div', 'variant-copy-hint');
+          hint.innerHTML = `<i data-lucide="copy" class="w-3 h-3"></i><span>Скопировать</span>`;
+
+          card.appendChild(header);
+          card.appendChild(list);
+          card.appendChild(bonusesWrap);
+          card.appendChild(hint);
+
+          card.addEventListener('click', async () => {
+            const text = Variants.buildQuoteTextFor(key);
+            const ok = await Utils.copyToClipboard(text);
+            App.showToast(ok ? `КП (${v.label}) скопировано!` : 'Не удалось скопировать');
+            Variants.close();
+          });
+
+          container.appendChild(card);
+        });
+
+        if (window.lucide) lucide.createIcons();
+      },
+
+      init: () => {
+        document.getElementById('btn-open-variants')?.addEventListener('click', Variants.open);
+        document.getElementById('btn-close-variants')?.addEventListener('click', Variants.close);
+        document.getElementById('variants-modal')?.addEventListener('click', (e) => {
+          if (e.target && e.target.id === 'variants-modal') Variants.close();
+        });
+        console.log('✅ Variants module initialized');
+      }
+    };
+
+    const Storage = {
+      save: () => {
+        DataManager.updateBackupIndicator('saving');
+        try {
+          DB.version = DB_VERSION;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
+          DataManager.updateBackupIndicator('saved');
+          DataManager.updateStats();
+          return true;
+        } catch (err) {
+          console.error('❌ Storage save error:', err);
+          DataManager.updateBackupIndicator('error');
+          if (err.name === 'QuotaExceededError') App.showToast('Хранилище переполнено');
+          return false;
+        }
+      },
+
+      load: () => {
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          if (!stored) {
+            DB = JSON.parse(JSON.stringify(DEFAULT_DB));
+            DB.version = DB_VERSION;
+            DataManager.updateBackupIndicator('saved');
+            return true;
+          }
+
+          const parsed = JSON.parse(stored);
+
+          DB = {
+            ...JSON.parse(JSON.stringify(DEFAULT_DB)),
+            travel: Utils.isValidObject(parsed.travel) ? parsed.travel : DEFAULT_DB.travel,
+            services: Utils.isValidObject(parsed.services) ? parsed.services : DEFAULT_DB.services,
+            holidays: Utils.isValidObject(parsed.holidays) ? parsed.holidays : DEFAULT_DB.holidays,
+            holidayRanges: Array.isArray(parsed.holidayRanges) ? parsed.holidayRanges : DEFAULT_DB.holidayRanges,
+            bonuses: Array.isArray(parsed.bonuses) ? parsed.bonuses : DEFAULT_DB.bonuses,
+            payments: Array.isArray(parsed.payments) ? parsed.payments : DEFAULT_DB.payments,
+            links: Array.isArray(parsed.links) ? parsed.links : DEFAULT_DB.links,
+            config: Utils.isValidObject(parsed.config) ? { ...DEFAULT_DB.config, ...parsed.config } : DEFAULT_DB.config,
+            version: DB_VERSION
+          };
+
+          DataManager.updateBackupIndicator('saved');
+          return true;
+        } catch (err) {
+          console.error('❌ Storage load error:', err);
+          DB = JSON.parse(JSON.stringify(DEFAULT_DB));
+          DB.version = DB_VERSION;
+          DataManager.updateBackupIndicator('error');
+          return false;
+        }
+      },
+
+      reset: () => {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+          DataManager.updateBackupIndicator('saved');
+          return true;
+        } catch (err) {
+          console.error('❌ Storage reset error:', err);
+          DataManager.updateBackupIndicator('error');
+          return false;
+        }
+      }
+    };
 
     const App = {
       init: () => {
         try {
-          if (!Storage.load()) {
-            console.error('Failed to load storage, using defaults');
-          }
-
-          // NEW: init data manager after DB is loaded
+          Storage.load();
           DataManager.init();
+
+          Templates.init();
+          Rounding.init();
+          Variants.init();
 
           App.migrateServicesNames();
           App.setupEventListeners();
@@ -1301,22 +2305,15 @@
           App.updateUI();
 
           const dateInput = document.getElementById('inp-date');
-          if (dateInput) {
-            dateInput.value = State.date;
-            App.updateDate();
-          }
+          if (dateInput) { dateInput.value = State.date; App.updateDate(); }
 
           App.renderParticles();
 
           if (window.lucide) lucide.createIcons();
-
           App.startSplash();
-          App.registerSW();
+          App.registerSWInline();
 
-          // Ensure indicator reflects actual state
           DataManager.updateBackupIndicator('saved');
-
-          console.log('✅ App initialized successfully');
         } catch (err) {
           console.error('❌ App initialization failed:', err);
           App.showToast('Ошибка инициализации');
@@ -1325,81 +2322,48 @@
       },
 
       setupEventListeners: () => {
-        // Settings
-        const btnSettings = document.getElementById('btn-settings');
-        if (btnSettings) btnSettings.addEventListener('click', App.toggleSettings);
+        document.getElementById('btn-settings')?.addEventListener('click', App.toggleSettings);
+        document.getElementById('btn-close-settings')?.addEventListener('click', App.toggleSettings);
+        document.getElementById('view-settings')?.addEventListener('click', (e) => {
+          if (e.target && e.target.id === 'view-settings') App.toggleSettings();
+        });
 
-        const btnCloseSettings = document.getElementById('btn-close-settings');
-        if (btnCloseSettings) btnCloseSettings.addEventListener('click', App.toggleSettings);
+        document.getElementById('inp-date')?.addEventListener('change', App.updateDate);
 
-        // Date
-        const dateInput = document.getElementById('inp-date');
-        if (dateInput) dateInput.addEventListener('change', App.updateDate);
+        document.getElementById('inp-region')?.addEventListener('change', App.updateRegion);
+        document.getElementById('inp-city')?.addEventListener('change', App.calc);
 
-        // Region / city
-        const regionSelect = document.getElementById('inp-region');
-        if (regionSelect) regionSelect.addEventListener('change', App.updateRegion);
+        document.getElementById('inp-cat')?.addEventListener('change', App.updateCat);
 
-        const citySelect = document.getElementById('inp-city');
-        if (citySelect) citySelect.addEventListener('change', App.calc);
+        document.getElementById('btn-qty-minus')?.addEventListener('click', () => App.changeQty(-1));
+        document.getElementById('btn-qty-plus')?.addEventListener('click', () => App.changeQty(1));
 
-        // Category / svc
-        const catSelect = document.getElementById('inp-cat');
-        if (catSelect) catSelect.addEventListener('change', App.updateCat);
+        document.getElementById('btn-add-service')?.addEventListener('click', App.addService);
+        document.getElementById('btn-copy-prices')?.addEventListener('click', App.copyPriceList);
+        document.getElementById('btn-copy-quote')?.addEventListener('click', App.copyQuote);
 
-        // Qty
-        const btnQtyMinus = document.getElementById('btn-qty-minus');
-        if (btnQtyMinus) btnQtyMinus.addEventListener('click', () => App.changeQty(-1));
-
-        const btnQtyPlus = document.getElementById('btn-qty-plus');
-        if (btnQtyPlus) btnQtyPlus.addEventListener('click', () => App.changeQty(1));
-
-        // Add service
-        const btnAddService = document.getElementById('btn-add-service');
-        if (btnAddService) btnAddService.addEventListener('click', App.addService);
-
-        // Copy prices
-        const btnCopyPrices = document.getElementById('btn-copy-prices');
-        if (btnCopyPrices) btnCopyPrices.addEventListener('click', App.copyPriceList);
-
-        // Manual price (debounce)
         const manualPriceInput = document.getElementById('inp-manual-price');
         if (manualPriceInput) {
           manualPriceInput.addEventListener('input', Utils.debounce(() => {
             const value = Utils.sanitizeNumber(manualPriceInput.value, 0, 999999);
             manualPriceInput.value = value || '';
             App.calc();
-          }, 300));
+          }, 250));
         }
 
-        // Guests
-        const guestsSelect = document.getElementById('inp-guests');
-        if (guestsSelect) guestsSelect.addEventListener('change', App.calc);
+        document.getElementById('inp-guests')?.addEventListener('change', App.calc);
+        document.getElementById('inp-tax')?.addEventListener('change', App.calc);
 
-        // Tax
-        const taxCheckbox = document.getElementById('inp-tax');
-        if (taxCheckbox) taxCheckbox.addEventListener('change', App.calc);
+        const bind = (id, fn) => { const el = document.getElementById(id); if (el) el.addEventListener('click', fn); };
 
-        // Copy quote
-        const btnCopyQuote = document.getElementById('btn-copy-quote');
-        if (btnCopyQuote) btnCopyQuote.addEventListener('click', App.copyQuote);
-
-        // === Admin buttons (чтобы не было “кнопки не работают”) ===
-        const bind = (id, fn) => {
-          const el = document.getElementById(id);
-          if (el) el.addEventListener('click', fn);
-        };
-
-        bind('btn-add-bonus', () => { if (typeof Admin !== 'undefined') Admin.addBonus(); });
-        bind('btn-add-region', () => { if (typeof Admin !== 'undefined') Admin.addRegion(); });
-        bind('btn-add-category', () => { if (typeof Admin !== 'undefined') Admin.addCategory(); });
-        bind('btn-add-holiday', () => { if (typeof Admin !== 'undefined') Admin.addHoliday(); });
-        bind('btn-add-range', () => { if (typeof Admin !== 'undefined') Admin.addRange(); });
-        bind('btn-add-payment', () => { if (typeof Admin !== 'undefined') Admin.addPayment(); });
-        bind('btn-add-link', () => { if (typeof Admin !== 'undefined') Admin.addLink(); });
-        bind('btn-reset-db', () => { if (typeof Admin !== 'undefined') Admin.reset(); });
-
-        console.log('✅ Event listeners attached');
+        bind('btn-add-bonus', () => Admin.addBonus());
+        bind('btn-add-region', () => Admin.addRegion());
+        bind('btn-add-category', () => Admin.addCategory());
+        bind('btn-add-holiday', () => Admin.addHoliday());
+        bind('btn-add-range', () => Admin.addRange());
+        bind('btn-add-payment', () => Admin.addPayment());
+        bind('btn-add-link', () => Admin.addLink());
+        bind('btn-reset-db', () => Admin.reset());
       },
 
       initProfileInputs: () => {
@@ -1410,19 +2374,19 @@
             DB.config.performer = Utils.sanitizeText(performerInput.value, 100);
             Storage.save();
             DataManager.updateStats();
-          }, 500));
+          }, 350));
         }
 
         const depositInput = document.getElementById('cfg-deposit');
         if (depositInput) {
-          depositInput.value = DB.config?.deposit || 30;
+          depositInput.value = DB.config?.deposit ?? 30;
           depositInput.addEventListener('input', Utils.debounce(() => {
             const value = Utils.sanitizeNumber(depositInput.value, 0, 100, 30);
             depositInput.value = value;
             DB.config.deposit = value;
             Storage.save();
             DataManager.updateStats();
-          }, 500));
+          }, 350));
         }
       },
 
@@ -1435,33 +2399,62 @@
             DB.services["Детские шоу"][newKey] = DB.services["Детские шоу"][oldKey];
             delete DB.services["Детские шоу"][oldKey];
             Storage.save();
-            console.log('✅ Service names migrated');
           }
-        } catch (err) {
-          console.error('Migration error:', err);
-        }
+        } catch (err) { console.error('Migration error:', err); }
       },
 
-      registerSW: () => {
-        if (!('serviceWorker' in navigator)) {
-          console.log('Service Worker not supported');
-          return;
-        }
-        window.addEventListener('load', () => {
-          navigator.serviceWorker
-            .register('./service-worker.js')
-            .then(reg => console.log('✅ SW registered:', reg.scope))
-            .catch(err => console.log('❌ SW registration failed (ok if single-file):', err));
-        });
+      // ✅ Inline SW (не требует service-worker.js). Если браузер не поддержит — ок.
+      registerSWInline: () => {
+        try {
+          if (!('serviceWorker' in navigator)) return;
+          const swCode = `
+            const CACHE = 'illusionist-os-cache-v1';
+            self.addEventListener('install', (e) => {
+              e.waitUntil((async () => {
+                try {
+                  const cache = await caches.open(CACHE);
+                  // кешируем текущий документ (по запросу клиента) — работает не везде, но не ломает
+                } catch (e) {}
+              })());
+              self.skipWaiting();
+            });
+            self.addEventListener('activate', (e) => {
+              e.waitUntil((async () => {
+                try {
+                  const keys = await caches.keys();
+                  await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
+                } catch (e) {}
+                self.clients.claim();
+              })());
+            });
+            self.addEventListener('fetch', (e) => {
+              // network-first: не мешаем живому обновлению
+              e.respondWith((async () => {
+                try {
+                  const res = await fetch(e.request);
+                  return res;
+                } catch (err) {
+                  const cached = await caches.match(e.request);
+                  if (cached) return cached;
+                  throw err;
+                }
+              })());
+            });
+          `;
+          const blob = new Blob([swCode], { type: 'text/javascript' });
+          const swUrl = URL.createObjectURL(blob);
+
+          navigator.serviceWorker.register(swUrl).catch(() => {});
+          // URL.revokeObjectURL(swUrl) нельзя сразу — иначе регистрация может не успеть
+          setTimeout(() => { try { URL.revokeObjectURL(swUrl); } catch(e){} }, 5000);
+        } catch (e) {}
       },
 
       startSplash: () => {
         const splash = document.getElementById('splash');
         if (!splash) return;
 
-        if (window.lucide) {
-          try { lucide.createIcons(); } catch (err) { console.warn('Lucide icons init error:', err); }
-        }
+        if (window.lucide) { try { lucide.createIcons(); } catch (err) {} }
 
         const MIN_MS = 2800;
         let dismissed = false;
@@ -1486,9 +2479,11 @@
           if (window.lucide) lucide.createIcons();
           DataManager.updateStats();
           DataManager.renderBackupSlots();
-        } catch (err) {
-          console.error('UI update error:', err);
-        }
+          Templates.render();
+          Templates.updateSaveButton();
+          Rounding.updateUI();
+          Admin.render();
+        } catch (err) { console.error('UI update error:', err); }
       },
 
       updateRegionSelect: () => {
@@ -1503,7 +2498,7 @@
         if (DB.travel && Utils.isValidObject(DB.travel)) {
           Object.keys(DB.travel).sort().forEach(region => Utils.addOption(regionSelect, region, region));
         }
-        if (currentValue && DB.travel[currentValue]) regionSelect.value = currentValue;
+        if (currentValue && DB.travel?.[currentValue]) regionSelect.value = currentValue;
       },
 
       updateCategorySelect: () => {
@@ -1518,7 +2513,7 @@
         if (DB.services && Utils.isValidObject(DB.services)) {
           Object.keys(DB.services).sort().forEach(category => Utils.addOption(catSelect, category, category));
         }
-        if (currentValue && DB.services[currentValue]) catSelect.value = currentValue;
+        if (currentValue && DB.services?.[currentValue]) catSelect.value = currentValue;
       },
 
       updateDate: () => {
@@ -1556,9 +2551,7 @@
           }
 
           App.calc();
-        } catch (err) {
-          console.error('Date update error:', err);
-        }
+        } catch (err) { console.error('Date update error:', err); }
       },
 
       updateRegion: () => {
@@ -1615,10 +2608,7 @@
         const cat = catSelect.value;
         const svc = svcSelect.value;
 
-        if (!cat || !svc) {
-          App.showToast('Выберите услугу!');
-          return;
-        }
+        if (!cat || !svc) { App.showToast('Выберите услугу!'); return; }
 
         const basePrice = DB.services?.[cat]?.[svc];
         if (typeof basePrice !== 'number' || isNaN(basePrice) || basePrice < 0) {
@@ -1694,6 +2684,7 @@
         });
 
         if (window.lucide) lucide.createIcons();
+        Templates.updateSaveButton();
       },
 
       calc: () => {
@@ -1717,7 +2708,6 @@
           }
           servicesTotal -= discount;
 
-          // Travel
           const regionSelect = document.getElementById('inp-region');
           const citySelect = document.getElementById('inp-city');
           let travel = 0;
@@ -1754,9 +2744,13 @@
           if (totalSumEl) totalSumEl.textContent = `${Utils.formatPrice(State.finalTotal)} ₽`;
 
           App.updateBonuses();
-        } catch (err) {
-          console.error('Calculation error:', err);
-        }
+
+          if (Rounding.state.isApplied) {
+            Rounding.clearStateSilently();
+          }
+          Rounding.updateUI();
+
+        } catch (err) { console.error('Calculation error:', err); }
       },
 
       updateBonuses: () => {
@@ -1791,20 +2785,13 @@
         if (!catSelect) return;
 
         const cat = catSelect.value;
-        if (!cat || !DB.services || !DB.services[cat]) {
-          App.showToast('Выберите категорию');
-          return;
-        }
+        if (!cat || !DB.services || !DB.services[cat]) { App.showToast('Выберите категорию'); return; }
 
         const services = DB.services[cat];
-        if (Object.keys(services).length === 0) {
-          App.showToast('Категория пустая');
-          return;
-        }
+        if (Object.keys(services).length === 0) { App.showToast('Категория пустая'); return; }
 
         const k = State.holidayK || 1;
-        const dateInput = document.getElementById('inp-date');
-        const dateRaw = dateInput ? dateInput.value : '';
+        const dateRaw = document.getElementById('inp-date')?.value || '';
         const dateFmt = Utils.formatDate(dateRaw);
 
         const bonusesSorted = (DB.bonuses || [])
@@ -1819,7 +2806,6 @@
         text += `\n`;
 
         const lines = [];
-
         Object.keys(services).forEach(name => {
           const base = services[name];
           if (typeof base !== 'number' || isNaN(base) || base < 0) return;
@@ -1828,7 +2814,6 @@
           const safeName = Utils.sanitizeText(name, 200);
 
           let bonusLine = '';
-
           if (hasBonuses) {
             const earned = bonusesSorted.filter(b => price >= (b.threshold || 0));
             if (earned.length > 0) {
@@ -1868,26 +2853,16 @@
       },
 
       copyQuote: async () => {
-        if (!State.finalTotal || State.finalTotal <= 0) {
-          App.showToast('Сумма 0 ₽');
-          return;
-        }
+        if (!State.finalTotal || State.finalTotal <= 0) { App.showToast('Сумма 0 ₽'); return; }
 
-        const clientInput = document.getElementById('inp-client');
-        const client = clientInput ? (Utils.sanitizeText(clientInput.value, 100) || 'Клиент') : 'Клиент';
+        const client = Utils.sanitizeText(document.getElementById('inp-client')?.value, 100) || 'Клиент';
+        const type = document.getElementById('inp-event-type')?.value || 'Мероприятие';
 
-        const eventSelect = document.getElementById('inp-event-type');
-        const type = eventSelect ? eventSelect.value : 'Мероприятие';
-
-        const dateInput = document.getElementById('inp-date');
-        const dateRaw = dateInput ? dateInput.value : '';
+        const dateRaw = document.getElementById('inp-date')?.value || '';
         const dateFmt = Utils.formatDate(dateRaw) || dateRaw;
 
-        const timeInput = document.getElementById('inp-time');
-        const time = timeInput ? timeInput.value : '18:00';
-
-        const citySelect = document.getElementById('inp-city');
-        const city = citySelect ? citySelect.value : '';
+        const time = document.getElementById('inp-time')?.value || '18:00';
+        const city = document.getElementById('inp-city')?.value || '';
 
         const depPct = DB.config?.deposit || 30;
         const deposit = Math.round(State.finalTotal * (depPct / 100));
@@ -1908,8 +2883,7 @@
         if (State.finalDetails.travel > 0) text += `Логистика: ${Utils.formatPrice(State.finalDetails.travel)} ₽\n`;
         if (State.finalDetails.guestPrice > 0) text += `Доплата за гостей: ${Utils.formatPrice(State.finalDetails.guestPrice)} ₽\n`;
         if (State.finalDetails.manPrice > 0) {
-          const manNameInput = document.getElementById('inp-manual-name');
-          const manName = manNameInput ? (Utils.sanitizeText(manNameInput.value, 100) || 'Доп') : 'Доп';
+          const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Доп';
           text += `${manName}: ${Utils.formatPrice(State.finalDetails.manPrice)} ₽\n`;
         }
         if (State.finalDetails.tax > 0) text += `Договор (+6%): ${Utils.formatPrice(State.finalDetails.tax)} ₽\n`;
@@ -1959,8 +2933,7 @@
         const isOpen = modal.classList.contains('active');
 
         if (!isOpen) {
-          if (typeof Admin !== 'undefined' && Admin.render) Admin.render();
-          // NEW: refresh data blocks
+          Admin.render();
           DataManager.renderBackupSlots();
           DataManager.updateStats();
           modal.classList.add('active');
@@ -1977,13 +2950,10 @@
         if (!toast || !msgEl) return;
 
         msgEl.textContent = Utils.sanitizeText(msg, 200);
-        toast.classList.remove('opacity-0', '-translate-y-4');
-        toast.classList.add('opacity-100', 'translate-y-0');
+        toast.classList.add('show');
 
-        setTimeout(() => {
-          toast.classList.add('opacity-0', '-translate-y-4');
-          toast.classList.remove('opacity-100', 'translate-y-0');
-        }, 2500);
+        clearTimeout(App._toastTimer);
+        App._toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
       },
 
       renderParticles: () => {
@@ -2031,93 +3001,7 @@
       }
     };
 
-    // ============================================================================
-    // ЧАСТЬ 3: ADMIN + STORAGE (part3-admin-storage.js)
-    // + обновленные Storage.save/load (NEW reliability hooks)
-    // ============================================================================
-
-    const Storage = {
-      save: () => {
-        // indicator: saving
-        if (typeof DataManager !== 'undefined') DataManager.updateBackupIndicator('saving');
-
-        try {
-          DB.version = DB_VERSION;
-
-          const serialized = JSON.stringify(DB);
-          localStorage.setItem(STORAGE_KEY, serialized);
-
-          if (typeof DataManager !== 'undefined') {
-            DataManager.updateBackupIndicator('saved');
-            DataManager.updateStats();
-          }
-
-          console.log('✅ Database saved');
-          return true;
-        } catch (err) {
-          console.error('❌ Storage save error:', err);
-          if (typeof DataManager !== 'undefined') DataManager.updateBackupIndicator('error');
-
-          if (err.name === 'QuotaExceededError') {
-            console.error('localStorage quota exceeded');
-            if (typeof App !== 'undefined' && App.showToast) App.showToast('Хранилище переполнено');
-          }
-          return false;
-        }
-      },
-
-      load: () => {
-        try {
-          const stored = localStorage.getItem(STORAGE_KEY);
-          if (!stored) {
-            console.log('No stored data, using defaults');
-            DB = JSON.parse(JSON.stringify(DEFAULT_DB));
-            DB.version = DB_VERSION;
-            if (typeof DataManager !== 'undefined') DataManager.updateBackupIndicator('saved');
-            return true;
-          }
-
-          const parsed = JSON.parse(stored);
-
-          DB = {
-            ...JSON.parse(JSON.stringify(DEFAULT_DB)),
-            travel: Utils.isValidObject(parsed.travel) ? parsed.travel : DEFAULT_DB.travel,
-            services: Utils.isValidObject(parsed.services) ? parsed.services : DEFAULT_DB.services,
-            holidays: Utils.isValidObject(parsed.holidays) ? parsed.holidays : DEFAULT_DB.holidays,
-            holidayRanges: Array.isArray(parsed.holidayRanges) ? parsed.holidayRanges : DEFAULT_DB.holidayRanges,
-            bonuses: Array.isArray(parsed.bonuses) ? parsed.bonuses : DEFAULT_DB.bonuses,
-            payments: Array.isArray(parsed.payments) ? parsed.payments : DEFAULT_DB.payments,
-            links: Array.isArray(parsed.links) ? parsed.links : DEFAULT_DB.links,
-            config: Utils.isValidObject(parsed.config) ? { ...DEFAULT_DB.config, ...parsed.config } : DEFAULT_DB.config,
-            version: DB_VERSION
-          };
-
-          console.log('✅ Database loaded');
-          if (typeof DataManager !== 'undefined') DataManager.updateBackupIndicator('saved');
-          return true;
-        } catch (err) {
-          console.error('❌ Storage load error:', err);
-          DB = JSON.parse(JSON.stringify(DEFAULT_DB));
-          DB.version = DB_VERSION;
-          if (typeof DataManager !== 'undefined') DataManager.updateBackupIndicator('error');
-          return false;
-        }
-      },
-
-      reset: () => {
-        try {
-          localStorage.removeItem(STORAGE_KEY);
-          console.log('✅ Database reset');
-          if (typeof DataManager !== 'undefined') DataManager.updateBackupIndicator('saved');
-          return true;
-        } catch (err) {
-          console.error('❌ Storage reset error:', err);
-          if (typeof DataManager !== 'undefined') DataManager.updateBackupIndicator('error');
-          return false;
-        }
-      }
-    };
-
+    /* ========== Admin ========== */
     const Admin = {
       render: () => {
         try {
@@ -2128,13 +3012,9 @@
           Admin.renderBonuses();
           Admin.renderPayments();
           Admin.renderLinks();
-
           if (window.lucide) lucide.createIcons();
-          if (typeof DataManager !== 'undefined') DataManager.updateStats();
-          console.log('✅ Admin UI rendered');
-        } catch (err) {
-          console.error('❌ Admin render error:', err);
-        }
+          DataManager.updateStats();
+        } catch (err) { console.error('❌ Admin render error:', err); }
       },
 
       toggleSection: (headerElement) => {
@@ -2145,7 +3025,7 @@
         if (icon) icon.style.transform = content && content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
       },
 
-      // TRAVEL
+      /* ===== Travel ===== */
       renderTravel: () => {
         const container = document.getElementById('settings-travel-list');
         if (!container) return;
@@ -2253,7 +3133,6 @@
 
         const sanitized = Utils.sanitizeText(name, 100);
         if (!sanitized) { App.showToast('Некорректное имя'); return; }
-
         if (DB.travel[sanitized]) { App.showToast('Регион уже существует'); return; }
 
         DB.travel[sanitized] = { fee: 0, cities: {} };
@@ -2315,7 +3194,7 @@
         Storage.save();
       },
 
-      // SERVICES
+      /* ===== Services ===== */
       renderServices: () => {
         const container = document.getElementById('settings-services-list');
         if (!container) return;
@@ -2460,7 +3339,7 @@
         Storage.save();
       },
 
-      // HOLIDAYS
+      /* ===== Holidays ===== */
       renderHolidays: () => {
         const container = document.getElementById('settings-holidays-list');
         if (!container) return;
@@ -2525,7 +3404,6 @@
       },
 
       delHoliday: (key) => { delete DB.holidays[key]; Storage.save(); Admin.render(); },
-
       updateHolidayKey: (oldKey, newKey) => {
         const value = DB.holidays[oldKey];
         delete DB.holidays[oldKey];
@@ -2533,10 +3411,9 @@
         Storage.save();
         Admin.render();
       },
-
       updateHolidayVal: (key, value) => { DB.holidays[key] = Utils.sanitizeFloat(value, 1, 10); Storage.save(); },
 
-      // RANGES
+      /* ===== Holiday Ranges ===== */
       renderRanges: () => {
         const container = document.getElementById('settings-ranges-list');
         if (!container) return;
@@ -2590,241 +3467,292 @@
       },
 
       addRange: () => {
-        if (!DB.holidayRanges) DB.holidayRanges = [];
-        DB.holidayRanges.push({ sm: 12, sd: 20, em: 12, ed: 30, k: 1.5 });
-        Storage.save();
-        Admin.render();
-      },
+        const start = prompt('Старт периода (ММ-ДД):', '12-20');
+        if (!start) return;
+        if (!Utils.validateDateKey(start)) { App.showToast('Неверный старт (MM-DD)'); return; }
 
-      delRange: (index) => {
-        if (!DB.holidayRanges || index < 0 || index >= DB.holidayRanges.length) return;
-        DB.holidayRanges.splice(index, 1);
+        const end = prompt('Конец периода (ММ-ДД):', '12-30');
+        if (!end) return;
+        if (!Utils.validateDateKey(end)) { App.showToast('Неверный конец (MM-DD)'); return; }
+
+        const kStr = prompt('Коэффициент (например 1.5):', '1.5');
+        if (kStr === null) return;
+        const k = Utils.sanitizeFloat(kStr, 1, 10, 1.5);
+
+        const s = Utils.parseMonthDay(start);
+        const e = Utils.parseMonthDay(end);
+        if (!s || !e) { App.showToast('Неверный формат даты'); return; }
+
+        if (!Array.isArray(DB.holidayRanges)) DB.holidayRanges = [];
+        DB.holidayRanges.push({ sm: s.mm, sd: s.dd, em: e.mm, ed: e.dd, k });
         Storage.save();
         Admin.render();
       },
 
       updateRange: (index, field, value) => {
-        if (!DB.holidayRanges || index < 0 || index >= DB.holidayRanges.length) return;
-        const range = DB.holidayRanges[index];
+        if (!Array.isArray(DB.holidayRanges) || !DB.holidayRanges[index]) return;
+        const r = DB.holidayRanges[index];
 
         if (field === 'k') {
-          range.k = Utils.sanitizeFloat(value, 1, 10);
-        } else {
-          const parts = value.split('-');
-          const m = Utils.sanitizeNumber(parts[0], 1, 12);
-          const d = Utils.sanitizeNumber(parts[1], 1, 31);
-          if (m && d) {
-            if (field === 'start') { range.sm = m; range.sd = d; }
-            else if (field === 'end') { range.em = m; range.ed = d; }
-          }
+          r.k = Utils.sanitizeFloat(value, 1, 10, r.k || 1.5);
+          Storage.save();
+          return;
         }
+
+        const md = Utils.parseMonthDay(value);
+        if (!md) {
+          App.showToast('Неверный формат (MM-DD)');
+          Admin.render();
+          return;
+        }
+
+        if (field === 'start') { r.sm = md.mm; r.sd = md.dd; }
+        if (field === 'end') { r.em = md.mm; r.ed = md.dd; }
+
         Storage.save();
+        Admin.render();
       },
 
-      // BONUSES
+      delRange: (index) => {
+        if (!Array.isArray(DB.holidayRanges)) return;
+        DB.holidayRanges.splice(index, 1);
+        Storage.save();
+        Admin.render();
+      },
+
+      /* ===== Bonuses ===== */
       renderBonuses: () => {
         const container = document.getElementById('settings-bonuses-list');
         if (!container) return;
 
         Utils.clearElement(container);
 
-        if (!DB.bonuses || !Array.isArray(DB.bonuses) || DB.bonuses.length === 0) {
-          container.textContent = 'Нет бонусов';
+        if (!Array.isArray(DB.bonuses) || DB.bonuses.length === 0) {
+          container.innerHTML = `<div class="text-xs text-slate-500">Нет бонусов</div>`;
           return;
         }
 
-        DB.bonuses.forEach((bonus, index) => container.appendChild(Admin.createBonusRow(bonus, index)));
+        DB.bonuses
+          .slice()
+          .sort((a,b) => (a.threshold||0) - (b.threshold||0))
+          .forEach((bonus, idx) => {
+            container.appendChild(Admin.createBonusRow(bonus, idx));
+          });
       },
 
-      createBonusRow: (bonus, index) => {
+      createBonusRow: (bonus, idx) => {
         const row = Utils.createElement('div', 'edit-row');
 
-        const label = Utils.createElement('span', 'text-xs text-slate-500 w-8', 'От');
+        const thr = Utils.createElement('input', 'edit-input w-28 text-right mono');
+        thr.type = 'number';
+        thr.value = bonus.threshold ?? 0;
+        thr.min = '0';
+        thr.addEventListener('change', () => {
+          DB.bonuses[idx].threshold = Utils.sanitizeNumber(thr.value, 0, 999999, 0);
+          Storage.save();
+          App.calc();
+          Admin.renderBonuses();
+        });
 
-        const thresholdInput = Utils.createElement('input', 'edit-input w-24 text-right mono');
-        thresholdInput.type = 'number';
-        thresholdInput.value = bonus.threshold || 0;
-        thresholdInput.placeholder = 'Сумма';
-        thresholdInput.min = '0';
-        thresholdInput.addEventListener('change', () => Admin.updateBonus(index, 'threshold', thresholdInput.value));
-
-        const textInput = Utils.createElement('input', 'edit-input flex-1');
-        textInput.value = bonus.text || '';
-        textInput.placeholder = 'Текст бонуса';
-        textInput.maxLength = 200;
-        textInput.addEventListener('input', () => Admin.updateBonus(index, 'text', textInput.value));
+        const text = Utils.createElement('input', 'edit-input w-full');
+        text.value = bonus.text ?? '';
+        text.maxLength = 200;
+        text.addEventListener('change', () => {
+          DB.bonuses[idx].text = Utils.sanitizeText(text.value, 200);
+          Storage.save();
+          App.calc();
+          Admin.renderBonuses();
+        });
 
         const delBtn = Utils.createElement('button', 'btn-del-mini');
         delBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
-        delBtn.addEventListener('click', () => Admin.delBonus(index));
+        delBtn.addEventListener('click', () => Admin.delBonus(idx));
 
-        row.appendChild(label);
-        row.appendChild(thresholdInput);
-        row.appendChild(textInput);
+        row.appendChild(thr);
+        row.appendChild(text);
         row.appendChild(delBtn);
         return row;
       },
 
       addBonus: () => {
-        if (!DB.bonuses) DB.bonuses = [];
-        DB.bonuses.push({ threshold: 10000, text: 'Бонус' });
-        Storage.save();
-        Admin.render();
-        App.calc();
-      },
+        const thr = prompt('Порог (₽):', '50000');
+        if (thr === null) return;
+        const threshold = Utils.sanitizeNumber(thr, 0, 999999, 0);
 
-      delBonus: (index) => {
-        if (!DB.bonuses || index < 0 || index >= DB.bonuses.length) return;
-        DB.bonuses.splice(index, 1);
-        Storage.save();
-        Admin.render();
-        App.calc();
-      },
+        const text = prompt('Текст бонуса:', 'Бонус клиенту');
+        if (!text) return;
 
-      updateBonus: (index, field, value) => {
-        if (!DB.bonuses || index < 0 || index >= DB.bonuses.length) return;
-        if (field === 'threshold') DB.bonuses[index].threshold = Utils.sanitizeNumber(value, 0);
-        else if (field === 'text') DB.bonuses[index].text = Utils.sanitizeText(value, 200);
+        if (!Array.isArray(DB.bonuses)) DB.bonuses = [];
+        DB.bonuses.push({ threshold, text: Utils.sanitizeText(text, 200) });
         Storage.save();
         App.calc();
+        Admin.renderBonuses();
       },
 
-      // PAYMENTS
+      delBonus: (idx) => {
+        if (!Array.isArray(DB.bonuses) || !DB.bonuses[idx]) return;
+        if (!confirm('Удалить бонус?')) return;
+        DB.bonuses.splice(idx, 1);
+        Storage.save();
+        App.calc();
+        Admin.renderBonuses();
+      },
+
+      /* ===== Payments ===== */
       renderPayments: () => {
         const container = document.getElementById('settings-payments-list');
         if (!container) return;
 
         Utils.clearElement(container);
 
-        if (!DB.payments || !Array.isArray(DB.payments) || DB.payments.length === 0) {
-          container.textContent = 'Нет реквизитов';
+        if (!Array.isArray(DB.payments) || DB.payments.length === 0) {
+          container.innerHTML = `<div class="text-xs text-slate-500">Нет реквизитов</div>`;
           return;
         }
 
-        DB.payments.forEach((payment, index) => container.appendChild(Admin.createPaymentCard(payment, index)));
+        DB.payments.forEach((p, idx) => container.appendChild(Admin.createPaymentRow(p, idx)));
       },
 
-      createPaymentCard: (payment, index) => {
-        const wrapper = Utils.createElement('div', 'bg-white/5 rounded-lg p-2 mb-2 relative group');
+      createPaymentRow: (p, idx) => {
+        const row = Utils.createElement('div', 'edit-row');
 
-        const titleInput = Utils.createElement('input', 'bg-transparent text-amber-500 font-extrabold text-xs w-full mb-1 outline-none');
-        titleInput.value = payment.title || '';
-        titleInput.maxLength = 100;
-        titleInput.addEventListener('input', () => Admin.updatePayment(index, 'title', titleInput.value));
-
-        const textArea = document.createElement('textarea');
-        textArea.className = 'bg-transparent text-slate-300 text-xs w-full outline-none resize-none h-auto';
-        textArea.rows = 1;
-        textArea.value = payment.text || '';
-        textArea.maxLength = 500;
-        textArea.addEventListener('input', () => {
-          Admin.updatePayment(index, 'text', textArea.value);
-          textArea.style.height = 'auto';
-          textArea.style.height = textArea.scrollHeight + 'px';
+        const title = Utils.createElement('input', 'edit-input w-36');
+        title.value = p.title ?? '';
+        title.maxLength = 100;
+        title.addEventListener('change', () => {
+          DB.payments[idx].title = Utils.sanitizeText(title.value, 100);
+          Storage.save();
         });
 
-        const delBtn = Utils.createElement('button', 'absolute top-2 right-2 btn-del-mini opacity-0 group-hover:opacity-100 transition');
-        delBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
-        delBtn.addEventListener('click', () => Admin.delPayment(index));
+        const text = Utils.createElement('input', 'edit-input w-full');
+        text.value = p.text ?? '';
+        text.maxLength = 500;
+        text.addEventListener('change', () => {
+          DB.payments[idx].text = Utils.sanitizeText(text.value, 500);
+          Storage.save();
+        });
 
-        wrapper.appendChild(titleInput);
-        wrapper.appendChild(textArea);
-        wrapper.appendChild(delBtn);
-        return wrapper;
+        const delBtn = Utils.createElement('button', 'btn-del-mini');
+        delBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
+        delBtn.addEventListener('click', () => Admin.delPayment(idx));
+
+        row.appendChild(title);
+        row.appendChild(text);
+        row.appendChild(delBtn);
+        return row;
       },
 
       addPayment: () => {
-        if (!DB.payments) DB.payments = [];
-        DB.payments.push({ title: 'Банк', text: '' });
+        const title = prompt('Название реквизитов:', 'Перевод');
+        if (!title) return;
+        const text = prompt('Текст реквизитов:', 'СБП / карта: ...');
+        if (!text) return;
+
+        if (!Array.isArray(DB.payments)) DB.payments = [];
+        DB.payments.push({ title: Utils.sanitizeText(title, 100), text: Utils.sanitizeText(text, 500) });
         Storage.save();
-        Admin.render();
+        Admin.renderPayments();
       },
 
-      delPayment: (index) => {
-        if (!DB.payments || index < 0 || index >= DB.payments.length) return;
-        DB.payments.splice(index, 1);
+      delPayment: (idx) => {
+        if (!Array.isArray(DB.payments) || !DB.payments[idx]) return;
+        if (!confirm('Удалить реквизиты?')) return;
+        DB.payments.splice(idx, 1);
         Storage.save();
-        Admin.render();
+        Admin.renderPayments();
       },
 
-      updatePayment: (index, field, value) => {
-        if (!DB.payments || index < 0 || index >= DB.payments.length) return;
-        if (field === 'title') DB.payments[index].title = Utils.sanitizeText(value, 100);
-        else if (field === 'text') DB.payments[index].text = Utils.sanitizeText(value, 500);
-        Storage.save();
-      },
-
-      // LINKS
+      /* ===== Links ===== */
       renderLinks: () => {
         const container = document.getElementById('settings-links-list');
         if (!container) return;
 
         Utils.clearElement(container);
 
-        if (!DB.links || !Array.isArray(DB.links) || DB.links.length === 0) {
-          container.textContent = 'Нет ссылок';
+        if (!Array.isArray(DB.links) || DB.links.length === 0) {
+          container.innerHTML = `<div class="text-xs text-slate-500">Нет ссылок</div>`;
           return;
         }
 
-        DB.links.forEach((link, index) => container.appendChild(Admin.createLinkRow(link, index)));
+        DB.links.forEach((l, idx) => container.appendChild(Admin.createLinkRow(l, idx)));
       },
 
-      createLinkRow: (link, index) => {
+      createLinkRow: (l, idx) => {
         const row = Utils.createElement('div', 'edit-row');
 
-        const labelInput = Utils.createElement('input', 'edit-input w-1/3');
-        labelInput.value = link.label || '';
-        labelInput.maxLength = 50;
-        labelInput.addEventListener('input', () => Admin.updateLink(index, 'label', labelInput.value));
+        const label = Utils.createElement('input', 'edit-input w-36');
+        label.value = l.label ?? '';
+        label.maxLength = 100;
+        label.addEventListener('change', () => {
+          DB.links[idx].label = Utils.sanitizeText(label.value, 100);
+          Storage.save();
+        });
 
-        const urlInput = Utils.createElement('input', 'edit-input flex-1');
-        urlInput.value = link.url || '';
-        urlInput.placeholder = 'https://...';
-        urlInput.maxLength = 500;
-        urlInput.addEventListener('input', () => Admin.updateLink(index, 'url', urlInput.value));
+        const url = Utils.createElement('input', 'edit-input w-full mono');
+        url.value = l.url ?? '';
+        url.maxLength = 500;
+        url.addEventListener('change', () => {
+          DB.links[idx].url = Utils.sanitizeText(url.value, 500);
+          Storage.save();
+        });
 
         const delBtn = Utils.createElement('button', 'btn-del-mini');
         delBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
-        delBtn.addEventListener('click', () => Admin.delLink(index));
+        delBtn.addEventListener('click', () => Admin.delLink(idx));
 
-        row.appendChild(labelInput);
-        row.appendChild(urlInput);
+        row.appendChild(label);
+        row.appendChild(url);
         row.appendChild(delBtn);
         return row;
       },
 
       addLink: () => {
-        if (!DB.links) DB.links = [];
-        DB.links.push({ label: 'Сайт', url: '' });
+        const label = prompt('Название ссылки:', 'Портфолио');
+        if (!label) return;
+        const url = prompt('URL:', 'https://');
+        if (!url) return;
+
+        if (!Array.isArray(DB.links)) DB.links = [];
+        DB.links.push({ label: Utils.sanitizeText(label, 100), url: Utils.sanitizeText(url, 500) });
         Storage.save();
-        Admin.render();
+        Admin.renderLinks();
       },
 
-      delLink: (index) => {
-        if (!DB.links || index < 0 || index >= DB.links.length) return;
-        DB.links.splice(index, 1);
+      delLink: (idx) => {
+        if (!Array.isArray(DB.links) || !DB.links[idx]) return;
+        if (!confirm('Удалить ссылку?')) return;
+        DB.links.splice(idx, 1);
         Storage.save();
-        Admin.render();
+        Admin.renderLinks();
       },
 
-      updateLink: (index, field, value) => {
-        if (!DB.links || index < 0 || index >= DB.links.length) return;
-        if (field === 'label') DB.links[index].label = Utils.sanitizeText(value, 50);
-        else if (field === 'url') DB.links[index].url = Utils.sanitizeText(value, 500);
-        Storage.save();
-      },
-
+      /* ===== Reset ===== */
       reset: () => {
-        if (!confirm('Сбросить базу цен к заводским настройкам? Это действие необратимо!')) return;
-        Storage.reset();
-        location.reload();
+        const hard = confirm('Сбросить базу цен на дефолт?\n\nOK = Сбросить\nОтмена = Отмена');
+        if (!hard) return;
+
+        try { DataManager.createBackup('Перед сбросом'); } catch(e){}
+
+        DB = JSON.parse(JSON.stringify(DEFAULT_DB));
+        DB.version = DB_VERSION;
+        Storage.save();
+
+        // корзину — в ноль, чтобы не было “призраков”
+        State.cart = [];
+        State.finalTotal = 0;
+        State.serviceQty = 1;
+
+        App.updateUI();
+        App.renderCart();
+        App.calc();
+        App.showToast('База сброшена');
       }
     };
 
-    // ============================================================================
-    // BOOT (НЕ ТРОГАЙ)
-    // ============================================================================
-    window.onload = App.init;
+    // === Boot ===
+    document.addEventListener('DOMContentLoaded', () => {
+      App.init();
+    });
   </script>
 </body>
 </html>
