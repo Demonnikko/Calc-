@@ -1,6 +1,10 @@
-/* Illusionist OS — offline PWA service worker */
-const CACHE_VERSION = 'illusionist-os-v1.0.0';
-const APP_SHELL = [
+/* Illusionist OS PWA SW */
+const CACHE_VERSION = 'illusionist-os-v1';
+const CORE_CACHE = `${CACHE_VERSION}-core`;
+const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
+
+// Put your app files here (same folder)
+const CORE_ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
@@ -9,74 +13,77 @@ const APP_SHELL = [
   './icons/apple-touch-icon.png'
 ];
 
-// A small runtime cache for external libs/fonts (first install online -> then works offline)
-const RUNTIME_CACHE = 'illusionist-os-runtime';
+// External CDN assets you use (Tailwind/Lucide/Fonts)
+const EXTERNAL_ASSETS = [
+  'https://cdn.tailwindcss.com',
+  'https://unpkg.com/lucide@latest',
+  'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&display=swap'
+];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting())
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(CORE_CACHE);
+    await cache.addAll(CORE_ASSETS);
+
+    // Pre-cache external (opaque) – best effort
+    const runtime = await caches.open(RUNTIME_CACHE);
+    await Promise.all(EXTERNAL_ASSETS.map(async (url) => {
+      try { await runtime.add(url); } catch (e) {}
+    }));
+
+    self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
     await Promise.all(keys.map((k) => {
-      if (k !== CACHE_VERSION && k !== RUNTIME_CACHE) return caches.delete(k);
+      if (!k.startsWith(CACHE_VERSION)) return caches.delete(k);
     }));
-    await self.clients.claim();
+    self.clients.claim();
   })());
 });
 
-// Cache-first for app shell navigations.
-// Stale-while-revalidate for other requests (incl. CDNs) so once you opened online, it works offline.
+// Cache strategy:
+// - same-origin: cache-first
+// - cross-origin: stale-while-revalidate (best effort)
 self.addEventListener('fetch', (event) => {
   const req = event.request;
 
-  // Only handle GET
+  // Only GET
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);
 
-  // SPA / single-page: always serve index.html for navigations
-  if (req.mode === 'navigate') {
-    event.respondWith((async () => {
-      const cache = await caches.open(CACHE_VERSION);
-      const cached = await cache.match('./index.html');
-      try {
-        const fresh = await fetch(req);
-        cache.put('./index.html', fresh.clone());
-        return fresh;
-      } catch (e) {
-        return cached || caches.match('./index.html');
-      }
-    })());
-    return;
-  }
-
-  // Static same-origin: cache-first
-  if (url.origin === self.location.origin) {
-    event.respondWith((async () => {
+  event.respondWith((async () => {
+    // Same-origin: cache first
+    if (url.origin === self.location.origin) {
       const cached = await caches.match(req);
       if (cached) return cached;
-      const cache = await caches.open(CACHE_VERSION);
-      const fresh = await fetch(req);
-      cache.put(req, fresh.clone());
-      return fresh;
-    })());
-    return;
-  }
 
-  // Cross-origin (CDN, fonts): stale-while-revalidate in runtime cache
-  event.respondWith((async () => {
+      try {
+        const fresh = await fetch(req);
+        const cache = await caches.open(CORE_CACHE);
+        cache.put(req, fresh.clone());
+        return fresh;
+      } catch (e) {
+        // Offline fallback: return cached index
+        const fallback = await caches.match('./index.html');
+        if (fallback) return fallback;
+        throw e;
+      }
+    }
+
+    // Cross-origin: stale-while-revalidate
     const cache = await caches.open(RUNTIME_CACHE);
     const cached = await cache.match(req);
+
     const fetchPromise = fetch(req).then((fresh) => {
-      // Can be opaque; still cache it
       cache.put(req, fresh.clone());
       return fresh;
-    }).catch(() => null);
+    }).catch(() => cached);
 
-    return cached || (await fetchPromise) || Response.error();
+    return cached || fetchPromise;
   })());
 });
