@@ -1,3 +1,10 @@
+ <!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Illusionist OS — Умный калькулятор</title>
+
   <!-- PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -25,12 +32,12 @@
 :root {
   /* Colors - улучшенная контрастность */
   --bg: #050507;
-  --panel: rgba(255,255,255,.10);      /* было .06 */
-  --panel2: rgba(255,255,255,.12);     /* было .08 */
-  --stroke: rgba(255,255,255,.15);     /* было .08 */
+  --panel: rgba(255,255,255,.10);
+  --panel2: rgba(255,255,255,.12);
+  --stroke: rgba(255,255,255,.15);
   --gold: #f59e0b;
   --muted: #94a3b8;
-  --text: #e5e7eb;
+  --text: #f1f5f9;  /* было #e5e7eb - увеличена яркость */
 
   /* Safe-area */
   --safe-top: env(safe-area-inset-top);
@@ -81,8 +88,9 @@ body {
 .glass {
   background: var(--panel);
   border: 1px solid var(--stroke);
-  backdrop-filter: blur(16px); /* было 12px */
+  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.05) inset;
 }
 
 /* ============================================
@@ -177,9 +185,9 @@ button {
 }
 
 .btn-gold:hover {
-  filter: brightness(1.05);
+  filter: brightness(1.08);
   transform: translateY(-1px);
-  box-shadow: 0 16px 35px rgba(245,158,11,.25);
+  box-shadow: 0 16px 40px rgba(245,158,11,.3), 0 0 20px rgba(245,158,11,.15);
 }
 
 .btn-gold:active {
@@ -372,7 +380,9 @@ button {
 /* ============================================
    MODALS
    ============================================ */
-#view-settings {
+#view-settings,
+#templates-modal,
+#variants-modal {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,.75);
@@ -382,7 +392,9 @@ button {
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
-#view-settings.active {
+#view-settings.active,
+#templates-modal.active,
+#variants-modal.active {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -419,6 +431,27 @@ button {
     max-height: calc(100vh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
     border-radius: 24px !important;
   }
+}
+
+/* Templates & Variants modals */
+.modal-content,
+.variants-modal-content {
+  background: #0a0a0c;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  width: min(480px, calc(100% - 40px));
+  max-height: calc(100vh - 80px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.variants-modal-content {
+  width: min(580px, calc(100% - 40px));
+}
+
+#variants-modal {
+  align-items: flex-start !important;
+  padding-top: max(24px, env(safe-area-inset-top)) !important;
 }
 
 /* ============================================
@@ -547,6 +580,76 @@ button {
 #cart-list > div:hover {
   background: rgba(255,255,255,0.08);
   border-color: rgba(255,255,255,0.12);
+}
+
+/* ============================================
+   TEMPLATES
+   ============================================ */
+.template-card {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1.5px solid rgba(245, 158, 11, 0.18);
+  border-radius: 16px;
+  padding: 14px 16px; /* было 10px 12px */
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  min-height: 90px;
+}
+
+.template-card:hover {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.15);
+}
+
+.template-card .template-name {
+  font-size: 13px; /* было 11px */
+  font-weight: 700;
+  color: #f59e0b;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.template-card .template-info {
+  font-size: 11px; /* было 9px */
+  color: #64748b;
+}
+
+.template-card .template-price {
+  font-size: 12px; /* было 10px */
+  font-weight: 800;
+  color: #e2e8f0;
+  font-family: "JetBrains Mono", monospace;
+  margin-top: 6px;
+}
+
+.template-card .template-delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.15);
+  color: rgba(239, 68, 68, 0.8);
+  opacity: 0;
+  transition: all 0.2s;
+}
+
+.template-card:hover .template-delete {
+  opacity: 1;
+}
+
+.template-card .template-delete:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
 }
 
 /* ============================================
@@ -768,6 +871,11 @@ button {
   animation: enter .25s ease both;
 }
 
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
 @keyframes enter {
   from {
     opacity: 0;
@@ -777,6 +885,21 @@ button {
     opacity: 1;
     transform: none;
   }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .round-pulse {
@@ -883,81 +1006,6 @@ button {
   }
 }
 
-
-
-/* Quick Replies */
-.quick-reply-card {
-  background: rgba(59, 130, 246, 0.08);
-  border: 1.5px solid rgba(59, 130, 246, 0.18);
-  border-radius: 16px;
-  padding: 14px 16px;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  min-height: 90px;
-}
-
-.quick-reply-card:hover {
-  background: rgba(59, 130, 246, 0.14);
-  border-color: rgba(59, 130, 246, 0.35);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
-}
-
-.quick-reply-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: #60a5fa;
-  margin-bottom: 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.quick-reply-preview {
-  font-size: 11px;
-  color: #64748b;
-  line-height: 1.4;
-}
-
-.quick-reply-actions {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  gap: 4px;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.quick-reply-card:hover .quick-reply-actions {
-  opacity: 1;
-}
-
-.quick-reply-btn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  transition: all 0.2s;
-}
-
-.quick-reply-btn:hover {
-  background: rgba(255,255,255,0.15);
-}
-
-.quick-reply-edit { color: #60a5fa; }
-.quick-reply-delete { color: #ef4444; }
-
-#quick-replies-modal.active,
-#packages-modal.active {
-  display: flex !important;
-}
-
 </style>
 </head>
 
@@ -969,7 +1017,7 @@ button {
   <div id="splash">
     <div class="text-center px-6">
       <div class="mx-auto mb-6 w-20 h-20 rounded-3xl flex items-center justify-center glass">
-        <i data-lucide="sparkles" class="w-10 h-10 text-amber-400"></i>
+        <i data-lucide="calculator" class="w-10 h-10 text-amber-400"></i>
       </div>
       <div class="font-cinzel text-3xl tracking-wide text-white mb-3">Illusionist OS</div>
       <div class="text-lg text-slate-300 font-semibold">Умный калькулятор</div>
@@ -991,8 +1039,8 @@ button {
   <header class="relative z-10">
     <div class="max-w-5xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-2xl glass flex items-center justify-center">
-          <i data-lucide="wand-2" class="w-6 h-6 text-amber-400"></i>
+        <div class="w-12 h-12 rounded-2xl glass flex items-center justify-center" style="animation: iconPulse 3s ease-in-out infinite;">
+          <i data-lucide="calculator" class="w-6 h-6 text-amber-400"></i>
         </div>
         <div>
           <div class="font-cinzel text-white tracking-wide text-lg">Illusionist OS</div>
@@ -1155,13 +1203,25 @@ button {
         </div>
 
         <div class="mt-3">
-  <button id="btn-open-packages" class="btn-secondary w-full">
-    <span class="flex items-center justify-center gap-2">
-      <i data-lucide="package" class="w-5 h-5"></i>
-      Пакеты услуг
-    </span>
-  </button>
-</div>
+          <button id="btn-open-packages" class="btn-secondary w-full">
+            <span class="flex items-center justify-center gap-2">
+              <i data-lucide="package" class="w-5 h-5"></i>
+              Пакеты
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ========== RIGHT PANEL ========== -->
+      <section class="glass rounded-3xl p-6">
+        <!-- Cart -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-base font-extrabold text-white tracking-wide">Корзина</div>
+            <div id="discount-badge" class="hidden text-xs font-extrabold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-full">
+              Скидка 10%
+            </div>
+          </div>
 
           <div id="cart-list" class="space-y-3 mb-6"></div>
 
@@ -1206,24 +1266,6 @@ button {
               <div class="text-sm text-slate-400 font-bold mb-3">Бонусы (что получает клиент)</div>
               <div id="bonus-list" class="flex flex-wrap gap-2 mb-4"></div>
             </div>
-            <!-- Быстрые ответы -->
-            <div class="mt-6">
-              <div class="flex items-center justify-between mb-3">
-                <div class="text-base font-extrabold text-white tracking-wide">Быстрые ответы</div>
-                <button id="btn-open-quick-replies-modal" class="text-sm font-bold text-amber-400 hover:text-amber-300 transition">
-                  Управлять
-                </button>
-              </div>
-
-              <div class="grid grid-cols-2 gap-3 mb-3" id="quick-replies-list"></div>
-              <div id="quick-replies-empty" class="hidden text-sm text-slate-500 bg-white/5 border border-white/10 rounded-2xl p-4 mb-3">
-                Пока нет быстрых ответов. Добавь свои шаблонные фразы.
-              </div>
-
-              <button id="btn-add-quick-reply" class="btn-add w-full mb-2">
-                + Добавить быстрый ответ
-              </button>
-            </div>
 
             <div class="text-sm text-slate-500 leading-relaxed">
               Клиенту важно знать: <span class="text-slate-300 font-bold">сколько</span> и
@@ -1234,51 +1276,7 @@ button {
       </section>
 
     </div>
-
-<!-- ========== QUICK REPLIES MODAL ========== -->
-<div id="quick-replies-modal" aria-hidden="true" style="position: fixed; inset: 0; background: rgba(0,0,0,.75); display: none; z-index: 40;">
-  <div class="glass rounded-3xl p-6" style="width: min(480px, calc(100% - 40px)); max-height: calc(100vh - 80px); overflow: auto; background: #0a0a0c; border: 1.5px solid rgba(255,255,255,0.15); margin: auto; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <div class="font-cinzel text-white text-xl mb-1">Быстрые ответы</div>
-        <div class="text-sm text-slate-400 font-semibold">Нажми — скопировать. Редактировать/удалить — кнопки.</div>
-      </div>
-      <button id="btn-close-quick-replies-modal" class="btn-icon" aria-label="Закрыть">
-        <i data-lucide="x" class="w-6 h-6 text-slate-400"></i>
-      </button>
-    </div>
-
-    <div class="space-y-3 mb-4" id="quick-replies-list-modal"></div>
-    <div id="quick-replies-empty-modal" class="hidden text-sm text-slate-500 bg-white/5 border border-white/10 rounded-2xl p-4 mb-4">
-      Пока нет быстрых ответов.
-    </div>
-
-    <button id="btn-add-quick-reply-modal" class="btn-add w-full">
-      + Добавить быстрый ответ
-    </button>
-  </div>
-</div>
-
-<div id="packages-modal" aria-hidden="true" style="position: fixed; inset: 0; background: rgba(0,0,0,.75); display: none; z-index: 40;">
-  <div class="glass rounded-3xl p-6" style="width: min(580px, calc(100% - 40px)); max-height: calc(100vh - 80px); overflow: auto; background: #0a0a0c; border: 1.5px solid rgba(255,255,255,0.15); margin: auto; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-    <div class="flex items-center justify-between mb-4">
-      <div>
-        <div class="font-cinzel text-white text-xl mb-1">Пакеты услуг</div>
-        <div class="text-sm text-slate-400 font-semibold">Нажми по пакету — КП скопируется.</div>
-      </div>
-      <button id="btn-close-packages" class="btn-icon" aria-label="Закрыть">
-        <i data-lucide="x" class="w-6 h-6 text-slate-400"></i>
-      </button>
-    </div>
-
-    <div class="space-y-4" id="packages-container"></div>
-
-    <div class="mt-6 text-sm text-slate-500 leading-relaxed">
-      Настрой пакеты в админке (Настройки → Пакеты услуг).
-    </div>
-  </div>
-</div>
-
+  </main>
 
   <!-- ========== SETTINGS MODAL ========== -->
   <div id="view-settings" aria-hidden="true">
@@ -1405,20 +1403,26 @@ button {
           <div class="text-base font-extrabold text-white mb-3">Ссылки</div>
           <div id="settings-links-list" class="space-y-2"></div>
         </div>
-
-        <div class="glass rounded-2xl p-5">
-          <div class="flex items-center justify-between mb-4">
-            <div class="text-base font-extrabold text-white">Пакеты услуг</div>
-            <button id="btn-add-package" class="btn-add text-sm">+ Пакет</button>
-          </div>
-          <div id="packages-admin-list"></div>
+        
+        <div class="glass rounded-2xl p-5 lg:col-span-2">
+          <div class="text-base font-extrabold text-white mb-3">Шаблоны пакетов</div>
+          <div class="text-sm text-slate-400 mb-3">1 шаблон = 3 пакета (Базовый, Оптимал, Премиум)</div>
+          <button id="btn-create-template" class="btn-add w-full mb-3">+ Создать шаблон</button>
+          <div id="package-templates-list" class="space-y-2"></div>
         </div>
-
+        
+        <!-- ШАБЛОНЫ ОТВЕТОВ -->
+        <div class="glass rounded-2xl p-5 lg:col-span-2">
+          <div class="text-base font-extrabold text-white mb-3">Шаблоны ответов</div>
+          <div class="text-sm text-slate-400 mb-3">Быстрые ответы на частые вопросы клиентов</div>
+          <button id="btn-create-response" class="btn-add w-full mb-3">+ Создать шаблон ответа</button>
+          <div id="response-templates-list" class="space-y-2"></div>
+        </div>
       </div>
     </div>
   </div>
 
-
+  <!-- ========== TEMPLATES MODAL ========== -->
   <!-- Scripts -->
   <script>
 /* === Inlined from app.js === */
@@ -1435,6 +1439,7 @@ button {
 const DB_VERSION = '2.0';
 const STORAGE_KEY = 'illusionist_calc_db';
 const BACKUP_KEY = 'illusionist_backups';
+const RESPONSE_TEMPLATES_KEY = 'illusionist_response_templates';
 const MAX_BACKUPS = 5;
 const AUTO_BACKUP_INTERVAL = 5 * 60 * 1000; // 5 минут
 
@@ -2176,17 +2181,13 @@ const App = {
         App.updateDate();
       }
 
-      // Particles: on by default only on bigger screens & when user didn't request reduced motion
-      const ENABLE_PARTICLES = (window.innerWidth > 768) && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-      if (ENABLE_PARTICLES) App.renderParticles();
+      App.renderParticles();
 
       if (window.lucide) lucide.createIcons();
       App.startSplash();
       App.registerSWInline();
 
       DataManager.updateBackupIndicator('saved');
-
-      console.log('✅ App initialized');
     } catch (err) {
       console.error('❌ App initialization failed:', err);
       App.showToast('Ошибка инициализации');
@@ -2221,62 +2222,61 @@ const App = {
 
     // Copy buttons
     document.getElementById('btn-copy-prices')?.addEventListener('click', App.copyPriceList);
-  const catSelect = document.getElementById('inp-cat');
-  if (!catSelect) return;
+    document.getElementById('btn-copy-quote')?.addEventListener('click', App.copyQuote);
 
-  const cat = catSelect.value;
-  if (!cat || !DB.services || !DB.services[cat]) {
-    App.showToast('Выберите категорию');
-    return;
-  }
-
-  const services = DB.services[cat];
-  if (Object.keys(services).length === 0) {
-    App.showToast('Категория пустая');
-    return;
-  }
-
-  const k = State.holidayK || 1;
-  const dateRaw = document.getElementById('inp-date')?.value || '';
-  const dateFmt = Utils.formatDate(dateRaw);
-
-  const bonusesSorted = (DB.bonuses || [])
-    .filter(b => Utils.isValidObject(b) && typeof b.threshold === 'number')
-    .slice()
-    .sort((a, b) => (a.threshold || 0) - (b.threshold || 0));
-
-  let text = `ЦЕНЫ: ${Utils.sanitizeText(cat, 100)}\n`;
-  if (dateFmt) text += `Дата: ${dateFmt}\n`;
-  if (k > 1) text += `Праздничный коэффициент: ×${k}\n`;
-  text += `\n`;
-
-  const lines = [];
-  Object.keys(services).forEach(name => {
-    const base = services[name];
-    if (typeof base !== 'number' || isNaN(base) || base < 0) return;
-
-    const price = Math.round(base * k);
-    const safeName = Utils.sanitizeText(name, 200);
-
-    // ИСПРАВЛЕНИЕ: Показываем только заработанные бонусы
-    let bonusLine = '';
-    const earned = bonusesSorted.filter(b => price >= (b.threshold || 0));
-    if (earned.length > 0) {
-      const bonusTexts = earned.map(b => `✅ ${Utils.sanitizeText(b.text, 200)}`).join('\n  ');
-      bonusLine = `\n  ${bonusTexts}`;
+    // Manual price
+    const manualPriceInput = document.getElementById('inp-manual-price');
+    if (manualPriceInput) {
+      manualPriceInput.addEventListener('input', Utils.debounce(() => {
+        const value = Utils.sanitizeNumber(manualPriceInput.value, 0, 999999);
+        manualPriceInput.value = value || '';
+        App.calc();
+      }, 250));
     }
 
-    lines.push(`• ${safeName} — ${Utils.formatPrice(price)} ₽${bonusLine}`);
-  });
+    // Guests & Tax
+    document.getElementById('inp-guests')?.addEventListener('change', App.calc);
+    document.getElementById('inp-tax')?.addEventListener('change', App.calc);
 
-  text += lines.join('\n\n') + '\n';
+    // Admin buttons
+    const bind = (id, fn) => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', fn);
+    };
 
-  const performer = Utils.sanitizeText(DB.config?.performer || 'Illusionist', 100);
-  text += `\nВаш ${performer}`;
+    bind('btn-add-bonus', () => Admin.addBonus());
+    bind('btn-add-region', () => Admin.addRegion());
+    bind('btn-add-category', () => Admin.addCategory());
+    bind('btn-add-holiday', () => Admin.addHoliday());
+    bind('btn-add-range', () => Admin.addRange());
+    bind('btn-add-payment', () => Admin.addPayment());
+    bind('btn-add-link', () => Admin.addLink());
+    bind('btn-reset-db', () => Admin.reset());
+  },
 
-  const success = await Utils.copyToClipboard(text);
-  App.showToast(success ? 'Прайс скопирован!' : 'Не удалось скопировать');
-},
+  initProfileInputs: () => {
+    const performerInput = document.getElementById('cfg-performer');
+    if (performerInput) {
+      performerInput.value = DB.config?.performer || 'Illusionist';
+      performerInput.addEventListener('input', Utils.debounce(() => {
+        DB.config.performer = Utils.sanitizeText(performerInput.value, 100);
+        Storage.save();
+        DataManager.updateStats();
+      }, 350));
+    }
+
+    const depositInput = document.getElementById('cfg-deposit');
+    if (depositInput) {
+      depositInput.value = DB.config?.deposit ?? 30;
+      depositInput.addEventListener('input', Utils.debounce(() => {
+        const value = Utils.sanitizeNumber(depositInput.value, 0, 100, 30);
+        depositInput.value = value;
+        DB.config.deposit = value;
+        Storage.save();
+        DataManager.updateStats();
+      }, 350));
+    }
+  },
 
   migrateServicesNames: () => {
     try {
@@ -2344,13 +2344,14 @@ const App = {
     const splash = document.getElementById('splash');
     if (!splash) return;
 
-    if (window.lucide) {
-      try {
-        lucide.createIcons();
-      } catch (err) {}
-    }
+    setTimeout(() => {
+      if (window.lucide) {
+        try { lucide.createIcons(); } catch (err) {}
+      }
+    }, 100);
 
     const MIN_MS = 2800;
+    const MAX_MS = 5000;
     let dismissed = false;
 
     const hide = () => {
@@ -2365,6 +2366,12 @@ const App = {
     splash.addEventListener('click', hide, { once: true });
     splash.addEventListener('touchstart', hide, { once: true, passive: true });
     setTimeout(hide, MIN_MS);
+    setTimeout(() => {
+      if (!dismissed) {
+        console.warn('Force hide');
+        hide();
+      }
+    }, MAX_MS);
   },
 
   updateUI: () => {
@@ -2576,7 +2583,7 @@ const App = {
 
       const wrapper = Utils.createElement(
         'div',
-        'animate-enter'
+        'animate-slide-in'
       );
 
       const leftDiv = Utils.createElement('div', 'flex-1 min-w-0');
@@ -2612,14 +2619,113 @@ const App = {
       wrapper.appendChild(rightDiv);
       cartList.appendChild(wrapper);
     });
-    if (window.lucide) lucide.createIcons();
 
-    // keep 'Save template' button in sync with cart state
+    if (window.lucide) lucide.createIcons();
   },
 
   calc: () => {
     try {
       const k = State.holidayK || 1;
+      
+      // Проверяем наличие пакета
+      const packageItem = State.cart.find(item => item.name.startsWith('ПАКЕТ:') && item.packageTemplate);
+      
+      if (packageItem && packageItem.packageTemplate) {
+        // РАСЧЁТ С ПАКЕТОМ
+        const tpl = packageItem.packageTemplate;
+        const regionSelect = document.getElementById('inp-region');
+        const region = regionSelect ? regionSelect.value : '';
+        
+        // Логистика
+        const citySelect = document.getElementById('inp-city');
+        let travel = 0;
+        if (regionSelect && citySelect) {
+          const city = citySelect.value;
+          if (region && city && DB.travel?.[region]) {
+            if (city === 'other') {
+              travel = Math.round((DB.travel[region].fee || 0) * (k > 1 ? 1.5 : 1));
+            } else if (DB.travel[region].cities && DB.travel[region].cities[city]) {
+              const cityData = DB.travel[region].cities[city];
+              const baseTravel = typeof cityData === 'number' ? cityData : (cityData.price || 0);
+              travel = Math.round(baseTravel * (k > 1 ? 1.5 : 1));
+            }
+          }
+        }
+        
+        // Доплаты
+        const manualPriceInput = document.getElementById('inp-manual-price');
+        const manPrice = manualPriceInput ? Utils.sanitizeNumber(manualPriceInput.value, 0, 999999, 0) : 0;
+        
+        const guestsSelect = document.getElementById('inp-guests');
+        const guestPrice = guestsSelect ? Utils.sanitizeNumber(guestsSelect.value, 0, 999999, 0) : 0;
+        
+        const taxCheckbox = document.getElementById('inp-tax');
+        const useTax = taxCheckbox ? taxCheckbox.checked : false;
+        
+        // Считаем 3 варианта с учётом праздничного коэффициента
+        const basicPrice = Math.round(tpl.basic.price * k);
+        const optimalPrice = Math.round(tpl.optimal.price * k);
+        const premiumPrice = Math.round(tpl.premium.price * k);
+        
+        const extras = travel + manPrice + guestPrice;
+        
+        const basicPreTax = basicPrice + extras;
+        const optimalPreTax = optimalPrice + extras;
+        const premiumPreTax = premiumPrice + extras;
+        
+        const basicTax = useTax ? Math.round(basicPreTax * 0.06) : 0;
+        const optimalTax = useTax ? Math.round(optimalPreTax * 0.06) : 0;
+        const premiumTax = useTax ? Math.round(premiumPreTax * 0.06) : 0;
+        
+        const basicTotal = basicPreTax + basicTax;
+        const optimalTotal = optimalPreTax + optimalTax;
+        const premiumTotal = premiumPreTax + premiumTax;
+        
+        // Сохраняем в State для копирования
+        State.finalTotal = basicTotal; // Для совместимости показываем базовый
+        State.finalDetails = { 
+          servicesTotal: 0, 
+          discount: 0, 
+          travel, 
+          manPrice, 
+          guestPrice, 
+          tax: basicTax, 
+          k,
+          // Добавляем данные пакетов
+          isPackage: true,
+          packageTemplate: tpl,
+          basicPrice,
+          optimalPrice,
+          premiumPrice,
+          basicTotal,
+          optimalTotal,
+          premiumTotal,
+          basicTax,
+          optimalTax,
+          premiumTax
+        };
+        
+        // Показываем диапазон в итоге
+        const totalSumEl = document.getElementById('total-sum');
+        if (totalSumEl) {
+          totalSumEl.innerHTML = `
+            <div class="text-sm text-slate-400">Базовый:</div>
+            <div class="text-2xl font-bold">${Utils.formatPrice(basicTotal)} ₽</div>
+            <div class="text-sm text-slate-400 mt-2">Оптимал:</div>
+            <div class="text-xl font-bold text-amber-400">${Utils.formatPrice(optimalTotal)} ₽</div>
+            <div class="text-sm text-slate-400 mt-2">Премиум:</div>
+            <div class="text-xl font-bold text-purple-400">${Utils.formatPrice(premiumTotal)} ₽</div>
+          `;
+        }
+        
+        // НЕ показываем автоматические бонусы для пакетов (они уже в описании)
+        const bonusListEl = document.getElementById('bonus-list');
+        if (bonusListEl) Utils.clearElement(bonusListEl);
+        
+        return;
+      }
+      
+      // ОБЫЧНЫЙ РАСЧЁТ (без пакета)
       let servicesTotal = 0;
 
       State.cart.forEach(item => {
@@ -2649,7 +2755,7 @@ const App = {
         if (region && city && DB.travel?.[region]) {
           const baseTravel = city === 'other'
             ? (DB.travel[region].fee || 0)
-            : (DB.travel[region].cities?.[city] || 0);
+            : (DB.travel[region].cities?.[city]?.price || 0);
 
           travel = Math.round(baseTravel * (k > 1 ? 1.5 : 1));
         }
@@ -2668,14 +2774,7 @@ const App = {
       const tax = useTax ? Math.round(preTax * 0.06) : 0;
 
       State.finalTotal = preTax + tax;
-
-      // If rounding was applied ранее — после любых перерасчётов сбрасываем округление,
-      // чтобы оно не «прилипало» к новой корзине.
-      if (typeof Rounding !== 'undefined' && Rounding.state && Rounding.state.isApplied) {
-        if (typeof Rounding.clearStateSilently === 'function') Rounding.clearStateSilently();
-        if (typeof Rounding.updateUI === 'function') Rounding.updateUI();
-      }
-      State.finalDetails = { servicesTotal, discount, travel, manPrice, guestPrice, tax, k };
+      State.finalDetails = { servicesTotal, discount, travel, manPrice, guestPrice, tax, k, isPackage: false };
 
       const totalSumEl = document.getElementById('total-sum');
       if (totalSumEl) {
@@ -2745,7 +2844,6 @@ const App = {
       .filter(b => Utils.isValidObject(b) && typeof b.threshold === 'number')
       .slice()
       .sort((a, b) => (a.threshold || 0) - (b.threshold || 0));
-    const hasBonuses = bonusesSorted.length > 0;
 
     let text = `ЦЕНЫ: ${Utils.sanitizeText(cat, 100)}\n`;
     if (dateFmt) text += `Дата: ${dateFmt}\n`;
@@ -2776,7 +2874,7 @@ const App = {
     text += `\nВаш ${performer}`;
 
     const success = await Utils.copyToClipboard(text);
-    App.showToast(success ? 'Прайс скопирован!' : 'Не удалось скопировать');
+    App.showToast(success ? 'Цены + бонусы скопированы!' : 'Не удалось скопировать');
   },
 
   copyQuote: async () => {
@@ -2791,9 +2889,157 @@ const App = {
     const dateRaw = document.getElementById('inp-date')?.value || '';
     const dateFmt = Utils.formatDate(dateRaw) || dateRaw;
 
-    const time = document.getElementById('inp-time')?.value || '18:00';
+    const time = document.getElementById('inp-time')?.value || '';
+    const region = document.getElementById('inp-region')?.value || '';
     const city = document.getElementById('inp-city')?.value || '';
 
+    // Проверяем, есть ли пакет
+    if (State.finalDetails.isPackage && State.finalDetails.packageTemplate) {
+      // ФОРМАТ С ПАКЕТАМИ (3 варианта)
+      const tpl = State.finalDetails.packageTemplate;
+      
+      let text = `${client}\n\n`;
+      text += `ПАКЕТЫ ДЛЯ МЕРОПРИЯТИЯ: ${type.toUpperCase()}\n\n`;
+      if (dateFmt) text += `Дата: ${dateFmt}\n`;
+      if (time) text += `Время: ${time}\n`;
+      if (region) text += `Регион: ${region}\n`;
+      if (city && city !== 'other') text += `Город: ${city}\n`;
+      text += `\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+      
+      // БАЗОВЫЙ
+      text += `📦 ВАРИАНТ 1: БАЗОВЫЙ\n\n`;
+      if (tpl.basic.description) text += `${tpl.basic.description}\n\n`;
+      if (tpl.basic.bonuses && tpl.basic.bonuses.length > 0) {
+        text += `Бонусы:\n`;
+        tpl.basic.bonuses.forEach(b => {
+          text += `✅ ${b}\n`;
+        });
+        text += `\n`;
+      }
+      
+      const k = State.finalDetails.k || 1;
+      if (k > 1) {
+        const markup = State.finalDetails.basicPrice - tpl.basic.price;
+        text += `Стоимость программы: ${Utils.formatPrice(tpl.basic.price)} ₽\n`;
+        text += `Наценка за праздник (×${k}): +${Utils.formatPrice(markup)} ₽\n`;
+      } else {
+        text += `Стоимость программы: ${Utils.formatPrice(State.finalDetails.basicPrice)} ₽\n`;
+      }
+      
+      if (State.finalDetails.travel > 0) text += `Логистика: ${Utils.formatPrice(State.finalDetails.travel)} ₽\n`;
+      if (State.finalDetails.guestPrice > 0) text += `Доплата за гостей: ${Utils.formatPrice(State.finalDetails.guestPrice)} ₽\n`;
+      if (State.finalDetails.manPrice > 0) {
+        const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Доп';
+        text += `${manName}: ${Utils.formatPrice(State.finalDetails.manPrice)} ₽\n`;
+      }
+      if (State.finalDetails.basicTax > 0) text += `Налог 6%: ${Utils.formatPrice(State.finalDetails.basicTax)} ₽\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `ИТОГО: ${Utils.formatPrice(State.finalDetails.basicTotal)} ₽\n\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+      
+      // ОПТИМАЛ
+      text += `📦 ВАРИАНТ 2: ОПТИМАЛ\n\n`;
+      if (tpl.optimal.description) text += `${tpl.optimal.description}\n\n`;
+      if (tpl.optimal.bonuses && tpl.optimal.bonuses.length > 0) {
+        text += `Бонусы:\n`;
+        tpl.optimal.bonuses.forEach(b => {
+          text += `✅ ${b}\n`;
+        });
+        text += `\n`;
+      }
+      
+      if (k > 1) {
+        const markup = State.finalDetails.optimalPrice - tpl.optimal.price;
+        text += `Стоимость программы: ${Utils.formatPrice(tpl.optimal.price)} ₽\n`;
+        text += `Наценка за праздник (×${k}): +${Utils.formatPrice(markup)} ₽\n`;
+      } else {
+        text += `Стоимость программы: ${Utils.formatPrice(State.finalDetails.optimalPrice)} ₽\n`;
+      }
+      
+      if (State.finalDetails.travel > 0) text += `Логистика: ${Utils.formatPrice(State.finalDetails.travel)} ₽\n`;
+      if (State.finalDetails.guestPrice > 0) text += `Доплата за гостей: ${Utils.formatPrice(State.finalDetails.guestPrice)} ₽\n`;
+      if (State.finalDetails.manPrice > 0) {
+        const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Доп';
+        text += `${manName}: ${Utils.formatPrice(State.finalDetails.manPrice)} ₽\n`;
+      }
+      if (State.finalDetails.optimalTax > 0) text += `Налог 6%: ${Utils.formatPrice(State.finalDetails.optimalTax)} ₽\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `ИТОГО: ${Utils.formatPrice(State.finalDetails.optimalTotal)} ₽\n\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+      
+      // ПРЕМИУМ
+      text += `📦 ВАРИАНТ 3: ПРЕМИУМ\n\n`;
+      if (tpl.premium.description) text += `${tpl.premium.description}\n\n`;
+      if (tpl.premium.bonuses && tpl.premium.bonuses.length > 0) {
+        text += `Бонусы:\n`;
+        tpl.premium.bonuses.forEach(b => {
+          text += `✅ ${b}\n`;
+        });
+        text += `\n`;
+      }
+      
+      if (k > 1) {
+        const markup = State.finalDetails.premiumPrice - tpl.premium.price;
+        text += `Стоимость программы: ${Utils.formatPrice(tpl.premium.price)} ₽\n`;
+        text += `Наценка за праздник (×${k}): +${Utils.formatPrice(markup)} ₽\n`;
+      } else {
+        text += `Стоимость программы: ${Utils.formatPrice(State.finalDetails.premiumPrice)} ₽\n`;
+      }
+      
+      if (State.finalDetails.travel > 0) text += `Логистика: ${Utils.formatPrice(State.finalDetails.travel)} ₽\n`;
+      if (State.finalDetails.guestPrice > 0) text += `Доплата за гостей: ${Utils.formatPrice(State.finalDetails.guestPrice)} ₽\n`;
+      if (State.finalDetails.manPrice > 0) {
+        const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Доп';
+        text += `${manName}: ${Utils.formatPrice(State.finalDetails.manPrice)} ₽\n`;
+      }
+      if (State.finalDetails.premiumTax > 0) text += `Налог 6%: ${Utils.formatPrice(State.finalDetails.premiumTax)} ₽\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `ИТОГО: ${Utils.formatPrice(State.finalDetails.premiumTotal)} ₽\n\n`;
+      
+      const depPct = DB.config?.deposit || 30;
+      const depositBasic = Math.round(State.finalDetails.basicTotal * (depPct / 100));
+      const depositOptimal = Math.round(State.finalDetails.optimalTotal * (depPct / 100));
+      const depositPremium = Math.round(State.finalDetails.premiumTotal * (depPct / 100));
+      
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+      text += `БРОНЬ ДАТЫ (${depPct}%):\n`;
+      text += `• Базовый: ${Utils.formatPrice(depositBasic)} ₽\n`;
+      text += `• Оптимал: ${Utils.formatPrice(depositOptimal)} ₽\n`;
+      text += `• Премиум: ${Utils.formatPrice(depositPremium)} ₽\n\n`;
+      
+      if (DB.payments && Array.isArray(DB.payments)) {
+        text += `Реквизиты:\n`;
+        DB.payments.forEach(p => {
+          if (Utils.isValidObject(p)) {
+            const title = Utils.sanitizeText(p.title, 100);
+            const payText = Utils.sanitizeText(p.text, 500);
+            text += `${title}: ${payText}\n`;
+          }
+        });
+        text += `\n`;
+      }
+      
+      if (DB.links && Array.isArray(DB.links)) {
+        text += `Ссылки:\n`;
+        DB.links.forEach(l => {
+          if (Utils.isValidObject(l)) {
+            const label = Utils.sanitizeText(l.label, 100);
+            const url = Utils.sanitizeText(l.url, 500);
+            text += `• ${label}: ${url}\n`;
+          }
+        });
+        text += `\n`;
+      }
+      
+      const performer = Utils.sanitizeText(DB.config?.performer || 'Illusionist', 100);
+      text += `Ваш ${performer}`;
+      
+      const success = await Utils.copyToClipboard(text);
+      App.showToast(success ? 'Пакеты скопированы!' : 'Не удалось скопировать');
+      return;
+    }
+    
+    // ОБЫЧНЫЙ ФОРМАТ (без пакетов)
     const depPct = DB.config?.deposit || 30;
     const deposit = Math.round(State.finalTotal * (depPct / 100));
 
@@ -2876,6 +3122,57 @@ const App = {
       Admin.render();
       DataManager.renderBackupSlots();
       DataManager.updateStats();
+      
+      // Рендерим шаблоны пакетов
+      const templatesContainer = document.getElementById('package-templates-list');
+      if (templatesContainer) {
+        templatesContainer.innerHTML = '';
+        const templates = DB.packageTemplates || [];
+        
+        if (templates.length === 0) {
+          templatesContainer.innerHTML = '<div class="text-slate-500 text-sm">Нет шаблонов</div>';
+        } else {
+          templates.forEach(tpl => {
+            const card = document.createElement('div');
+            card.className = 'glass rounded-xl p-3 mb-2';
+            
+            card.innerHTML = `
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <div class="font-bold text-amber-400 text-sm">${Utils.escapeHtml(tpl.name)}</div>
+                  <div class="text-xs text-slate-300 mt-1">
+                    Базовый: ${Utils.formatPrice(tpl.basic.price)} ₽ • 
+                    Оптимал: ${Utils.formatPrice(tpl.optimal.price)} ₽ • 
+                    Премиум: ${Utils.formatPrice(tpl.premium.price)} ₽
+                  </div>
+                </div>
+                <button class="btn-icon ml-2" data-del="${tpl.id}">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </div>
+            `;
+            
+            const delBtn = card.querySelector('[data-del]');
+            if (delBtn) {
+              delBtn.addEventListener('click', () => {
+                if (confirm(`Удалить шаблон "${tpl.name}"?`)) {
+                  const idx = DB.packageTemplates.findIndex(t => t.id === tpl.id);
+                  if (idx >= 0) {
+                    DB.packageTemplates.splice(idx, 1);
+                    Storage.save();
+                    App.toggleSettings(); // Закрываем
+                    setTimeout(() => App.toggleSettings(), 100); // Открываем снова
+                    App.showToast('Удалено');
+                  }
+                }
+              });
+            }
+            
+            templatesContainer.appendChild(card);
+          });
+        }
+      }
+      
       modal.classList.add('active');
       if (window.lucide) lucide.createIcons();
     } else {
@@ -2892,37 +3189,13 @@ const App = {
     msgEl.textContent = Utils.sanitizeText(msg, 200);
     toast.classList.add('show');
 
-    // If there's a previous click handler, remove it to avoid stacking listeners
-    if (App._toastClickHandler) {
-      toast.removeEventListener('click', App._toastClickHandler);
-      App._toastClickHandler = null;
-    }
-
-    const hideOnClick = () => {
-      toast.classList.remove('show');
-      clearTimeout(App._toastTimer);
-      toast.removeEventListener('click', hideOnClick);
-      if (App._toastClickHandler === hideOnClick) App._toastClickHandler = null;
-    };
-
-    App._toastClickHandler = hideOnClick;
-    toast.addEventListener('click', hideOnClick);
-
     clearTimeout(App._toastTimer);
-    App._toastTimer = setTimeout(() => {
-      toast.classList.remove('show');
-      toast.removeEventListener('click', hideOnClick);
-      if (App._toastClickHandler === hideOnClick) App._toastClickHandler = null;
-    }, 3000);
+    App._toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
   },
 
   renderParticles: () => {
     const canvas = document.getElementById('bg-canvas');
     if (!canvas) return;
-    // Respect user's reduced-motion preference
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    // Simple performance gate for small screens
-    if (window.innerWidth <= 768) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -2998,21 +3271,12 @@ const Admin = {
     }
   },
 
+  // ... (продолжение Admin методов в следующей части)
 };
 
 // ============================================
 // BOOT
 // ============================================
-// Warn before leaving when cart isn't empty
-window.addEventListener('beforeunload', (e) => {
-  try {
-    if (typeof State !== 'undefined' && Array.isArray(State.cart) && State.cart.length > 0) {
-      e.preventDefault();
-      e.returnValue = '';
-    }
-  } catch (_) {}
-});
-
 document.addEventListener('DOMContentLoaded', () => {
   App.init();
 });
@@ -3833,15 +4097,15 @@ Object.assign(Admin, {
 /* === Inlined from modules.js === */
 /* ============================================
    ILLUSIONIST OS - MODULES.JS
-   Модули: Rounding, Packages, QuickReplies
+   Модули: Templates, Rounding, Variants
    ============================================ */
 
 'use strict';
 
-/* ============================================
-   МОДУЛЬ ROUNDING - ВСТАВЬ ПЕРЕД const Packages = {
-   В СЕКЦИИ MODULES
-   ============================================ */
+// ============================================
+// TEMPLATES MODULE
+// ============================================
+
 
 // ============================================
 // ROUNDING MODULE
@@ -4009,680 +4273,433 @@ const Rounding = {
     }
 
     if (resetBtn) resetBtn.addEventListener('click', Rounding.reset);
-
-    // initial paint
-    Rounding.updateUI();
-
-    console.log('✅ Rounding module initialized');
   }
 };
 
-// Инициализация при загрузке
+// ============================================
+// VARIANTS MODULE
+// ============================================
+
+// ============================================
+// RESPONSE TEMPLATES MODULE
+// ============================================
+
+// Загрузка шаблонов ответов
+function loadResponseTemplates() {
+  const stored = localStorage.getItem(RESPONSE_TEMPLATES_KEY);
+  if (!stored) return [];
+  try {
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+// Сохранение шаблонов ответов
+function saveResponseTemplates(templates) {
+  try {
+    localStorage.setItem(RESPONSE_TEMPLATES_KEY, JSON.stringify(templates));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Рендеринг списка шаблонов ответов
+function renderResponseTemplates() {
+  const container = document.getElementById('response-templates-list');
+  if (!container) return;
+  
+  const templates = loadResponseTemplates();
+  Utils.clearElement(container);
+  
+  if (templates.length === 0) {
+    const empty = Utils.createElement('div', 'text-sm text-slate-500 bg-white/5 border border-white/10 rounded-xl p-4 text-center');
+    empty.textContent = 'Нет шаблонов. Создайте первый!';
+    container.appendChild(empty);
+    return;
+  }
+  
+  templates.forEach((tpl, idx) => {
+    const card = Utils.createElement('div', 'bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 transition cursor-pointer flex items-center justify-between group');
+    
+    const left = Utils.createElement('div', 'flex-1 min-w-0');
+    const title = Utils.createElement('div', 'font-bold text-white truncate');
+    title.textContent = tpl.name || 'Без названия';
+    
+    const preview = Utils.createElement('div', 'text-sm text-slate-400 truncate mt-1');
+    preview.textContent = tpl.text ? (tpl.text.substring(0, 50) + (tpl.text.length > 50 ? '...' : '')) : '';
+    
+    left.appendChild(title);
+    left.appendChild(preview);
+    
+    const right = Utils.createElement('div', 'flex items-center gap-2 ml-3');
+    
+    const copyBtn = Utils.createElement('button', 'btn-icon opacity-0 group-hover:opacity-100 transition');
+    copyBtn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i>';
+    copyBtn.title = 'Скопировать';
+    copyBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const success = await Utils.copyToClipboard(tpl.text || '');
+      App.showToast(success ? 'Текст скопирован!' : 'Не удалось скопировать');
+    });
+    
+    const delBtn = Utils.createElement('button', 'btn-icon opacity-0 group-hover:opacity-100 transition');
+    delBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
+    delBtn.title = 'Удалить';
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (confirm(`Удалить шаблон "${tpl.name}"?`)) {
+        const updated = loadResponseTemplates();
+        updated.splice(idx, 1);
+        saveResponseTemplates(updated);
+        renderResponseTemplates();
+        App.showToast('Шаблон удалён');
+      }
+    });
+    
+    right.appendChild(copyBtn);
+    right.appendChild(delBtn);
+    
+    card.appendChild(left);
+    card.appendChild(right);
+    
+    // Клик по карточке = копирование
+    card.addEventListener('click', async () => {
+      const success = await Utils.copyToClipboard(tpl.text || '');
+      App.showToast(success ? 'Текст скопирован!' : 'Не удалось скопировать');
+    });
+    
+    container.appendChild(card);
+  });
+  
+  if (window.lucide) lucide.createIcons();
+}
+
+// Создание нового шаблона ответа
+function createResponseTemplate() {
+  const name = prompt('Название шаблона:');
+  if (!name) return;
+  
+  const text = prompt('Текст ответа:');
+  if (!text) return;
+  
+  const templates = loadResponseTemplates();
+  templates.push({
+    id: Date.now(),
+    name: name.trim(),
+    text: text.trim()
+  });
+  
+  saveResponseTemplates(templates);
+  renderResponseTemplates();
+  App.showToast('Шаблон создан!');
+}
+
+// ============================================
+// INIT ALL MODULES
+// ============================================
 document.addEventListener('DOMContentLoaded', () => {
   Rounding.init();
-});
-
-// ============================================
-// PACKAGES MODULE (Пакеты)
-// ============================================
-const PACKAGES_KEY = 'illusionist_packages';
-
-const Packages = {
-  load: () => {
-    const stored = Utils.loadFromStorage(PACKAGES_KEY, null);
-    if (!stored || !Array.isArray(stored)) {
-      return Packages.getDefaultPackages();
-    }
-    return stored;
-  },
-
-  save: (packages) => Utils.saveToStorage(PACKAGES_KEY, packages),
-
-  getDefaultPackages: () => [
-    {
-      id: Date.now(),
-      name: 'Базовый',
-      description: 'Основная программа',
-      services: [],
-      color: 'slate'
-    },
-    {
-      id: Date.now() + 1,
-      name: 'Оптимальный',
-      description: 'Расширенная программа',
-      services: [],
-      color: 'amber',
-      recommended: true
-    },
-    {
-      id: Date.now() + 2,
-      name: 'Премиум',
-      description: 'Максимальная программа',
-      services: [],
-      color: 'purple'
-    }
-  ],
-
-  add: () => {
-    const name = prompt('Название пакета:', 'VIP пакет');
-    if (!name) return false;
-
-    const sanitizedName = Utils.sanitizeText(name, 50);
-    if (!sanitizedName) {
-      App.showToast('Некорректное название');
-      return false;
-    }
-
-    const description = prompt('Описание:', 'Для особых клиентов');
-    const sanitizedDesc = Utils.sanitizeText(description || '', 100);
-
-    const packages = Packages.load();
-    packages.push({
-      id: Date.now(),
-      name: sanitizedName,
-      description: sanitizedDesc,
-      services: [],
-      color: 'blue'
-    });
-
-    Packages.save(packages);
-    Packages.renderAdmin();
-    App.showToast(`Пакет "${sanitizedName}" создан`);
-    return true;
-  },
-
-  edit: (packageId) => {
-    const packages = Packages.load();
-    const pkg = packages.find(p => p.id === packageId);
-    if (!pkg) return false;
-
-    const newName = prompt('Название:', pkg.name);
-    if (newName === null) return false;
-
-    const sanitizedName = Utils.sanitizeText(newName, 50) || pkg.name;
-
-    const newDesc = prompt('Описание:', pkg.description);
-    if (newDesc === null) return false;
-
-    pkg.name = sanitizedName;
-    pkg.description = Utils.sanitizeText(newDesc, 100);
-
-    Packages.save(packages);
-    Packages.renderAdmin();
-    App.showToast('Пакет обновлён');
-    return true;
-  },
-
-  delete: (packageId) => {
-    const packages = Packages.load();
-    const pkg = packages.find(p => p.id === packageId);
-    if (!pkg) return false;
-
-    if (!confirm(`Удалить пакет "${pkg.name}"?`)) return false;
-
-    Packages.save(packages.filter(p => p.id !== packageId));
-    Packages.renderAdmin();
-    App.showToast('Пакет удалён');
-    return true;
-  },
-
-  addService: (packageId) => {
-    const packages = Packages.load();
-    const pkg = packages.find(p => p.id === packageId);
-    if (!pkg) return false;
-
-    const categories = Object.keys(DB.services || {});
-    if (categories.length === 0) {
-      App.showToast('Нет категорий услуг');
-      return false;
-    }
-
-    let categoryText = 'Выберите категорию:\n';
-    categories.forEach((cat, idx) => {
-      categoryText += `${idx + 1}. ${cat}\n`;
-    });
-    const catIdx = prompt(categoryText + '\nВведите номер:');
-    if (!catIdx) return false;
-
-    const selectedCat = categories[parseInt(catIdx) - 1];
-    if (!selectedCat || !DB.services[selectedCat]) {
-      App.showToast('Некорректная категория');
-      return false;
-    }
-
-    const services = Object.keys(DB.services[selectedCat]);
-    if (services.length === 0) {
-      App.showToast('В категории нет услуг');
-      return false;
-    }
-
-    let serviceText = 'Выберите услугу:\n';
-    services.forEach((svc, idx) => {
-      serviceText += `${idx + 1}. ${svc} (${Utils.formatPrice(DB.services[selectedCat][svc])} ₽)\n`;
-    });
-    const svcIdx = prompt(serviceText + '\nВведите номер:');
-    if (!svcIdx) return false;
-
-    const selectedSvc = services[parseInt(svcIdx) - 1];
-    if (!selectedSvc) {
-      App.showToast('Некорректная услуга');
-      return false;
-    }
-
-    const price = DB.services[selectedCat][selectedSvc];
-    const qty = prompt('Количество:', '1');
-    const sanitizedQty = Utils.sanitizeNumber(qty, 1, 99, 1);
-
-    pkg.services.push({
-      name: selectedSvc,
-      price: price,
-      qty: sanitizedQty
-    });
-
-    Packages.save(packages);
-    Packages.renderAdmin();
-    App.showToast('Услуга добавлена');
-    return true;
-  },
-
-  removeService: (packageId, serviceIndex) => {
-    const packages = Packages.load();
-    const pkg = packages.find(p => p.id === packageId);
-    if (!pkg || !pkg.services[serviceIndex]) return false;
-
-    pkg.services.splice(serviceIndex, 1);
-    Packages.save(packages);
-    Packages.renderAdmin();
-    return true;
-  },
-
-  calculateTotal: (pkg) => {
-    const k = State.holidayK || 1;
-    let total = pkg.services.reduce((sum, s) => sum + (s.price * s.qty * k), 0);
-
-    if (pkg.services.length > 1) {
-      total -= Math.round(total * 0.1);
-    }
-
-    const regionSelect = document.getElementById('inp-region');
-    const citySelect = document.getElementById('inp-city');
-    if (regionSelect && citySelect) {
-      const region = regionSelect.value;
-      const city = citySelect.value;
-      if (region && city && DB.travel?.[region]) {
-        const baseTravel = city === 'other'
-          ? (DB.travel[region].fee || 0)
-          : (DB.travel[region].cities?.[city] || 0);
-        total += Math.round(baseTravel * (k > 1 ? 1.5 : 1));
+  
+  // Рендерим список шаблонов в настройках
+  renderTemplatesAdmin();
+  renderResponseTemplates();
+  
+  // КНОПКА "ПАКЕТЫ" - добавляет в корзину
+  const packagesBtn = document.getElementById('btn-open-packages');
+  if (packagesBtn) {
+    packagesBtn.addEventListener('click', () => {
+      const templates = DB.packageTemplates || [];
+      
+      if (templates.length === 0) {
+        alert('Нет шаблонов!\n\nСоздайте шаблон в Настройках → Шаблоны пакетов');
+        return;
       }
-    }
-
-    const manualPriceInput = document.getElementById('inp-manual-price');
-    const manPrice = manualPriceInput ? Utils.sanitizeNumber(manualPriceInput.value, 0, 999999, 0) : 0;
-    total += manPrice;
-
-    const guestsSelect = document.getElementById('inp-guests');
-    const guestPrice = guestsSelect ? Utils.sanitizeNumber(guestsSelect.value, 0, 999999, 0) : 0;
-    total += guestPrice;
-
-    const taxCheckbox = document.getElementById('inp-tax');
-    if (taxCheckbox && taxCheckbox.checked) {
-      total += Math.round(total * 0.06);
-    }
-
-    return Math.round(total);
-  },
-
-  buildQuoteText: (pkg) => {
-    const client = Utils.sanitizeText(document.getElementById('inp-client')?.value, 100) || 'Клиент';
-    const type = document.getElementById('inp-event-type')?.value || 'Мероприятие';
-    const dateRaw = document.getElementById('inp-date')?.value || '';
-    const dateFmt = Utils.formatDate(dateRaw) || dateRaw;
-    const time = document.getElementById('inp-time')?.value || '18:00';
-    const city = document.getElementById('inp-city')?.value || '';
-    const total = Packages.calculateTotal(pkg);
-    const depPct = DB.config?.deposit || 30;
-    const deposit = Math.round(total * (depPct / 100));
-
-    let text = `${client}\n\n`;
-    text += `ПАКЕТ "${pkg.name.toUpperCase()}": ${type.toUpperCase()}\n`;
-    if (pkg.description) text += `${pkg.description}\n`;
-    text += `${dateFmt} / ${time}\n`;
-    if (city && city !== 'other') text += `${Utils.sanitizeText(city, 100)}\n`;
-    text += `\nПрограмма:\n`;
-
-    const k = State.holidayK || 1;
-    pkg.services.forEach(service => {
-      const price = Math.round(service.price * service.qty * k);
-      text += `• ${service.name}${service.qty > 1 ? ` ×${service.qty}` : ''} — ${Utils.formatPrice(price)} ₽\n`;
-    });
-
-    if (pkg.services.length > 1) {
-      const servicesTotal = pkg.services.reduce((sum, s) => sum + (s.price * s.qty * k), 0);
-      const discount = Math.round(servicesTotal * 0.1);
-      text += `Скидка 10%: -${Utils.formatPrice(discount)} ₽\n`;
-    }
-
-    const earned = App.getBonusesForTotal(total);
-    if (earned.length > 0) {
-      text += `\nБонусы:\n`;
-      earned.forEach(b => text += `• ${Utils.sanitizeText(b.text, 200)}\n`);
-    }
-
-    text += `\nИТОГО: ${Utils.formatPrice(total)} ₽\n`;
-    text += `Бронь даты (${depPct}%): ${Utils.formatPrice(deposit)} ₽\n`;
-
-    if (DB.payments && Array.isArray(DB.payments)) {
-      text += `\nРеквизиты:\n`;
-      DB.payments.forEach(p => {
-        if (Utils.isValidObject(p)) {
-          text += `${Utils.sanitizeText(p.title, 100)}: ${Utils.sanitizeText(p.text, 500)}\n`;
-        }
+      
+      // Формируем список для выбора
+      let message = 'Выберите шаблон:\n\n';
+      templates.forEach((tpl, idx) => {
+        message += `${idx + 1}. ${tpl.name}\n`;
       });
-    }
-
-    if (DB.links && Array.isArray(DB.links)) {
-      text += `\nСсылки:\n`;
-      DB.links.forEach(l => {
-        if (Utils.isValidObject(l)) {
-          text += `• ${Utils.sanitizeText(l.label, 100)}: ${Utils.sanitizeText(l.url, 500)}\n`;
-        }
-      });
-    }
-
-    const performer = Utils.sanitizeText(DB.config?.performer || 'Illusionist', 100);
-    text += `\nВаш ${performer}`;
-    return text;
-  },
-
-  renderAdmin: () => {
-    const container = document.getElementById('packages-admin-list');
-    if (!container) return;
-
-    const packages = Packages.load();
-    Utils.clearElement(container);
-
-    if (packages.length === 0) {
-      container.innerHTML = '<div class="text-sm text-slate-500">Нет пакетов</div>';
-      return;
-    }
-
-    packages.forEach(pkg => {
-      const wrapper = Utils.createElement('div', 'bg-white/5 rounded-xl p-4 mb-3');
-
-      const header = Utils.createElement('div', 'flex items-center justify-between mb-3');
-
-      const titleDiv = Utils.createElement('div', 'flex-1');
-      const titleSpan = Utils.createElement('span', 'font-bold text-base text-amber-400');
-      titleSpan.textContent = pkg.name;
-      titleDiv.appendChild(titleSpan);
-
-      if (pkg.description) {
-        const descSpan = Utils.createElement('div', 'text-xs text-slate-500 mt-1');
-        descSpan.textContent = pkg.description;
-        titleDiv.appendChild(descSpan);
+      message += '\nВведите номер:';
+      
+      const choice = prompt(message);
+      if (!choice) return;
+      
+      const num = parseInt(choice);
+      if (isNaN(num) || num < 1 || num > templates.length) {
+        alert('Неверный номер!');
+        return;
       }
-
-      const actions = Utils.createElement('div', 'flex gap-2');
-
-      const editBtn = Utils.createElement('button', 'btn-icon');
-      editBtn.innerHTML = '<i data-lucide="edit-2" class="w-5 h-5"></i>';
-      editBtn.addEventListener('click', () => Packages.edit(pkg.id));
-
-      const delBtn = Utils.createElement('button', 'btn-del-mini');
-      delBtn.innerHTML = '<i data-lucide="trash-2" class="w-5 h-5"></i>';
-      delBtn.addEventListener('click', () => Packages.delete(pkg.id));
-
-      actions.appendChild(editBtn);
-      actions.appendChild(delBtn);
-      header.appendChild(titleDiv);
-      header.appendChild(actions);
-
-      const servicesList = Utils.createElement('div', 'space-y-2 mb-3');
-      if (pkg.services.length === 0) {
-        const emptyMsg = Utils.createElement('div', 'text-sm text-slate-600 italic');
-        emptyMsg.textContent = 'Нет услуг';
-        servicesList.appendChild(emptyMsg);
+      
+      const selectedTemplate = templates[num - 1];
+      
+      // Добавляем в корзину специальную услугу ПАКЕТ
+      const packageItem = {
+        name: `ПАКЕТ: ${selectedTemplate.name}`,
+        price: 0, // Цена 0, реальные цены будут в форматировании
+        qty: 1,
+        packageTemplate: selectedTemplate // Сохраняем ссылку на шаблон
+      };
+      
+      // Проверяем, нет ли уже пакета в корзине
+      const existingPackageIndex = State.cart.findIndex(item => item.name.startsWith('ПАКЕТ:'));
+      if (existingPackageIndex >= 0) {
+        // Заменяем старый пакет
+        State.cart[existingPackageIndex] = packageItem;
+        App.showToast('Пакет заменён');
       } else {
-        pkg.services.forEach((service, idx) => {
-          const serviceRow = Utils.createElement('div', 'flex items-center justify-between bg-white/5 rounded-lg p-2');
-
-          const serviceName = Utils.createElement('span', 'text-sm text-slate-300');
-          serviceName.textContent = `${service.name}${service.qty > 1 ? ` ×${service.qty}` : ''} — ${Utils.formatPrice(service.price * service.qty)} ₽`;
-
-          const removeBtn = Utils.createElement('button', 'text-red-400 hover:text-red-300 transition p-1');
-          removeBtn.innerHTML = '<i data-lucide="x" class="w-4 h-4"></i>';
-          removeBtn.addEventListener('click', () => Packages.removeService(pkg.id, idx));
-
-          serviceRow.appendChild(serviceName);
-          serviceRow.appendChild(removeBtn);
-          servicesList.appendChild(serviceRow);
-        });
+        // Добавляем новый
+        State.cart.push(packageItem);
+        App.showToast('Пакет добавлен в корзину');
       }
-
-      const addServiceBtn = Utils.createElement('button', 'btn-add w-full text-sm');
-      addServiceBtn.textContent = '+ Добавить услугу';
-      addServiceBtn.addEventListener('click', () => Packages.addService(pkg.id));
-
-      wrapper.appendChild(header);
-      wrapper.appendChild(servicesList);
-      wrapper.appendChild(addServiceBtn);
-      container.appendChild(wrapper);
+      
+      App.calc(); // ВАЖНО! Пересчитываем корзину
+      App.updateUI();
     });
-
-    if (window.lucide) lucide.createIcons();
-  },
-
-  open: () => {
-    const modal = document.getElementById('packages-modal');
-    if (!modal) return;
-    Packages.renderModal();
-    modal.classList.add('active');
-    if (window.lucide) lucide.createIcons();
-  },
-
-  close: () => {
-    const modal = document.getElementById('packages-modal');
-    if (!modal) return;
-    modal.classList.remove('active');
-  },
-
-  renderModal: () => {
-    const container = document.getElementById('packages-container');
-    if (!container) return;
-
-    const packages = Packages.load();
-    Utils.clearElement(container);
-
-    if (packages.length === 0) {
-      container.innerHTML = '<div class="text-sm text-slate-500">Нет пакетов. Настройте их в админке.</div>';
-      return;
-    }
-
-    packages.forEach(pkg => {
-      const total = Packages.calculateTotal(pkg);
-
-      const card = Utils.createElement('div', `variant-card variant-${pkg.color || 'base'}`);
-
-      if (pkg.recommended) {
-        const rec = Utils.createElement('div', 'variant-recommended', 'Рекомендуем');
-        card.appendChild(rec);
-      }
-
-      const header = Utils.createElement('div', 'variant-header');
-      header.innerHTML = `
-        <span class="variant-badge badge-${pkg.color || 'base'}">${Utils.escapeHtml(pkg.name)}</span>
-        <span class="variant-price price-${pkg.color || 'base'}">${Utils.formatPrice(total)} ₽</span>
-      `;
-
-      const description = Utils.createElement('div', 'text-xs text-slate-400 mb-2');
-      description.textContent = pkg.description || 'Нажмите для копирования КП';
-
-      const list = document.createElement('ul');
-      list.className = 'variant-items';
-      pkg.services.forEach(service => {
-        const li = document.createElement('li');
-        li.textContent = `${service.name}${service.qty > 1 ? ` ×${service.qty}` : ''}`;
-        list.appendChild(li);
-      });
-
-      const bonuses = App.getBonusesForTotal(total);
-      const bonusesWrap = Utils.createElement('div', 'variant-bonuses');
-      if (bonuses.length > 0) {
-        bonuses.forEach(b => {
-          const tag = Utils.createElement('span', 'variant-bonus-tag', Utils.sanitizeText(b.text, 60));
-          bonusesWrap.appendChild(tag);
-        });
-      }
-
-      const hint = Utils.createElement('div', 'variant-copy-hint');
-      hint.innerHTML = `<i data-lucide="copy" class="w-4 h-4"></i><span>Скопировать</span>`;
-
-      card.appendChild(header);
-      card.appendChild(description);
-      card.appendChild(list);
-      card.appendChild(bonusesWrap);
-      card.appendChild(hint);
-
-      card.addEventListener('click', async () => {
-        const text = Packages.buildQuoteText(pkg);
-        const ok = await Utils.copyToClipboard(text);
-        App.showToast(ok ? `Пакет "${pkg.name}" скопирован!` : 'Не удалось скопировать');
-        Packages.close();
-      });
-
-      container.appendChild(card);
-    });
-
-    if (window.lucide) lucide.createIcons();
-  },
-
-  init: () => {
-    document.getElementById('btn-open-packages')?.addEventListener('click', Packages.open);
-    document.getElementById('btn-close-packages')?.addEventListener('click', Packages.close);
-    document.getElementById('packages-modal')?.addEventListener('click', (e) => {
-      if (e.target && e.target.id === 'packages-modal') Packages.close();
-    });
-    document.getElementById('btn-add-package')?.addEventListener('click', Packages.add);
-
-    Packages.renderAdmin();
-    console.log('✅ Packages module initialized');
   }
-};
-
-// Инициализация
-document.addEventListener('DOMContentLoaded', () => {
-  Packages.init();
-});
-
-// ============================================
-// QUICK REPLIES MODULE (Быстрые ответы)
-// ============================================
-const QUICK_REPLIES_KEY = 'illusionist_quick_replies';
-
-const QuickReplies = {
-  load: () => Utils.loadFromStorage(QUICK_REPLIES_KEY, []),
-
-  save: (replies) => Utils.saveToStorage(QUICK_REPLIES_KEY, replies),
-
-  add: () => {
-    const name = prompt('Название шаблона:', 'Первое касание');
-    if (!name) return false;
-
-    const sanitizedName = Utils.sanitizeText(name, 50);
-    if (!sanitizedName) {
-      App.showToast('Некорректное название');
-      return false;
+  
+  // ГЕНЕРАЦИЯ ТЕКСТА ВСЕХ 3 ПАКЕТОВ
+  function generatePackagesText(tpl) {
+    // Получаем данные из калькулятора
+    const region = document.getElementById('inp-region')?.value || '';
+    const city = document.getElementById('inp-city')?.value || '';
+    const dateRaw = document.getElementById('inp-date')?.value || '';
+    const time = document.getElementById('inp-time')?.value || '';
+    const dateFmt = Utils.formatDate(dateRaw) || dateRaw;
+    
+    // Региональный множитель
+    let regionMult = 1;
+    if (region && DB.travel && DB.travel[region]) {
+      regionMult = DB.travel[region].multiplier || 1;
     }
-
-    const text = prompt('Текст шаблона:', 'Здравствуйте! Спасибо за обращение...');
-    if (!text) return false;
-
-    const sanitizedText = Utils.sanitizeText(text, 2000);
-    if (!sanitizedText) {
-      App.showToast('Текст пустой');
-      return false;
+    
+    // Логистика
+    let logistics = 0;
+    if (region && city && DB.travel && DB.travel[region] && DB.travel[region].cities) {
+      const cityData = DB.travel[region].cities[city];
+      if (cityData && typeof cityData.price === 'number') {
+        logistics = cityData.price;
+      }
     }
-
-    const replies = QuickReplies.load();
-
-    if (replies.some(r => r.name === sanitizedName)) {
-      if (!confirm(`Ответ "${sanitizedName}" уже существует. Заменить?`)) return false;
-      const idx = replies.findIndex(r => r.name === sanitizedName);
-      if (idx >= 0) replies.splice(idx, 1);
+    
+    let text = `ПАКЕТЫ ДЛЯ МЕРОПРИЯТИЯ\n\n`;
+    if (dateFmt) text += `Дата: ${dateFmt}\n`;
+    if (time) text += `Время: ${time}\n`;
+    if (region) text += `Регион: ${region}\n`;
+    if (city) text += `Город: ${city}\n`;
+    text += `\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    
+    // БАЗОВЫЙ
+    const basicPrice = Math.round(tpl.basic.price * regionMult);
+    const basicTotal = basicPrice + logistics;
+    
+    text += `📦 ВАРИАНТ 1: БАЗОВЫЙ\n\n`;
+    if (tpl.basic.description) text += `${tpl.basic.description}\n\n`;
+    if (tpl.basic.bonuses && tpl.basic.bonuses.length > 0) {
+      text += `Бонусы:\n`;
+      tpl.basic.bonuses.forEach(b => {
+        text += `✅ ${b}\n`;
+      });
+      text += `\n`;
     }
-
-    replies.unshift({
-      id: Date.now(),
-      name: sanitizedName,
-      text: sanitizedText,
-      createdAt: new Date().toISOString()
-    });
-
-    if (replies.length > 20) replies.pop();
-
-    QuickReplies.save(replies);
-    QuickReplies.render();
-    App.showToast(`Ответ "${sanitizedName}" сохранён`);
-    return true;
-  },
-
-  edit: (replyId) => {
-    const replies = QuickReplies.load();
-    const reply = replies.find(r => r.id === replyId);
-    if (!reply) return false;
-
-    const newName = prompt('Название:', reply.name);
-    if (newName === null) return false;
-
-    const newText = prompt('Текст:', reply.text);
-    if (newText === null) return false;
-
-    const sanitizedText = Utils.sanitizeText(newText, 2000);
-    if (!sanitizedText) {
-      App.showToast('Текст не может быть пустым');
-      return false;
+    text += `Стоимость программы: ${Utils.formatPrice(basicPrice)} ₽\n`;
+    if (logistics > 0) text += `Логистика: ${Utils.formatPrice(logistics)} ₽\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `ИТОГО: ${Utils.formatPrice(basicTotal)} ₽\n\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    
+    // ОПТИМАЛ
+    const optimalPrice = Math.round(tpl.optimal.price * regionMult);
+    const optimalTotal = optimalPrice + logistics;
+    
+    text += `📦 ВАРИАНТ 2: ОПТИМАЛ\n\n`;
+    if (tpl.optimal.description) text += `${tpl.optimal.description}\n\n`;
+    if (tpl.optimal.bonuses && tpl.optimal.bonuses.length > 0) {
+      text += `Бонусы:\n`;
+      tpl.optimal.bonuses.forEach(b => {
+        text += `✅ ${b}\n`;
+      });
+      text += `\n`;
     }
-
-    reply.name = Utils.sanitizeText(newName, 50) || reply.name;
-    reply.text = sanitizedText;
-
-    QuickReplies.save(replies);
-    QuickReplies.render();
-    App.showToast('Ответ обновлён');
-    return true;
-  },
-
-  copy: async (replyId) => {
-    const replies = QuickReplies.load();
-    const reply = replies.find(r => r.id === replyId);
-    if (!reply) {
-      App.showToast('Ответ не найден');
-      return false;
+    text += `Стоимость программы: ${Utils.formatPrice(optimalPrice)} ₽\n`;
+    if (logistics > 0) text += `Логистика: ${Utils.formatPrice(logistics)} ₽\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `ИТОГО: ${Utils.formatPrice(optimalTotal)} ₽\n\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    
+    // ПРЕМИУМ
+    const premiumPrice = Math.round(tpl.premium.price * regionMult);
+    const premiumTotal = premiumPrice + logistics;
+    
+    text += `📦 ВАРИАНТ 3: ПРЕМИУМ\n\n`;
+    if (tpl.premium.description) text += `${tpl.premium.description}\n\n`;
+    if (tpl.premium.bonuses && tpl.premium.bonuses.length > 0) {
+      text += `Бонусы:\n`;
+      tpl.premium.bonuses.forEach(b => {
+        text += `✅ ${b}\n`;
+      });
+      text += `\n`;
     }
-
-    const success = await Utils.copyToClipboard(reply.text);
-    App.showToast(success ? `"${reply.name}" скопирован!` : 'Не удалось скопировать');
-    return success;
-  },
-
-  delete: (replyId) => {
-    const replies = QuickReplies.load();
-    const reply = replies.find(r => r.id === replyId);
-    if (!reply) return false;
-
-    if (!confirm(`Удалить "${reply.name}"?`)) return false;
-
-    QuickReplies.save(replies.filter(r => r.id !== replyId));
-    QuickReplies.render();
-    App.showToast('Ответ удалён');
-    return true;
-  },
-
-  renderTo: (containerId, emptyId) => {
-    const container = document.getElementById(containerId);
-    const emptyMsg = document.getElementById(emptyId);
+    text += `Стоимость программы: ${Utils.formatPrice(premiumPrice)} ₽\n`;
+    if (logistics > 0) text += `Логистика: ${Utils.formatPrice(logistics)} ₽\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `ИТОГО: ${Utils.formatPrice(premiumTotal)} ₽\n\n`;
+    
+    const performer = Utils.sanitizeText(DB.config?.performer || 'Illusionist', 100);
+    text += `Ваш ${performer}`;
+    
+    return text;
+  }
+  
+  // РЕНДЕР СПИСКА ШАБЛОНОВ В НАСТРОЙКАХ
+  function renderTemplatesAdmin() {
+    const container = document.getElementById('package-templates-list');
     if (!container) return;
-
-    const replies = QuickReplies.load();
-    Utils.clearElement(container);
-
-    if (replies.length === 0) {
-      container.classList.add('hidden');
-      if (emptyMsg) emptyMsg.classList.remove('hidden');
+    
+    container.innerHTML = '';
+    
+    const templates = DB.packageTemplates || [];
+    
+    if (templates.length === 0) {
+      container.innerHTML = '<div class="text-slate-500 text-sm">Нет шаблонов</div>';
       return;
     }
-
-    container.classList.remove('hidden');
-    if (emptyMsg) emptyMsg.classList.add('hidden');
-
-    replies.forEach(reply => {
-      const card = Utils.createElement('div', 'quick-reply-card');
-      card.dataset.id = reply.id;
-
-      const preview = Utils.sanitizeText(reply.text, 60);
-      const truncated = reply.text.length > 60 ? preview + '...' : preview;
-
+    
+    templates.forEach(tpl => {
+      const card = document.createElement('div');
+      card.className = 'glass rounded-xl p-3 mb-2';
+      
       card.innerHTML = `
-        <div class="quick-reply-name">${Utils.escapeHtml(reply.name)}</div>
-        <div class="quick-reply-preview">${Utils.escapeHtml(truncated)}</div>
-        <div class="quick-reply-actions">
-          <button class="quick-reply-btn quick-reply-edit" title="Редактировать">
-            <i data-lucide="edit-2" class="w-4 h-4"></i>
-          </button>
-          <button class="quick-reply-btn quick-reply-delete" title="Удалить">
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <div class="font-bold text-amber-400 text-sm">${Utils.escapeHtml(tpl.name)}</div>
+            <div class="text-xs text-slate-300 mt-1">
+              Базовый: ${Utils.formatPrice(tpl.basic.price)} ₽ • 
+              Оптимал: ${Utils.formatPrice(tpl.optimal.price)} ₽ • 
+              Премиум: ${Utils.formatPrice(tpl.premium.price)} ₽
+            </div>
+          </div>
+          <button class="btn-icon ml-2" data-del="${tpl.id}">
             <i data-lucide="trash-2" class="w-4 h-4"></i>
           </button>
         </div>
       `;
-
-      card.addEventListener('click', (e) => {
-        if (e.target.closest('.quick-reply-actions')) return;
-        QuickReplies.copy(reply.id);
-      });
-
-      const editBtn = card.querySelector('.quick-reply-edit');
-      if (editBtn) {
-        editBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          QuickReplies.edit(reply.id);
-        });
-      }
-
-      const delBtn = card.querySelector('.quick-reply-delete');
+      
+      const delBtn = card.querySelector('[data-del]');
       if (delBtn) {
-        delBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          QuickReplies.delete(reply.id);
+        delBtn.addEventListener('click', () => {
+          if (confirm(`Удалить шаблон "${tpl.name}"?`)) {
+            const templates = DB.packageTemplates || [];
+            const idx = templates.findIndex(t => t.id === tpl.id);
+            if (idx >= 0) {
+              templates.splice(idx, 1);
+              DB.packageTemplates = templates;
+              Storage.save();
+              renderTemplatesAdmin();
+              App.showToast('Удалено');
+            }
+          }
         });
       }
-
+      
       container.appendChild(card);
     });
-
+    
     if (window.lucide) lucide.createIcons();
-  },
-
-  render: () => {
-    QuickReplies.renderTo('quick-replies-list', 'quick-replies-empty');
-    QuickReplies.renderTo('quick-replies-list-modal', 'quick-replies-empty-modal');
-  },
-
-  openModal: () => {
-    const modal = document.getElementById('quick-replies-modal');
-    if (!modal) return;
-    QuickReplies.render();
-    modal.classList.add('active');
-    if (window.lucide) lucide.createIcons();
-  },
-
-  closeModal: () => {
-    const modal = document.getElementById('quick-replies-modal');
-    if (!modal) return;
-    modal.classList.remove('active');
-  },
-
-  init: () => {
-    document.getElementById('btn-add-quick-reply')?.addEventListener('click', QuickReplies.add);
-    document.getElementById('btn-add-quick-reply-modal')?.addEventListener('click', () => {
-      const ok = QuickReplies.add();
-      if (ok) QuickReplies.openModal();
-    });
-
-    document.getElementById('btn-open-quick-replies-modal')?.addEventListener('click', QuickReplies.openModal);
-    document.getElementById('btn-close-quick-replies-modal')?.addEventListener('click', QuickReplies.closeModal);
-    document.getElementById('quick-replies-modal')?.addEventListener('click', (e) => {
-      if (e.target && e.target.id === 'quick-replies-modal') QuickReplies.closeModal();
-    });
-
-    QuickReplies.render();
-    console.log('✅ QuickReplies module initialized');
   }
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-  QuickReplies.init();
+  
+  // КНОПКА СОЗДАНИЯ ШАБЛОНА
+  const createBtn = document.getElementById('btn-create-template');
+  if (createBtn) {
+    createBtn.addEventListener('click', () => {
+      const templateName = prompt('Название шаблона (например: Свадьба, Выпускной, Корпоратив):');
+      if (!templateName || !templateName.trim()) {
+        alert('Отменено');
+        return;
+      }
+      
+      alert('Сейчас заполним 3 пакета: Базовый, Оптимал, Премиум');
+      
+      // ===== БАЗОВЫЙ =====
+      alert('📦 БАЗОВЫЙ ПАКЕТ');
+      
+      const basicDesc = prompt('БАЗОВЫЙ — Описание (что входит):\n\nНапример: Микромагия 60 минут, фокусы с картами', '');
+      if (basicDesc === null) return;
+      
+      const basicBonuses = prompt('БАЗОВЫЙ — Бонусы (через запятую):\n\nНапример: Мини-сувенир гостям', '');
+      
+      const basicPrice = prompt('БАЗОВЫЙ — Базовая цена (₽):', '50000');
+      if (!basicPrice) return;
+      
+      // ===== ОПТИМАЛ =====
+      alert('📦 ОПТИМАЛ ПАКЕТ');
+      
+      const optimalDesc = prompt('ОПТИМАЛ — Описание (что входит):\n\nНапример: Микромагия 90 минут, фокусы с картами, шоу с голубями', '');
+      if (optimalDesc === null) return;
+      
+      const optimalBonuses = prompt('ОПТИМАЛ — Бонусы (через запятую):\n\nНапример: Мини-сувенир гостям, фото/видео с фишкой', '');
+      
+      const optimalPrice = prompt('ОПТИМАЛ — Базовая цена (₽):', '75000');
+      if (!optimalPrice) return;
+      
+      // ===== ПРЕМИУМ =====
+      alert('📦 ПРЕМИУМ ПАКЕТ');
+      
+      const premiumDesc = prompt('ПРЕМИУМ — Описание (что входит):\n\nНапример: Микромагия 120 минут, фокусы с картами, шоу с голубями, левитация', '');
+      if (premiumDesc === null) return;
+      
+      const premiumBonuses = prompt('ПРЕМИУМ — Бонусы (через запятую):\n\nНапример: Все включено, сувениры всем гостям', '');
+      
+      const premiumPrice = prompt('ПРЕМИУМ — Базовая цена (₽):', '120000');
+      if (!premiumPrice) return;
+      
+      // Собираем данные
+      const template = {
+        id: 'tpl_' + Date.now(),
+        name: templateName.trim(),
+        basic: {
+          name: templateName.trim() + ' — Базовый',
+          price: parseInt(basicPrice) || 50000,
+          description: basicDesc.trim(),
+          bonuses: basicBonuses ? basicBonuses.split(',').map(b => b.trim()).filter(b => b) : []
+        },
+        optimal: {
+          name: templateName.trim() + ' — Оптимал',
+          price: parseInt(optimalPrice) || 75000,
+          description: optimalDesc.trim(),
+          bonuses: optimalBonuses ? optimalBonuses.split(',').map(b => b.trim()).filter(b => b) : []
+        },
+        premium: {
+          name: templateName.trim() + ' — Премиум',
+          price: parseInt(premiumPrice) || 120000,
+          description: premiumDesc.trim(),
+          bonuses: premiumBonuses ? premiumBonuses.split(',').map(b => b.trim()).filter(b => b) : []
+        }
+      };
+      
+      // Сохраняем
+      if (!DB.packageTemplates) DB.packageTemplates = [];
+      DB.packageTemplates.push(template);
+      Storage.save();
+      renderTemplatesAdmin();
+      
+      alert('✅ Шаблон "' + templateName + '" создан!\n\n' +
+        '📦 Базовый: ' + Utils.formatPrice(template.basic.price) + ' ₽\n' +
+        '📦 Оптимал: ' + Utils.formatPrice(template.optimal.price) + ' ₽\n' +
+        '📦 Премиум: ' + Utils.formatPrice(template.premium.price) + ' ₽');
+    });
+  }
+  
+  // КНОПКА СОЗДАНИЯ ШАБЛОНА ОТВЕТА
+  const btnCreateResponse = document.getElementById('btn-create-response');
+  if (btnCreateResponse) {
+    btnCreateResponse.addEventListener('click', createResponseTemplate);
+  }
 });
+
 </script>
 </body>
 </html>
