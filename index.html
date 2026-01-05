@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
@@ -11,16 +11,66 @@
   <meta name="apple-mobile-web-app-title" content="Illusionist OS" />
   <meta name="theme-color" content="#050507" />
 
+  <!-- Icons (iOS/Android/PWA) -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png" />
+  <link rel="apple-touch-icon" sizes="120x120" href="icons/apple-touch-icon-120.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="Illusionist OS" />
+
+<!-- DNS Prefetch для ускорения -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+  <link rel="dns-prefetch" href="https://unpkg.com">
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" as="style">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
   <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
+  <script src="https://cdn.tailwindcss.com" defer></script>
   
   <!-- Lucide -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preload" href="https://unpkg.com/lucide@latest" as="script">
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+
+  <!-- Critical CSS для мгновенного рендера -->
+  <style>
+    body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,sans-serif}
+    #splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#050507;z-index:50}
+    .hide{opacity:0;pointer-events:none}
+  
+/* Mini chips for quick percent presets */
+.mini-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0.22rem 0.5rem;
+  border-radius:999px;
+  font-size:0.72rem;
+  font-weight:800;
+  letter-spacing:0.02em;
+  border:1px solid rgba(245,158,11,0.25);
+  background:rgba(245,158,11,0.10);
+  color:rgba(245,158,11,0.95);
+  transition:transform .12s ease, background .12s ease, border-color .12s ease;
+  cursor:pointer;
+  user-select:none;
+  white-space:nowrap;
+}
+.mini-chip:hover{ transform:translateY(-1px); background:rgba(245,158,11,0.14); border-color:rgba(245,158,11,0.35); }
+.mini-chip:active{ transform:translateY(0px) scale(.98); }
+.mini-chip--ghost{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.12); color:rgba(226,232,240,0.9); }
+
+</style>
 
   <!-- Styles -->
   <style>
@@ -54,7 +104,7 @@ html, body {
   background: var(--bg);
   color: var(--text);
   overflow-x: hidden !important;
-  max-width: 100vw !important;
+  max-width: 100vw;
   height: -webkit-fill-available;
   scroll-behavior: smooth;
   font-size: 16px; /* было 14px */
@@ -153,7 +203,7 @@ main {
   input[type="time"],
   select,
   textarea {
-    font-size: 16px !important; /* iOS не зумит при >= 16px */
+    font-size: 16px; /* iOS не зумит при >= 16px */
   }
 }
 
@@ -173,15 +223,16 @@ button {
 .btn-gold {
   width: 100%;
   border-radius: 16px;
-  padding: 14px 18px; /* было 12px 14px */
-  font-size: 15px; /* было 13px */
+  padding: 14px 18px;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.02em;
   background: linear-gradient(135deg, rgba(245,158,11,.95), rgba(245,158,11,.75));
   color: #120a00;
   border: 1.5px solid rgba(245,158,11,.4);
   box-shadow: 0 12px 30px rgba(245,158,11,.2);
-  min-height: 52px; /* для удобства тапа */
+  min-height: 52px;
+  animation: goldGlow 4s ease-in-out infinite;
 }
 
 .btn-gold:hover {
@@ -255,7 +306,7 @@ button {
   color: rgba(245,158,11,.95);
   border-radius: 14px;
   padding: 12px 16px; /* было 7px 10px */
-  font-size: 13px; /* было 11px */
+  font-size: 14px; /* было 11px */
   font-weight: 700;
   letter-spacing: 0.02em;
   min-height: 48px;
@@ -293,7 +344,7 @@ button {
   gap: 8px;
   padding: 12px 16px; /* было 10px 14px */
   border-radius: 14px;
-  font-size: 13px; /* было 11px */
+  font-size: 14px; /* было 11px */
   font-weight: 700;
   transition: all 0.2s;
   min-height: 48px;
@@ -409,9 +460,9 @@ button {
   bottom: env(safe-area-inset-bottom) !important;
   transform: none !important;
   width: 100% !important;
-  max-width: 100% !important;
-  max-height: none !important;
-  margin: 0 !important;
+  max-width: 100%;
+  max-height: none;
+  margin: 0;
   border-radius: 0 !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
@@ -420,15 +471,15 @@ button {
 
 @media (min-width: 768px) {
   #view-settings .panel {
-    position: absolute !important;
+    position: absolute;
     left: 50% !important;
     top: 50% !important;
     right: auto !important;
     bottom: auto !important;
     transform: translate(-50%, -50%) !important;
     width: min(920px, calc(100% - 48px)) !important;
-    max-width: min(920px, calc(100% - 48px)) !important;
-    max-height: calc(100vh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    max-width: min(920px, calc(100% - 48px));
+    max-height: calc(100vh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     border-radius: 24px !important;
   }
 }
@@ -542,7 +593,7 @@ button {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
 }
 
@@ -605,7 +656,7 @@ button {
 }
 
 .template-card .template-name {
-  font-size: 13px; /* было 11px */
+  font-size: 14px; /* было 11px */
   font-weight: 700;
   color: #f59e0b;
   margin-bottom: 4px;
@@ -615,12 +666,12 @@ button {
 }
 
 .template-card .template-info {
-  font-size: 11px; /* было 9px */
+  font-size: 14px; /* было 9px */
   color: #64748b;
 }
 
 .template-card .template-price {
-  font-size: 12px; /* было 10px */
+  font-size: 14px; /* было 10px */
   font-weight: 800;
   color: #e2e8f0;
   font-family: "JetBrains Mono", monospace;
@@ -664,7 +715,7 @@ button {
   background: rgba(255, 255, 255, 0.06);
   border: 1.5px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
-  font-size: 12px; /* было 10px */
+  font-size: 14px; /* было 10px */
   font-weight: 600;
   font-family: "JetBrains Mono", monospace;
   transition: all 0.2s;
@@ -762,7 +813,7 @@ button {
 }
 
 .variant-badge {
-  font-size: 10px; /* было 9px */
+  font-size: 14px; /* было 9px */
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -796,7 +847,7 @@ button {
 .variant-price.price-premium { color: #a855f7; }
 
 .variant-items {
-  font-size: 13px; /* было 11px */
+  font-size: 14px; /* было 11px */
   color: #94a3b8;
   line-height: 1.6;
 }
@@ -822,7 +873,7 @@ button {
 
 .variant-bonus-tag {
   display: inline-block;
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 700;
   background: rgba(34, 197, 94, 0.18);
   color: #22c55e;
@@ -840,7 +891,7 @@ button {
   opacity: 0;
   transition: opacity 0.2s;
   color: #64748b;
-  font-size: 12px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -854,7 +905,7 @@ button {
   position: absolute;
   top: -10px;
   right: 16px;
-  font-size: 9px;
+  font-size: 14px;
   font-weight: 800;
   text-transform: uppercase;
   background: linear-gradient(135deg, #f59e0b, #f97316);
@@ -874,6 +925,19 @@ button {
 @keyframes iconPulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
+}
+
+@keyframes goldGlow {
+  0%, 100% {
+    box-shadow: 
+      0 12px 30px rgba(245,158,11,.2),
+      0 0 0 0 rgba(245,158,11,0);
+  }
+  50% {
+    box-shadow: 
+      0 16px 40px rgba(245,158,11,.35),
+      0 0 25px rgba(245,158,11,.2);
+  }
 }
 
 @keyframes enter {
@@ -900,6 +964,27 @@ button {
 
 .animate-slide-in {
   animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    filter: blur(0px) brightness(1);
+  }
+  30% {
+    transform: scale(1.02) translateX(8px);
+    filter: blur(0px) brightness(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.92) translateX(30px);
+    filter: blur(6px) brightness(0.3);
+  }
+}
+
+.animate-fade-out {
+  animation: fadeOut 0.4s ease-out forwards;
 }
 
 .round-pulse {
@@ -935,6 +1020,63 @@ button {
 }
 
 /* ============================================
+   FLOATING CARDS
+   ============================================ */
+#floating-cards {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.floating-card {
+  position: absolute;
+  font-size: 120px;
+  opacity: 0.04;
+  color: #f59e0b;
+  animation: float var(--duration, 30s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  filter: blur(1px);
+}
+
+.floating-card:nth-child(1) {
+  left: 15%;
+  top: -10%;
+}
+
+.floating-card:nth-child(2) {
+  left: 60%;
+  top: -15%;
+}
+
+.floating-card:nth-child(3) {
+  left: 80%;
+  top: -8%;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.04;
+  }
+  50% {
+    transform: translateY(100vh) rotate(180deg);
+    opacity: 0.04;
+  }
+  90% {
+    opacity: 0.04;
+  }
+  100% {
+    transform: translateY(120vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* ============================================
    UTILITIES
    ============================================ */
 #import-file-input {
@@ -950,7 +1092,7 @@ button {
    ============================================ */
 @media (max-width: 768px) {
   .lg\:grid-cols-2 {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
   }
   
   .lg\:col-span-2 {
@@ -960,7 +1102,7 @@ button {
 
 @media (max-width: 640px) {
   .grid-cols-2.md\:grid-cols-4 {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .grid-cols-5 {
@@ -971,17 +1113,17 @@ button {
 @media (max-width: 480px) {
   /* Уменьшение отступов на очень маленьких экранах */
   .glass.rounded-3xl {
-    border-radius: 24px !important;
-    padding: 20px !important;
+    border-radius: 24px;
+    padding: 20px;
   }
   
   header {
-    padding: 12px 16px !important;
+    padding: 12px 16px;
   }
   
   .btn-gold,
   .btn-secondary {
-    padding: 12px 16px !important;
+    padding: 12px 16px;
     font-size: 14px !important;
   }
   
@@ -991,14 +1133,14 @@ button {
   }
   
   .backup-slot {
-    padding: 8px !important;
-    min-height: 56px !important;
+    padding: 8px;
+    min-height: 56px;
   }
 }
 
 @media (max-width: 380px) {
   header .font-cinzel {
-    font-size: 16px !important;
+    font-size: 16px;
   }
   
   .backup-status {
@@ -1007,22 +1149,525 @@ button {
 }
 
 </style>
+<style>
+
+/* ============================================
+   PREMIUM DIALOG (replaces native prompt/confirm)
+   ============================================ */
+#premium-dialog-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:99999;background:rgba(0,0,0,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:16px}
+#premium-dialog-overlay.active{display:flex}
+#premium-dialog{width:min(520px,92vw);border-radius:18px;overflow:hidden;
+  background:linear-gradient(180deg, rgba(17,24,39,.92), rgba(2,6,23,.92));
+  border:1px solid rgba(245,158,11,.22);
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+}
+#premium-dialog .pd-head{display:flex;gap:12px;align-items:flex-start;padding:16px 16px 10px}
+#premium-dialog .pd-icon{flex:0 0 auto;width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25)}
+#premium-dialog .pd-title{font-weight:700;color:#fff;font-size:15px;line-height:1.2;margin-top:2px}
+#premium-dialog .pd-msg{color:rgba(226,232,240,.92);font-size:13px;line-height:1.35;margin-top:6px;white-space:pre-wrap}
+#premium-dialog .pd-body{padding:0 16px 12px}
+#premium-dialog .pd-input{width:100%;margin-top:10px;padding:12px 12px;border-radius:14px;
+  background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.18);color:#fff;outline:none}
+#premium-dialog .pd-input:focus{border-color:rgba(245,158,11,.55);box-shadow:0 0 0 3px rgba(245,158,11,.15)}
+#premium-dialog .pd-actions{display:flex;gap:10px;justify-content:flex-end;padding:12px 16px 16px}
+#premium-dialog .pd-btn{border-radius:14px;padding:10px 14px;font-size:13px;font-weight:600;border:1px solid rgba(148,163,184,.18);
+  background:rgba(15,23,42,.55);color:#fff;cursor:pointer}
+#premium-dialog .pd-btn:hover{transform:translateY(-1px)}
+#premium-dialog .pd-btn:active{transform:translateY(0)}
+#premium-dialog .pd-btn.ok{border-color:rgba(245,158,11,.35);background:linear-gradient(180deg, rgba(245,158,11,.28), rgba(245,158,11,.14))}
+#premium-dialog .pd-btn.danger{border-color:rgba(239,68,68,.35);background:linear-gradient(180deg, rgba(239,68,68,.22), rgba(239,68,68,.10))}
+#premium-dialog .pd-btn.ghost{background:rgba(15,23,42,.25)}
+
+</style>
+<style>
+
+/* RESPONSIVE TYPOGRAPHY */
+body {
+  font-size: clamp(14px, 3.5vw, 16px) !important;
+}
+
+h1, .title {
+  font-size: clamp(24px, 6vw, 32px) !important;
+}
+
+h2, .subtitle {
+  font-size: clamp(20px, 5vw, 24px) !important;
+}
+
+h3 {
+  font-size: clamp(18px, 4.5vw, 20px) !important;
+}
+
+button, .btn {
+  font-size: clamp(14px, 3.5vw, 16px) !important;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+input, select, textarea {
+  font-size: clamp(16px, 4vw, 18px) !important;
+  min-height: 44px;
+  padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 16px);
+}
+
+.modal-content, .panel {
+  padding: clamp(16px, 4vw, 24px);
+}
+
+/* ADAPTIVE SPACING */
+.space-sm {
+  margin: clamp(8px, 2vw, 12px);
+}
+
+.space-md {
+  margin: clamp(12px, 3vw, 16px);
+}
+
+.space-lg {
+  margin: clamp(16px, 4vw, 24px);
+}
+
+/* RESPONSIVE GRID */
+.grid {
+  gap: clamp(12px, 3vw, 20px);
+}
+
+/* RESPONSIVE TOUCH TARGETS */
+[role="button"],
+a,
+button,
+.clickable {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* RESPONSIVE ICONS */
+svg, i[class*="icon"] {
+  width: clamp(20px, 5vw, 24px) !important;
+  height: clamp(20px, 5vw, 24px) !important;
+}
+
+/* MOBILE OPTIMIZATIONS */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 24px !important;
+  }
+  
+  h2 {
+    font-size: 20px !important;
+  }
+  
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+  
+  .modal-content {
+    width: 95vw !important;
+    max-height: 85vh;
+  }
+}
+
+/* LARGE SCREENS */
+@media (min-width: 1200px) {
+  body {
+    font-size: 16px;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+</style>
+<style>
+
+/* ENHANCED SAFE-AREA SUPPORT */
+html {
+  height: 100%;
+  height: -webkit-fill-available;
+}
+
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Fixed elements safe-area */
+.fixed-top {
+  padding-top: env(safe-area-inset-top, 0px) !important;
+}
+
+.fixed-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+}
+
+/* Modals safe-area */
+.modal {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.modal-content {
+  max-height: calc(90vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+}
+
+</style>
 </head>
 
 <body class="min-h-screen">
   <input type="file" id="import-file-input" accept=".json,.backup" />
   <canvas id="bg-canvas"></canvas>
+  
+  <!-- ========== FLOATING CARDS ========== -->
+  <div id="floating-cards">
+    <div class="floating-card" style="--delay: 0s; --duration: 30s;">♠</div>
+    <div class="floating-card" style="--delay: 10s; --duration: 35s;">♥</div>
+    <div class="floating-card" style="--delay: 20s; --duration: 40s;">♣</div>
+  </div>
 
   <!-- ========== SPLASH ========== -->
-  <div id="splash">
-    <div class="text-center px-6">
-      <div class="mx-auto mb-6 w-20 h-20 rounded-3xl flex items-center justify-center glass">
-        <i data-lucide="calculator" class="w-10 h-10 text-amber-400"></i>
-      </div>
-      <div class="font-cinzel text-3xl tracking-wide text-white mb-3">Illusionist OS</div>
-      <div class="text-lg text-slate-300 font-semibold">Умный калькулятор</div>
-      <div class="mt-8 text-sm text-slate-400">Нажми, чтобы пропустить</div>
+  
+<!-- SPLASH SCREEN -->
+<div id="splash" style="
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  opacity: 1;
+  transition: opacity 0.8s ease;
+  overflow: hidden;
+">
+  <!-- Animated Background Particles -->
+  <canvas id="particles-canvas" style="
+    position: absolute;
+    inset: 0;
+    opacity: 0.3;
+  "></canvas>
+
+  <!-- Magic Cards Floating Animation -->
+  <div style="
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    opacity: 0.15;
+  ">
+    <div class="floating-card" style="position: absolute; top: 10%; left: 5%; font-size: 60px; animation: float1 6s ease-in-out infinite;">♠️</div>
+    <div class="floating-card" style="position: absolute; top: 20%; right: 10%; font-size: 50px; animation: float2 7s ease-in-out infinite;">♥️</div>
+    <div class="floating-card" style="position: absolute; bottom: 15%; left: 15%; font-size: 55px; animation: float3 8s ease-in-out infinite;">♦️</div>
+    <div class="floating-card" style="position: absolute; bottom: 25%; right: 20%; font-size: 45px; animation: float1 9s ease-in-out infinite;">♣️</div>
+    <div class="floating-card" style="position: absolute; top: 50%; left: 25%; font-size: 40px; animation: float2 5s ease-in-out infinite;">🎩</div>
+    <div class="floating-card" style="position: absolute; top: 60%; right: 30%; font-size: 50px; animation: float3 7s ease-in-out infinite;">🎴</div>
+    <div class="floating-card" style="position: absolute; top: 30%; left: 50%; font-size: 35px; animation: float1 6s ease-in-out infinite;">✨</div>
+  </div>
+
+  <!-- Main Content -->
+  <div style="
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 20px;
+    animation: fadeInUp 1s ease-out;
+  ">
+    <!-- Logo/Icon -->
+    <div style="
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 30px;
+      background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(251,191,36,0.2));
+      border: 3px solid rgba(245,158,11,0.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      animation: pulse 2s ease-in-out infinite, rotate 20s linear infinite;
+      box-shadow: 0 0 40px rgba(245,158,11,0.3), 0 0 80px rgba(245,158,11,0.1);
+    ">
+      🎩
     </div>
+
+    <!-- Title with Glitch Effect -->
+    <h1 style="
+      font-family: 'Cinzel', serif;
+      font-size: clamp(32px, 8vw, 56px);
+      font-weight: 700;
+      background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #f59e0b 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0 0 12px 0;
+      letter-spacing: 4px;
+      animation: shimmer 3s ease-in-out infinite, textGlow 2s ease-in-out infinite;
+      text-shadow: 0 0 30px rgba(245,158,11,0.5);
+      position: relative;
+    ">
+      ILLUSIONIST OS
+    </h1>
+
+    <!-- Subtitle with Typewriter Effect -->
+    <p style="
+      font-size: clamp(12px, 3vw, 16px);
+      color: rgba(148,163,184,0.9);
+      margin: 0 0 40px 0;
+      letter-spacing: 2px;
+      font-weight: 300;
+      animation: fadeIn 1.5s ease-out 0.5s both;
+    ">
+      Для профессионалов иллюзии
+    </p>
+
+    <!-- Magic Wand Divider -->
+    <div style="
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #f59e0b, transparent);
+      margin: 0 auto 30px;
+      animation: expandWidth 2s ease-out;
+    "></div>
+
+    <!-- Loading Bar with Sparkles -->
+    <div style="
+      width: clamp(200px, 60vw, 300px);
+      height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 0 auto;
+      position: relative;
+      box-shadow: 0 0 20px rgba(245,158,11,0.2);
+    ">
+      <div style="
+        height: 100%;
+        background: linear-gradient(90deg, 
+          rgba(245,158,11,0.5) 0%, 
+          #f59e0b 50%, 
+          rgba(245,158,11,0.5) 100%
+        );
+        background-size: 200% 100%;
+        animation: loading 1.8s ease-in-out infinite, shimmer 2s linear infinite;
+        box-shadow: 0 0 20px rgba(245,158,11,0.8);
+      "></div>
+      
+      <!-- Sparkle Effects -->
+      <div style="
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
+        background-size: 20px 20px;
+        animation: sparkle 1.5s linear infinite;
+      "></div>
+    </div>
+
+    <!-- Loading Text -->
+    <div style="
+      margin-top: 20px;
+      font-size: 12px;
+      color: rgba(148,163,184,0.6);
+      letter-spacing: 1px;
+      animation: pulse 2s ease-in-out infinite;
+    ">
+      Загрузка магии...
+    </div>
+  </div>
+</div>
+
+<style>
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes textGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px rgba(245,158,11,0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(245,158,11,0.8));
+  }
+}
+
+@keyframes loading {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes expandWidth {
+  from { width: 0; }
+  to { width: 60px; }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+@keyframes float1 {
+  0%, 100% { 
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.3;
+  }
+  33% { 
+    transform: translate(20px, -30px) rotate(120deg);
+    opacity: 0.6;
+  }
+  66% { 
+    transform: translate(-15px, 20px) rotate(240deg);
+    opacity: 0.4;
+  }
+}
+
+@keyframes float2 {
+  0%, 100% { 
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 0.3;
+  }
+  50% { 
+    transform: translate(-25px, 30px) rotate(180deg) scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+@keyframes float3 {
+  0%, 100% { 
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.4;
+  }
+  25% { 
+    transform: translate(30px, -20px) rotate(90deg);
+    opacity: 0.6;
+  }
+  75% { 
+    transform: translate(-20px, 15px) rotate(270deg);
+    opacity: 0.5;
+  }
+}
+</style>
+
+<script>
+// Particles Canvas Animation
+(function() {
+  const canvas = document.getElementById('particles-canvas');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  
+  const particles = [];
+  const particleCount = 50;
+  
+  class Particle {
+    constructor() {
+      this.reset();
+    }
+    
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.vx = (Math.random() - 0.5) * 0.5;
+      this.vy = (Math.random() - 0.5) * 0.5;
+      this.size = Math.random() * 2 + 1;
+      this.opacity = Math.random() * 0.5 + 0.2;
+    }
+    
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      
+      if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+    }
+    
+    draw() {
+      ctx.fillStyle = `rgba(245, 158, 11, ${this.opacity})`;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  
+  for (let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+  }
+  
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    particles.forEach(particle => {
+      particle.update();
+      particle.draw();
+    });
+    
+    // Draw connections
+    particles.forEach((p1, i) => {
+      particles.slice(i + 1).forEach(p2 => {
+        const dx = p1.x - p2.x;
+        const dy = p1.y - p2.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < 150) {
+          ctx.strokeStyle = `rgba(245, 158, 11, ${0.2 * (1 - distance / 150)})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      });
+    });
+    
+    requestAnimationFrame(animate);
+  }
+  
+  animate();
+})();
+</script>
+<!-- /SPLASH SCREEN -->
+
   </div>
 
   <!-- ========== TOAST ========== -->
@@ -1081,16 +1726,13 @@ button {
           </div>
           <div>
             <label class="text-sm text-slate-400 font-bold mb-2 block">Время</label>
+            <select id="inp-time-mode" class="form-input mb-2">
+              <option value="time" selected>Указать время</option>
+              <option value="none">Без времени</option>
+            </select>
             <input type="time" id="inp-time" class="form-input" value="18:00" />
           </div>
         </div>
-
-        <!-- Client -->
-        <div class="mb-4">
-          <label class="text-sm text-slate-400 font-bold mb-2 block">Клиент</label>
-          <input id="inp-client" class="form-input" placeholder="Имя клиента" />
-        </div>
-
         <!-- Event Type -->
         <div class="mb-4">
           <label class="text-sm text-slate-400 font-bold mb-2 block">Тип события</label>
@@ -1175,12 +1817,28 @@ button {
                 <option value="3000">+3 000 ₽</option>
               </select>
             </div>
+            
             <div class="flex items-end">
-              <label class="flex items-center gap-3 text-sm text-slate-300 font-bold select-none px-4 py-3 glass rounded-2xl w-full cursor-pointer hover:bg-white/10 transition">
-                <input type="checkbox" id="inp-tax" class="accent-amber-500 w-5 h-5" />
-                Договор (+6%)
-              </label>
+              <div class="flex flex-col gap-2 w-full">
+                <label class="flex items-center gap-3 text-sm text-slate-200 font-bold bg-white/5 px-4 py-2 rounded-2xl w-full cursor-pointer hover:bg-white/10 transition">
+                  <input type="checkbox" id="inp-tax" class="accent-amber-500 w-5 h-5" />
+                  <span id="lbl-cashless">Оплата по безналу</span>
+                </label>
+                <label class="flex items-center gap-3 text-sm text-slate-200 font-bold bg-white/5 px-4 py-2 rounded-2xl w-full cursor-pointer hover:bg-white/10 transition">
+                  <input type="checkbox" id="inp-agency" class="accent-amber-500 w-5 h-5" />
+                  <div class="flex items-center justify-between w-full gap-2">
+                  <span id="lbl-agency">Комиссия агентства</span>
+                  
+                </div>
+                </label>
+
+                <label class="flex items-center gap-3 text-sm text-slate-200 font-bold bg-white/5 px-4 py-2 rounded-2xl w-full cursor-pointer hover:bg-white/10 transition">
+                  <input type="checkbox" id="inp-burn" class="accent-amber-500 w-5 h-5" />
+                  <span id="lbl-burn">Предложение действует 48 часов</span>
+                </label>
+</div>
             </div>
+
           </div>
         </div>
 
@@ -1223,7 +1881,9 @@ button {
             </div>
           </div>
 
-          <div id="cart-list" class="space-y-3 mb-6"></div>
+          <div id="cart-list" class="space-y-3"></div>
+
+          <div id="cart-breakdown" class="space-y-2 mb-6"></div>
 
           <!-- Total -->
           <div class="border-t border-white/10 pt-6">
@@ -1291,6 +1951,32 @@ button {
         </button>
       </div>
 
+      <!-- PERSONAL INFO -->
+      <div class="glass rounded-2xl p-5 mb-6 border-2 border-amber-500/20">
+        <div class="flex items-center gap-3 mb-4">
+          <i data-lucide="user" class="w-6 h-6 text-amber-400"></i>
+          <span class="text-base font-extrabold text-white">Персональные данные</span>
+        </div>
+        
+        <div class="space-y-3">
+          <div>
+            <label class="block text-sm font-semibold text-slate-300 mb-2">
+              Ваше имя / Псевдоним
+            </label>
+            <input 
+              type="text" 
+              id="personal-name" 
+              class="form-input" 
+              placeholder="Например: Александр Великий 🎩"
+              maxlength="100"
+            />
+            <div class="text-xs text-slate-500 mt-1">
+              Будет отображаться в подписи КП
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- DATA MANAGEMENT -->
       <div class="glass rounded-2xl p-5 mb-6 border-2 border-emerald-500/20">
         <div class="flex items-center justify-between mb-4">
@@ -1345,14 +2031,41 @@ button {
         <div class="text-base font-extrabold text-white mb-4">Профиль</div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="text-sm text-slate-400 font-bold mb-2 block">Подпись</label>
-            <input id="cfg-performer" class="form-input" placeholder="Напр. Дмитрий" />
-          </div>
-          <div>
             <label class="text-sm text-slate-400 font-bold mb-2 block">Бронь (%)</label>
             <input id="cfg-deposit" type="number" class="form-input text-right mono" placeholder="30" />
           </div>
-        </div>
+        
+          <div>
+            <label class="text-sm text-slate-400 font-bold mb-2 block">Оплата по безналу (%)</label>
+            <input id="cfg-cashless-percent" type="number" class="form-input text-right mono" placeholder="6" />
+            <div class="text-xs text-slate-500 mt-2">Ставка наценки при оплате по безналу (чтобы компенсировать налоги/эквайринг).</div>
+          </div>
+          <div>
+            <label class="text-sm text-slate-400 font-bold mb-2 block">Комиссия агентства (%)</label>
+            <input id="cfg-agency-percent" type="number" class="form-input text-right mono" placeholder="15" />
+            <div class="text-xs text-slate-500 mt-2">Используется для расчёта «Чек на руки» и «Чек для клиента».</div>
+
+          <div class="md:col-span-2">
+            <div class="text-sm text-slate-400 font-bold mb-2 block">Сгорающий бонус</div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="text-xs text-slate-500 font-semibold mb-1 block">Название</label>
+                <input id="cfg-burn-title" type="text" class="form-input" placeholder="Напр. Появление Гендиректора" maxlength="120" />
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 font-semibold mb-1 block">Цена бонуса (₽)</label>
+                <input id="cfg-burn-price" type="number" class="form-input text-right mono" placeholder="15000" />
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 font-semibold mb-1 block">Срок (часов)</label>
+                <input id="cfg-burn-hours" type="number" class="form-input text-right mono" placeholder="48" />
+              </div>
+            </div>
+            <div class="text-xs text-slate-500 mt-2">Если включить галочку в калькуляторе — в КП появится строка про бонус, который действует ограниченное время.</div>
+          </div>
+
+          </div>
+</div>
       </div>
 
       <!-- Admin quick actions -->
@@ -1617,14 +2330,36 @@ const Utils = {
     }
   },
 
+  // Кеш для localStorage
+  _storageCache: new Map(),
+  
   loadFromStorage: (key, defaultValue = null) => {
     try {
+      // Проверяем кеш
+      if (Utils._storageCache.has(key)) {
+        return Utils._storageCache.get(key);
+      }
+      
       const item = localStorage.getItem(key);
       if (item === null) return defaultValue;
-      return JSON.parse(item);
+      
+      const parsed = JSON.parse(item);
+      Utils._storageCache.set(key, parsed);
+      return parsed;
     } catch (err) {
       console.error('Storage load error:', err);
       return defaultValue;
+    }
+  },
+  
+  saveToStorage: (key, value) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      Utils._storageCache.set(key, value); // Обновляем кеш
+      return true;
+    } catch (err) {
+      console.error('Storage save error:', err);
+      return false;
     }
   },
 
@@ -1690,7 +2425,13 @@ const DEFAULT_DB = {
   ],
   config: {
     performer: "Illusionist",
-    deposit: 30
+    deposit: 30,
+    cashlessPercent: 6,
+    agencyPercent: 15,
+    burnBonusTitle: "Появление Гендиректора",
+    burnBonusPrice: 15000,
+    burnHours: 48,
+    personalName: ""
   }
 };
 
@@ -1710,7 +2451,8 @@ let State = {
   serviceQty: 1,
   cart: [],
   finalTotal: 0,
-  finalDetails: {
+    expiringOffer: false,
+finalDetails: {
     servicesTotal: 0,
     discount: 0,
     travel: 0,
@@ -1799,7 +2541,7 @@ const DataManager = {
   importData: (file) => new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const data = JSON.parse(e.target.result);
         const validation = DataManager.validateData(data);
@@ -1814,7 +2556,7 @@ const DataManager = {
           const { checksum, exportedAt, ...cleanData } = data;
           const calculated = DataManager.calculateChecksum(cleanData);
           if (checksum !== calculated) {
-            if (!confirm('Контрольная сумма не совпадает. Данные могли быть изменены. Продолжить?')) {
+            if (!(await PremiumDialog.confirm({ message: 'Контрольная сумма не совпадает. Данные могли быть изменены. Продолжить?', danger: true, okText: 'Продолжить', cancelText: 'Отмена', icon: 'alert-triangle' }))) {
               reject(new Error('Cancelled'));
               return;
             }
@@ -1882,7 +2624,7 @@ const DataManager = {
     }
   },
 
-  restoreBackup: (backupId) => {
+  restoreBackup: async (backupId) => {
     try {
       const backups = Utils.loadFromStorage(BACKUP_KEY, []);
       const backup = backups.find(b => b.id === backupId);
@@ -1892,13 +2634,13 @@ const DataManager = {
         return false;
       }
 
-      if (!confirm(`Восстановить "${backup.label}"?\nТекущие данные будут заменены.`)) {
+      if (!(await PremiumDialog.confirm({ message: `Восстановить "${backup.label}"?\nТекущие данные будут заменены.`, danger: true, okText: 'Продолжить', cancelText: 'Отмена', icon: 'alert-triangle' }))) {
         return false;
       }
 
       const calculated = DataManager.calculateChecksum(backup.data);
       if (backup.checksum !== calculated) {
-        if (!confirm('Контрольная сумма не совпадает. Продолжить?')) {
+        if (!(await PremiumDialog.confirm({ message: 'Контрольная сумма не совпадает. Продолжить?', danger: true, okText: 'Продолжить', cancelText: 'Отмена', icon: 'alert-triangle' }))) {
           return false;
         }
       }
@@ -1927,7 +2669,7 @@ const DataManager = {
     }
   },
 
-  deleteBackup: (backupId) => {
+  deleteBackup: async (backupId) => {
     try {
       let backups = Utils.loadFromStorage(BACKUP_KEY, []);
       backups = backups.filter(b => b.id !== backupId);
@@ -1988,9 +2730,9 @@ const DataManager = {
         `;
         slot.title = `${backup.label}\nПравый клик — удалить`;
         slot.addEventListener('click', () => DataManager.restoreBackup(backup.id));
-        slot.addEventListener('contextmenu', (e) => {
+        slot.addEventListener('contextmenu', async (e) => {
           e.preventDefault();
-          if (confirm(`Удалить "${backup.label}"?`)) {
+          if (await PremiumDialog.confirm({ message: `Удалить "${backup.label}"?`, danger: true, okText: 'Да', cancelText: 'Отмена', icon: 'shield-alert' })) {
             DataManager.deleteBackup(backup.id);
           }
         });
@@ -2077,8 +2819,8 @@ const DataManager = {
     document.getElementById('btn-import-data')?.addEventListener('click', () => {
       document.getElementById('import-file-input')?.click();
     });
-    document.getElementById('btn-create-backup')?.addEventListener('click', () => {
-      const label = prompt('Название бэкапа:', `Бэкап ${new Date().toLocaleDateString('ru-RU')}`);
+    document.getElementById('btn-create-backup')?.addEventListener('click', async () => {
+      const label = await PremiumDialog.prompt({ title: 'Название бэкапа', defaultValue: `Бэкап ${new Date().toLocaleDateString('ru-RU')}`, okText: 'Создать', cancelText: 'Отмена', icon: 'archive' });
       if (label !== null) DataManager.createBackup(label || undefined);
     });
 
@@ -2173,6 +2915,7 @@ const App = {
       App.migrateServicesNames();
       App.setupEventListeners();
       App.initProfileInputs();
+      App.updateBurnLabel();
       App.updateUI();
 
       const dateInput = document.getElementById('inp-date');
@@ -2181,13 +2924,28 @@ const App = {
         App.updateDate();
       }
 
-      App.renderParticles();
-
-      if (window.lucide) lucide.createIcons();
+      // Ленивая загрузка неприоритетных элементов
+      if (window.requestIdleCallback) {
+        requestIdleCallback(() => {
+          App.renderParticles();
+          if (window.lucide) lucide.createIcons();
+        }, { timeout: 2000 });
+      } else {
+        setTimeout(() => {
+          App.renderParticles();
+          if (window.lucide) lucide.createIcons();
+        }, 100);
+      }
+      
       App.startSplash();
       App.registerSWInline();
 
       DataManager.updateBackupIndicator('saved');
+      
+      // Помечаем что приложение готово к работе
+      if (window.markAppReady) {
+        window.markAppReady();
+      }
     } catch (err) {
       console.error('❌ App initialization failed:', err);
       App.showToast('Ошибка инициализации');
@@ -2205,6 +2963,29 @@ const App = {
 
     // Date
     document.getElementById('inp-date')?.addEventListener('change', App.updateDate);
+
+    // Time mode (можно выбрать "Без времени")
+    const timeMode = document.getElementById('inp-time-mode');
+    const timeInput = document.getElementById('inp-time');
+    const applyTimeMode = () => {
+      if (!timeMode || !timeInput) return;
+      const mode = timeMode.value || 'time';
+      const isNone = mode === 'none';
+      timeInput.disabled = isNone;
+      timeInput.style.display = isNone ? 'none' : '';
+      if (isNone) {
+        timeInput.value = '';
+      } else if (!timeInput.value) {
+        timeInput.value = '18:00';
+      }
+    };
+    if (timeMode) {
+      timeMode.addEventListener('change', () => {
+        applyTimeMode();
+        App.calc();
+      });
+      applyTimeMode();
+    }
 
     // Region & City
     document.getElementById('inp-region')?.addEventListener('change', App.updateRegion);
@@ -2238,6 +3019,8 @@ const App = {
     document.getElementById('inp-guests')?.addEventListener('change', App.calc);
     document.getElementById('inp-tax')?.addEventListener('change', App.calc);
 
+    document.getElementById('inp-agency')?.addEventListener('change', App.calc);
+    document.getElementById('inp-agency')?.addEventListener('input', App.calc);
     // Admin buttons
     const bind = (id, fn) => {
       const el = document.getElementById(id);
@@ -2255,16 +3038,6 @@ const App = {
   },
 
   initProfileInputs: () => {
-    const performerInput = document.getElementById('cfg-performer');
-    if (performerInput) {
-      performerInput.value = DB.config?.performer || 'Illusionist';
-      performerInput.addEventListener('input', Utils.debounce(() => {
-        DB.config.performer = Utils.sanitizeText(performerInput.value, 100);
-        Storage.save();
-        DataManager.updateStats();
-      }, 350));
-    }
-
     const depositInput = document.getElementById('cfg-deposit');
     if (depositInput) {
       depositInput.value = DB.config?.deposit ?? 30;
@@ -2276,8 +3049,93 @@ const App = {
         DataManager.updateStats();
       }, 350));
     }
-  },
+    const cashlessInput = document.getElementById('cfg-cashless-percent');
+    if (cashlessInput) {
+      cashlessInput.value = DB.config?.cashlessPercent ?? 6;
+      cashlessInput.addEventListener('input', Utils.debounce(() => {
+        const value = Utils.sanitizeNumber(cashlessInput.value, 0, 100, 6);
+        cashlessInput.value = value;
+        DB.config.cashlessPercent = value;
+        Storage.save();
+        DataManager.updateStats();
+        App.updatePercentLabels();
+        App.calc();
+      }, 350));
+    }
 
+    const agencyInput = document.getElementById('cfg-agency-percent');
+    if (agencyInput) {
+      agencyInput.value = DB.config?.agencyPercent ?? 15;
+      agencyInput.addEventListener('input', Utils.debounce(() => {
+        const value = Utils.sanitizeNumber(agencyInput.value, 0, 99, 15);
+        agencyInput.value = value;
+        DB.config.agencyPercent = value;
+        Storage.save();
+        DataManager.updateStats();
+        App.updatePercentLabels();
+        App.calc();
+      }, 350));
+    }
+
+    const burnTitleInput = document.getElementById('cfg-burn-title');
+    if (burnTitleInput) {
+      burnTitleInput.value = DB.config?.burnBonusTitle ?? "Появление Гендиректора";
+      burnTitleInput.addEventListener('input', Utils.debounce(() => {
+        const v = Utils.sanitizeText(burnTitleInput.value, 120) || "";
+        burnTitleInput.value = v;
+        DB.config.burnBonusTitle = v;
+        Storage.save();
+      }, 350));
+    }
+
+    const burnPriceInput = document.getElementById('cfg-burn-price');
+    if (burnPriceInput) {
+      burnPriceInput.value = DB.config?.burnBonusPrice ?? 15000;
+      burnPriceInput.addEventListener('input', Utils.debounce(() => {
+        const value = Utils.sanitizeNumber(burnPriceInput.value, 0, 99999999, 15000);
+        burnPriceInput.value = value;
+        DB.config.burnBonusPrice = value;
+        Storage.save();
+      }, 350));
+    }
+
+    const burnHoursInput = document.getElementById('cfg-burn-hours');
+    if (burnHoursInput) {
+      burnHoursInput.value = DB.config?.burnHours ?? 48;
+      burnHoursInput.addEventListener('input', Utils.debounce(() => {
+        const value = Utils.sanitizeNumber(burnHoursInput.value, 1, 240, 48);
+        burnHoursInput.value = value;
+        DB.config.burnHours = value;
+        Storage.save();
+        App.updateBurnLabel();
+      }, 350));
+    }
+
+    App.updatePercentLabels();
+
+  },
+updatePercentLabels: () => {
+  try {
+    const cashlessPct = Utils.sanitizeNumber(DB.config?.cashlessPercent ?? 6, 0, 100, 6);
+    const agencyPct = Utils.sanitizeNumber(DB.config?.agencyPercent ?? 15, 0, 99, 15);
+
+    const cashlessLbl = document.getElementById('lbl-cashless');
+    if (cashlessLbl) cashlessLbl.textContent = `Оплата по безналу`;
+
+    const agencyLbl = document.getElementById('lbl-agency');
+    if (agencyLbl) agencyLbl.textContent = `Комиссия агентства`;
+  } catch (e) {
+    // silent
+  }
+},
+
+  updateBurnLabel: () => {
+    try {
+      const hours = Utils.sanitizeNumber(DB.config?.burnHours ?? 48, 1, 240, 48);
+      const lbl = document.getElementById('lbl-burn');
+      if (lbl) lbl.textContent = `Предложение действует ${hours} часов`;
+    } catch (e) {}
+  },
   migrateServicesNames: () => {
     try {
       if (!DB.services || !DB.services["Детские шоу"]) return;
@@ -2295,7 +3153,6 @@ const App = {
 
   registerSWInline: () => {
     try {
-      if (!('serviceWorker' in navigator)) return;
       const swCode = `
         const CACHE = 'illusionist-os-cache-v1';
         self.addEventListener('install', (e) => {
@@ -2331,7 +3188,6 @@ const App = {
       const blob = new Blob([swCode], { type: 'text/javascript' });
       const swUrl = URL.createObjectURL(blob);
 
-      navigator.serviceWorker.register(swUrl).catch(() => {});
       setTimeout(() => {
         try {
           URL.revokeObjectURL(swUrl);
@@ -2353,14 +3209,42 @@ const App = {
     const MIN_MS = 2800;
     const MAX_MS = 5000;
     let dismissed = false;
+    let appReady = false;
 
     const hide = () => {
       if (dismissed) return;
       dismissed = true;
-      splash.classList.add('hide');
-      setTimeout(() => {
-        if (splash.parentNode) splash.remove();
-      }, 700);
+      
+      // Скрываем splash только когда приложение готово
+      const doHide = () => {
+        splash.classList.add('hide');
+        setTimeout(() => {
+          if (splash.parentNode) splash.remove();
+        }, 700);
+      };
+      
+      // Если приложение уже готово - сразу скрываем
+      if (appReady) {
+        doHide();
+      } else {
+        // Иначе ждём готовности (но не больше 500мс)
+        const checkReady = setInterval(() => {
+          if (appReady) {
+            clearInterval(checkReady);
+            doHide();
+          }
+        }, 50);
+        
+        setTimeout(() => {
+          clearInterval(checkReady);
+          doHide();
+        }, 500);
+      }
+    };
+    
+    // Помечаем что приложение готово
+    window.markAppReady = () => {
+      appReady = true;
     };
 
     splash.addEventListener('click', hide, { once: true });
@@ -2368,7 +3252,6 @@ const App = {
     setTimeout(hide, MIN_MS);
     setTimeout(() => {
       if (!dismissed) {
-        console.warn('Force hide');
         hide();
       }
     }, MAX_MS);
@@ -2376,13 +3259,19 @@ const App = {
 
   updateUI: () => {
     try {
-      App.updateRegionSelect();
-      App.updateCategorySelect();
-      App.updateCat();
-      if (window.lucide) lucide.createIcons();
-      DataManager.updateStats();
-      DataManager.renderBackupSlots();
-      Admin.render();
+      // Батчим DOM операции через RAF для плавности
+      requestAnimationFrame(() => {
+        App.updateRegionSelect();
+        App.updateCategorySelect();
+        App.updateCat();
+        
+        requestAnimationFrame(() => {
+          if (window.lucide) lucide.createIcons();
+          DataManager.updateStats();
+          DataManager.renderBackupSlots();
+          Admin.render();
+        });
+      });
     } catch (err) {
       console.error('UI update error:', err);
     }
@@ -2566,9 +3455,26 @@ const App = {
 
   removeService: (idx) => {
     if (idx >= 0 && idx < State.cart.length) {
-      State.cart.splice(idx, 1);
-      App.renderCart();
-      App.calc();
+      // Находим элемент в DOM
+      const cartList = document.getElementById('cart-list');
+      if (cartList && cartList.children[idx]) {
+        const element = cartList.children[idx];
+        
+        // Добавляем класс анимации
+        element.classList.add('animate-fade-out');
+        
+        // Ждём окончания анимации, затем удаляем
+        setTimeout(() => {
+          State.cart.splice(idx, 1);
+          App.renderCart();
+          App.calc();
+        }, 400); // 400ms = длительность анимации
+      } else {
+        // Fallback если элемент не найден
+        State.cart.splice(idx, 1);
+        App.renderCart();
+        App.calc();
+      }
     }
   },
 
@@ -2623,6 +3529,114 @@ const App = {
     if (window.lucide) lucide.createIcons();
   },
 
+  renderBreakdown: () => {
+    const wrap = document.getElementById('cart-breakdown');
+    if (!wrap) return;
+
+    Utils.clearElement(wrap);
+
+    const d = State.finalDetails || {};
+    const hasAnything = (State.cart && State.cart.length) || (State.finalTotal && State.finalTotal > 0);
+
+    if (!hasAnything) return;
+
+    const mkRow = (label, value, opts = {}) => {
+      const { tone = 'default', sign = '+', subtle = false } = opts;
+
+      const row = Utils.createElement(
+        'div',
+        'flex items-center justify-between px-4 py-3 rounded-2xl bg-white/5 border border-white/10'
+      );
+
+      const left = Utils.createElement('div', 'min-w-0');
+      const title = Utils.createElement('div', subtle ? 'text-xs text-slate-500 font-bold uppercase tracking-wider' : 'text-sm text-slate-200 font-bold');
+      title.textContent = label;
+      left.appendChild(title);
+
+      const right = Utils.createElement('div', 'flex items-baseline gap-1 flex-shrink-0');
+
+      const s = Utils.createElement('span', 'text-xs text-slate-500 font-black');
+      s.textContent = sign;
+      if (sign === '') s.textContent = '';
+
+      const val = Utils.createElement(
+        'span',
+        tone === 'total'
+          ? 'text-base font-extrabold text-amber-400 mono'
+          : tone === 'minus'
+            ? 'text-base font-extrabold text-rose-300 mono'
+            : 'text-base font-extrabold text-slate-100 mono'
+      );
+      val.textContent = `${Utils.formatPrice(Math.abs(value))} ₽`;
+
+      if (sign !== '') right.appendChild(s);
+      right.appendChild(val);
+
+      row.appendChild(left);
+      row.appendChild(right);
+      wrap.appendChild(row);
+    };
+
+    // Header
+    const header = Utils.createElement('div', 'text-xs text-slate-500 font-black uppercase tracking-wider px-1');
+    header.textContent = 'Расчёт';
+    wrap.appendChild(header);
+
+    // ====== PACKAGE MODE ======
+    if (d.isPackage) {
+      // Общие допы (показываем только если есть)
+      if (d.k && d.k > 1) {
+        const row = Utils.createElement('div', 'text-xs text-slate-500 font-bold px-1');
+        row.textContent = `Праздничный коэффициент: ×${d.k}`;
+        wrap.appendChild(row);
+      }
+
+      if (d.travel > 0) mkRow('Логистика', d.travel, { sign: '+', tone: 'default' });
+      if (d.guestPrice > 0) mkRow('Гости', d.guestPrice, { sign: '+', tone: 'default' });
+      if (d.manPrice > 0) {
+        const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Дополнение';
+        mkRow(manName, d.manPrice, { sign: '+', tone: 'default' });
+      }
+
+      const section = Utils.createElement('div', 'mt-2 text-xs text-slate-500 font-black uppercase tracking-wider px-1');
+      section.textContent = 'Итоги по вариантам';
+      wrap.appendChild(section);
+
+      const addVariant = (name, total, tax, agency) => {
+        mkRow(name, total, { sign: '', tone: 'total' });
+        if (d.useCashless && tax > 0) mkRow('— Оплата по безналу', tax, { sign: '+', subtle: true });
+        if (d.useAgency && agency > 0) mkRow('— Комиссия агентства', agency, { sign: '+', subtle: true });
+      };
+
+      addVariant('Базовый', d.basicTotal || 0, d.basicTax || 0, d.basicAgencyMarkup || 0);
+      addVariant('Оптимал', d.optimalTotal || 0, d.optimalTax || 0, d.optimalAgencyMarkup || 0);
+      addVariant('Премиум', d.premiumTotal || 0, d.premiumTax || 0, d.premiumAgencyMarkup || 0);
+
+      return;
+    }
+
+    // ====== NORMAL MODE ======
+    const preDiscount = Math.round((d.servicesTotal || 0) + (d.discount || 0));
+    if (preDiscount > 0) mkRow('Услуги', preDiscount, { sign: '+', tone: 'default' });
+    if (d.discount > 0) mkRow('Скидка', d.discount, { sign: '-', tone: 'minus' });
+    if (d.travel > 0) mkRow('Логистика', d.travel, { sign: '+', tone: 'default' });
+    if (d.guestPrice > 0) mkRow('Гости', d.guestPrice, { sign: '+', tone: 'default' });
+    if (d.manPrice > 0) {
+      const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Дополнение';
+      mkRow(manName, d.manPrice, { sign: '+', tone: 'default' });
+    }
+    if (d.useCashless && d.tax > 0) mkRow('Оплата по безналу', d.tax, { sign: '+', tone: 'default' });
+
+    const baseBeforeAgency = d.useAgency ? Math.max(0, (State.finalTotal || 0) - (d.agencyMarkup || 0)) : (State.finalTotal || 0);
+    if (d.useAgency && d.agencyMarkup > 0) {
+      mkRow('Подытог (без комиссии)', baseBeforeAgency, { sign: '', tone: 'default' });
+      mkRow('Комиссия агентства', d.agencyMarkup, { sign: '+', tone: 'default' });
+      mkRow('Итого для клиента', State.finalTotal || 0, { sign: '', tone: 'total' });
+    } else {
+      mkRow('Итого', State.finalTotal || 0, { sign: '', tone: 'total' });
+    }
+  },
+
   calc: () => {
     try {
       const k = State.holidayK || 1;
@@ -2672,15 +3686,38 @@ const App = {
         const basicPreTax = basicPrice + extras;
         const optimalPreTax = optimalPrice + extras;
         const premiumPreTax = premiumPrice + extras;
-        
-        const basicTax = useTax ? Math.round(basicPreTax * 0.06) : 0;
-        const optimalTax = useTax ? Math.round(optimalPreTax * 0.06) : 0;
-        const premiumTax = useTax ? Math.round(premiumPreTax * 0.06) : 0;
-        
-        const basicTotal = basicPreTax + basicTax;
-        const optimalTotal = optimalPreTax + optimalTax;
-        const premiumTotal = premiumPreTax + premiumTax;
-        
+
+        const cashlessPct = Utils.sanitizeNumber(DB.config?.cashlessPercent ?? 6, 0, 100, 6);
+        const agencyPct = Utils.sanitizeNumber(DB.config?.agencyPercent ?? 15, 0, 99, 15);
+
+        const agencyCheckbox = document.getElementById('inp-agency');
+        const useAgency = agencyCheckbox ? agencyCheckbox.checked : false;
+
+      const burnCheckbox = document.getElementById('inp-burn');
+      const useBurn = burnCheckbox ? burnCheckbox.checked : false;
+      State.expiringOffer = useBurn;
+        const basicTax = useTax ? Math.round(basicPreTax * (cashlessPct / 100)) : 0;
+        const optimalTax = useTax ? Math.round(optimalPreTax * (cashlessPct / 100)) : 0;
+        const premiumTax = useTax ? Math.round(premiumPreTax * (cashlessPct / 100)) : 0;
+
+        const basicSub = basicPreTax + basicTax;
+        const optimalSub = optimalPreTax + optimalTax;
+        const premiumSub = premiumPreTax + premiumTax;
+
+        const toClient = (subTotal) => {
+          if (!useAgency) return subTotal;
+          const k = 1 + (agencyPct / 100);
+          return Math.round(subTotal * k);
+        };
+
+        const basicTotal = toClient(basicSub);
+        const optimalTotal = toClient(optimalSub);
+        const premiumTotal = toClient(premiumSub);
+
+        const basicAgencyMarkup = useAgency ? Math.max(0, basicTotal - basicSub) : 0;
+        const optimalAgencyMarkup = useAgency ? Math.max(0, optimalTotal - optimalSub) : 0;
+        const premiumAgencyMarkup = useAgency ? Math.max(0, premiumTotal - premiumSub) : 0;
+
         // Сохраняем в State для копирования
         State.finalTotal = basicTotal; // Для совместимости показываем базовый
         State.finalDetails = { 
@@ -2689,33 +3726,62 @@ const App = {
           travel, 
           manPrice, 
           guestPrice, 
-          tax: basicTax, 
           k,
-          // Добавляем данные пакетов
           isPackage: true,
           packageTemplate: tpl,
+
+          cashlessPercent: cashlessPct,
+          useCashless: useTax,
+          agencyPercent: agencyPct,
+          useAgency,
+
           basicPrice,
           optimalPrice,
           premiumPrice,
-          basicTotal,
-          optimalTotal,
-          premiumTotal,
+
+          basicPreTax,
+          optimalPreTax,
+          premiumPreTax,
+
           basicTax,
           optimalTax,
-          premiumTax
+          premiumTax,
+
+          basicSub,
+          optimalSub,
+          premiumSub,
+
+          basicAgencyMarkup,
+          optimalAgencyMarkup,
+          premiumAgencyMarkup,
+
+          basicTotal,
+          optimalTotal,
+          premiumTotal
         };
         
         // Показываем диапазон в итоге
         const totalSumEl = document.getElementById('total-sum');
         if (totalSumEl) {
           totalSumEl.innerHTML = `
-            <div class="text-sm text-slate-400">Базовый:</div>
-            <div class="text-2xl font-bold">${Utils.formatPrice(basicTotal)} ₽</div>
-            <div class="text-sm text-slate-400 mt-2">Оптимал:</div>
-            <div class="text-xl font-bold text-amber-400">${Utils.formatPrice(optimalTotal)} ₽</div>
-            <div class="text-sm text-slate-400 mt-2">Премиум:</div>
-            <div class="text-xl font-bold text-purple-400">${Utils.formatPrice(premiumTotal)} ₽</div>
-          `;
+            ${useAgency ? `
+              <div class="text-sm text-slate-400">Базовый:</div>
+              <div class="text-sm text-slate-500">На руки: <span class="text-slate-200 font-bold mono">${Utils.formatPrice(basicPreTax)} ₽</span> • Клиенту: <span class="text-slate-200 font-bold mono">${Utils.formatPrice(basicTotal)} ₽</span></div>
+
+              <div class="text-sm text-slate-400 mt-2">Оптимал:</div>
+              <div class="text-sm text-slate-500">На руки: <span class="text-amber-400 font-extrabold mono">${Utils.formatPrice(optimalPreTax)} ₽</span> • Клиенту: <span class="text-amber-400 font-extrabold mono">${Utils.formatPrice(optimalTotal)} ₽</span></div>
+
+              <div class="text-sm text-slate-400 mt-2">Премиум:</div>
+              <div class="text-sm text-slate-500">На руки: <span class="text-purple-300 font-extrabold mono">${Utils.formatPrice(premiumPreTax)} ₽</span> • Клиенту: <span class="text-purple-300 font-extrabold mono">${Utils.formatPrice(premiumTotal)} ₽</span></div>
+            ` : `
+              <div class="text-sm text-slate-400">Базовый:</div>
+              <div class="text-2xl font-bold">${Utils.formatPrice(basicTotal)} ₽</div>
+              <div class="text-sm text-slate-400 mt-2">Оптимал:</div>
+              <div class="text-xl font-bold text-amber-400">${Utils.formatPrice(optimalTotal)} ₽</div>
+              <div class="text-sm text-slate-400 mt-2">Премиум:</div>
+              <div class="text-xl font-bold text-purple-400">${Utils.formatPrice(premiumTotal)} ₽</div>
+            `}
+`;
         }
         
         // НЕ показываем автоматические бонусы для пакетов (они уже в описании)
@@ -2753,11 +3819,13 @@ const App = {
         const city = citySelect.value;
 
         if (region && city && DB.travel?.[region]) {
-          const baseTravel = city === 'other'
-            ? (DB.travel[region].fee || 0)
-            : (DB.travel[region].cities?.[city]?.price || 0);
-
-          travel = Math.round(baseTravel * (k > 1 ? 1.5 : 1));
+          if (city === 'other') {
+            travel = Math.round((DB.travel[region].fee || 0) * (k > 1 ? 1.5 : 1));
+          } else if (DB.travel[region].cities && DB.travel[region].cities[city] != null) {
+            const cityData = DB.travel[region].cities[city];
+            const baseTravel = typeof cityData === 'number' ? cityData : (cityData.price || 0);
+            travel = Math.round(baseTravel * (k > 1 ? 1.5 : 1));
+          }
         }
       }
 
@@ -2771,16 +3839,66 @@ const App = {
       const useTax = taxCheckbox ? taxCheckbox.checked : false;
 
       let preTax = servicesTotal + travel + manPrice + guestPrice;
-      const tax = useTax ? Math.round(preTax * 0.06) : 0;
+      const cashlessPct = Utils.sanitizeNumber(DB.config?.cashlessPercent ?? 6, 0, 100, 6);
+      const agencyPct = Utils.sanitizeNumber(DB.config?.agencyPercent ?? 15, 0, 99, 15);
 
-      State.finalTotal = preTax + tax;
-      State.finalDetails = { servicesTotal, discount, travel, manPrice, guestPrice, tax, k, isPackage: false };
+      const agencyCheckbox = document.getElementById('inp-agency');
+      const useAgency = agencyCheckbox ? agencyCheckbox.checked : false;
+
+      const tax = useTax ? Math.round(preTax * (cashlessPct / 100)) : 0;
+
+      const subTotal = preTax + tax;
+
+      const toClient = (sub) => {
+        if (!useAgency) return sub;
+        const k = 1 + (agencyPct / 100);
+        return Math.round(sub * k);
+      };
+
+      const total = toClient(subTotal);
+      const agencyMarkup = useAgency ? Math.max(0, total - subTotal) : 0;
+
+      // В итогах и бонусах ориентируемся на сумму для клиента
+      State.finalTotal = total;
+
+      // Детали для КП/копирования
+      State.finalDetails = { 
+        servicesTotal, 
+        discount, 
+        travel, 
+        manPrice, 
+        guestPrice, 
+        k,
+        isPackage: false,
+
+        cashlessPercent: cashlessPct,
+        useCashless: useTax,
+        tax,
+        subTotal,
+
+        agencyPercent: agencyPct,
+        useAgency,
+        agencyMarkup,
+
+        total,
+        preTax
+      };
 
       const totalSumEl = document.getElementById('total-sum');
       if (totalSumEl) {
-        totalSumEl.textContent = `${Utils.formatPrice(State.finalTotal)} ₽`;
+        if (State.finalDetails?.useAgency) {
+          totalSumEl.innerHTML = `
+            <div class="text-sm text-slate-400">Чек на руки:</div>
+            <div class="text-2xl font-extrabold text-slate-100 mono">${Utils.formatPrice(State.finalDetails.preTax)} ₽</div>
+            <div class="text-sm text-slate-400 mt-2">Чек для клиента:</div>
+            <div class="text-3xl font-extrabold text-amber-400 mono">${Utils.formatPrice(State.finalTotal)} ₽</div>
+          `;
+        } else {
+          totalSumEl.textContent = `${Utils.formatPrice(State.finalTotal)} ₽`;
+        }
       }
 
+      App.renderBreakdown();
       App.updateBonuses();
 
     } catch (err) {
@@ -2831,50 +3949,149 @@ const App = {
     }
 
     const services = DB.services[cat];
-    if (Object.keys(services).length === 0) {
+    if (!Utils.isValidObject(services) || Object.keys(services).length === 0) {
       App.showToast('Категория пустая');
       return;
     }
 
+    const depositPct = Utils.sanitizeNumber(DB.config?.deposit ?? 30, 0, 100, 30);
+    const cashlessPct = Utils.sanitizeNumber(DB.config?.cashlessPercent ?? 6, 0, 100, 6);
+    const agencyPct = Utils.sanitizeNumber(DB.config?.agencyPercent ?? 15, 0, 99, 15);
+
+    // Текущие условия (для расчёта итоговых цен)
     const k = State.holidayK || 1;
-    const dateRaw = document.getElementById('inp-date')?.value || '';
-    const dateFmt = Utils.formatDate(dateRaw);
 
-    const bonusesSorted = (DB.bonuses || [])
-      .filter(b => Utils.isValidObject(b) && typeof b.threshold === 'number')
-      .slice()
-      .sort((a, b) => (a.threshold || 0) - (b.threshold || 0));
+    // Логистика (по выбранным регион/город)
+    const regionSelect = document.getElementById('inp-region');
+    const citySelect = document.getElementById('inp-city');
+    let travel = 0;
 
-    let text = `ЦЕНЫ: ${Utils.sanitizeText(cat, 100)}\n`;
-    if (dateFmt) text += `Дата: ${dateFmt}\n`;
-    if (k > 1) text += `Праздничный коэффициент: ×${k}\n`;
-    text += `\n`;
+    if (regionSelect && citySelect) {
+      const region = regionSelect.value;
+      const city = citySelect.value;
+      if (region && city && DB.travel?.[region]) {
+        if (city === 'other') {
+          travel = Math.round((DB.travel[region].fee || 0) * (k > 1 ? 1.5 : 1));
+        } else if (DB.travel[region].cities && DB.travel[region].cities[city] != null) {
+          const cityData = DB.travel[region].cities[city];
+          const baseTravel = typeof cityData === 'number' ? cityData : (cityData.price || 0);
+          travel = Math.round(baseTravel * (k > 1 ? 1.5 : 1));
+        }
+      }
+    }
+
+    const manualPriceInput = document.getElementById('inp-manual-price');
+    const manPrice = manualPriceInput ? Utils.sanitizeNumber(manualPriceInput.value, 0, 999999, 0) : 0;
+
+    const guestsSelect = document.getElementById('inp-guests');
+    const guestPrice = guestsSelect ? Utils.sanitizeNumber(guestsSelect.value, 0, 999999, 0) : 0;
+
+    const taxCheckbox = document.getElementById('inp-tax');
+    const useTax = taxCheckbox ? taxCheckbox.checked : false;
+
+    const agencyCheckbox = document.getElementById('inp-agency');
+    const useAgency = agencyCheckbox ? agencyCheckbox.checked : false;
+
+    const computeFinal = (basePrice) => {
+      const base = Math.round(Utils.sanitizeNumber(basePrice, 0, 999999, 0) * k);
+      let total = base + travel + manPrice + guestPrice;
+
+      if (useTax) total += Math.round(total * (cashlessPct / 100));
+      if (useAgency) total += Math.round(total * (agencyPct / 100));
+
+      return Math.max(0, Math.round(total));
+    };
+
+    let text = `Ваше персональное предложение\n\n`;
+    text += `📌 Формат: ${cat}\n\n`;
+    text += `Варианты и итоговая стоимость (условия уже учтены):\n\n`;
 
     const lines = [];
-    Object.keys(services).forEach(name => {
-      const base = services[name];
-      if (typeof base !== 'number' || isNaN(base) || base < 0) return;
+    Object.keys(services).forEach((name) => {
+      const raw = services[name];
 
-      const price = Math.round(base * k);
-      const safeName = Utils.sanitizeText(name, 200);
+      const safeName = Utils.sanitizeText(name, 120);
+      if (!safeName) return;
 
-      let bonusLine = '';
-      const earned = bonusesSorted.filter(b => price >= (b.threshold || 0));
-      if (earned.length > 0) {
-        const bonusTexts = earned.map(b => `✅ ${Utils.sanitizeText(b.text, 200)}`).join('\n  ');
-        bonusLine = `\n  ${bonusTexts}`;
-      }
+      const basePrice = typeof raw === 'number'
+        ? raw
+        : (Utils.isValidObject(raw) ? Utils.sanitizeNumber(raw.price, 0, 999999, 0) : 0);
 
-      lines.push(`• ${safeName} — ${Utils.formatPrice(price)} ₽${bonusLine}`);
+      const finalPrice = computeFinal(basePrice);
+      if (!finalPrice) return;
+
+      // Бонусы: объединяем бонусы услуги + бонусы по порогу
+      const perItemBonuses = (Utils.isValidObject(raw) && Array.isArray(raw.bonuses)) ? raw.bonuses : [];
+      const thresholdBonuses = App.getBonusesForTotal(finalPrice).map(b => b.text);
+
+      const allBonuses = []
+        .concat(perItemBonuses)
+        .concat(thresholdBonuses)
+        .map(b => Utils.sanitizeText(b, 140))
+        .filter(Boolean);
+
+      const uniqBonuses = Array.from(new Set(allBonuses));
+      const bonusLine = uniqBonuses.length
+        ? `\n   Бонусы: ${uniqBonuses.map(b => `✅ ${b}`).join(' ')}`
+        : '';
+
+      lines.push(`• ${safeName} — ${Utils.formatPrice(finalPrice)} ₽${bonusLine}`);
     });
 
-    text += lines.join('\n\n') + '\n';
+    if (!lines.length) {
+      App.showToast('Нет цен для копирования');
+      return;
+    }
 
-    const performer = Utils.sanitizeText(DB.config?.performer || 'Illusionist', 100);
-    text += `\nВаш ${performer}`;
+    text += lines.join('\n\n') + '\n\n';
+    text += `Бронь: ${depositPct}% (фиксирует дату)\n\n`;
+
+    // Expiring bonus (сгорающий бонус)
+    const burnEnabled = !!document.getElementById('inp-burn')?.checked;
+    if (burnEnabled) {
+      const hours = Utils.sanitizeNumber(DB.config?.burnHours ?? 48, 1, 240, 48);
+      const bonusTitle = Utils.sanitizeText(DB.config?.burnBonusTitle ?? '', 120) || 'Бонус';
+      const bonusPrice = Utils.sanitizeNumber(DB.config?.burnBonusPrice ?? 0, 0, 99999999, 0);
+      const deadline = new Date(Date.now() + hours * 60 * 60 * 1000);
+      const deadlineStr = new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(deadline);
+      text += `⏳ Сгорающий бонус\n`;
+      text += `Бонус "${bonusTitle}" (цена ${Utils.formatPrice(bonusPrice)} ₽) идет в подарок при бронировании даты до ${deadlineStr}.\n\n`;
+    }
+
+    if (Array.isArray(DB.links) && DB.links.length) {
+      text += `Ссылки:\n`;
+      DB.links.forEach(l => {
+        if (Utils.isValidObject(l)) {
+          const label = Utils.sanitizeText(l.label, 100);
+          const url = Utils.sanitizeText(l.url, 500);
+          if (label && url) text += `• ${label}: ${url}\n`;
+        }
+      });
+      text += `\n`;
+    }
+
+    if (Array.isArray(DB.payments) && DB.payments.length) {
+      text += `Способы оплаты:\n`;
+      DB.payments.forEach(p => {
+        if (Utils.isValidObject(p)) {
+          const title = Utils.sanitizeText(p.title, 80);
+          const txt = Utils.sanitizeText(p.text, 240);
+          if (title || txt) text += `• ${title}${title && txt ? ': ' : ''}${txt}\n`;
+        }
+      });
+      text += `\n`;
+    }
+
+    const personalName = Utils.sanitizeText(DB.config?.personalName || '', 100);
+    if (personalName) {
+      text += `С уважением, ${personalName}`;
+    } else {
+      const performer = Utils.sanitizeText(DB.config?.performer || 'Illusionist', 100);
+      text += `Ваш ${performer}`;
+    }
 
     const success = await Utils.copyToClipboard(text);
-    App.showToast(success ? 'Цены + бонусы скопированы!' : 'Не удалось скопировать');
+    App.showToast(success ? 'Цены скопированы!' : 'Не удалось скопировать');
   },
 
   copyQuote: async () => {
@@ -2883,230 +4100,127 @@ const App = {
       return;
     }
 
-    const client = Utils.sanitizeText(document.getElementById('inp-client')?.value, 100) || 'Клиент';
-    const type = document.getElementById('inp-event-type')?.value || 'Мероприятие';
+    const depositPct = Utils.sanitizeNumber(DB.config?.deposit ?? 30, 0, 100, 30);
+
+    const type = Utils.sanitizeText(document.getElementById('inp-event-type')?.value || 'Мероприятие', 60);
 
     const dateRaw = document.getElementById('inp-date')?.value || '';
-    const dateFmt = Utils.formatDate(dateRaw) || dateRaw;
+    const dateFmt = Utils.formatDate(dateRaw) || dateRaw || 'по согласованию';
 
-    const time = document.getElementById('inp-time')?.value || '';
-    const region = document.getElementById('inp-region')?.value || '';
-    const city = document.getElementById('inp-city')?.value || '';
+    const timeRaw = document.getElementById('inp-time')?.value || '';
+    const timeFmt = timeRaw ? timeRaw : 'по согласованию';
 
-    // Проверяем, есть ли пакет
-    if (State.finalDetails.isPackage && State.finalDetails.packageTemplate) {
-      // ФОРМАТ С ПАКЕТАМИ (3 варианта)
+    const region = Utils.sanitizeText(document.getElementById('inp-region')?.value || '', 80);
+    const city = Utils.sanitizeText(document.getElementById('inp-city')?.value || '', 80);
+
+    const locationLine = [city, region].filter(Boolean).join(', ') || 'по согласованию';
+
+    let text = `Ваше персональное предложение\n\n`;
+    text += `🎩 Формат: ${type}\n`;
+    text += `📅 Дата: ${dateFmt}\n`;
+    text += `⏰ Время: ${timeFmt}\n`;
+    text += `📍 Локация: ${locationLine}\n\n`;
+
+    // ====== PACKAGE MODE ======
+    if (State.finalDetails?.isPackage && State.finalDetails?.packageTemplate) {
       const tpl = State.finalDetails.packageTemplate;
-      
-      let text = `${client}\n\n`;
-      text += `ПАКЕТЫ ДЛЯ МЕРОПРИЯТИЯ: ${type.toUpperCase()}\n\n`;
-      if (dateFmt) text += `Дата: ${dateFmt}\n`;
-      if (time) text += `Время: ${time}\n`;
-      if (region) text += `Регион: ${region}\n`;
-      if (city && city !== 'other') text += `Город: ${city}\n`;
-      text += `\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-      
-      // БАЗОВЫЙ
-      text += `📦 ВАРИАНТ 1: БАЗОВЫЙ\n\n`;
-      if (tpl.basic.description) text += `${tpl.basic.description}\n\n`;
-      if (tpl.basic.bonuses && tpl.basic.bonuses.length > 0) {
-        text += `Бонусы:\n`;
-        tpl.basic.bonuses.forEach(b => {
-          text += `✅ ${b}\n`;
-        });
-        text += `\n`;
-      }
-      
-      const k = State.finalDetails.k || 1;
-      if (k > 1) {
-        const markup = State.finalDetails.basicPrice - tpl.basic.price;
-        text += `Стоимость программы: ${Utils.formatPrice(tpl.basic.price)} ₽\n`;
-        text += `Наценка за праздник (×${k}): +${Utils.formatPrice(markup)} ₽\n`;
-      } else {
-        text += `Стоимость программы: ${Utils.formatPrice(State.finalDetails.basicPrice)} ₽\n`;
-      }
-      
-      if (State.finalDetails.travel > 0) text += `Логистика: ${Utils.formatPrice(State.finalDetails.travel)} ₽\n`;
-      if (State.finalDetails.guestPrice > 0) text += `Доплата за гостей: ${Utils.formatPrice(State.finalDetails.guestPrice)} ₽\n`;
-      if (State.finalDetails.manPrice > 0) {
-        const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Доп';
-        text += `${manName}: ${Utils.formatPrice(State.finalDetails.manPrice)} ₽\n`;
-      }
-      if (State.finalDetails.basicTax > 0) text += `Налог 6%: ${Utils.formatPrice(State.finalDetails.basicTax)} ₽\n`;
-      text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-      text += `ИТОГО: ${Utils.formatPrice(State.finalDetails.basicTotal)} ₽\n\n`;
-      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-      
-      // ОПТИМАЛ
-      text += `📦 ВАРИАНТ 2: ОПТИМАЛ\n\n`;
-      if (tpl.optimal.description) text += `${tpl.optimal.description}\n\n`;
-      if (tpl.optimal.bonuses && tpl.optimal.bonuses.length > 0) {
-        text += `Бонусы:\n`;
-        tpl.optimal.bonuses.forEach(b => {
-          text += `✅ ${b}\n`;
-        });
-        text += `\n`;
-      }
-      
-      if (k > 1) {
-        const markup = State.finalDetails.optimalPrice - tpl.optimal.price;
-        text += `Стоимость программы: ${Utils.formatPrice(tpl.optimal.price)} ₽\n`;
-        text += `Наценка за праздник (×${k}): +${Utils.formatPrice(markup)} ₽\n`;
-      } else {
-        text += `Стоимость программы: ${Utils.formatPrice(State.finalDetails.optimalPrice)} ₽\n`;
-      }
-      
-      if (State.finalDetails.travel > 0) text += `Логистика: ${Utils.formatPrice(State.finalDetails.travel)} ₽\n`;
-      if (State.finalDetails.guestPrice > 0) text += `Доплата за гостей: ${Utils.formatPrice(State.finalDetails.guestPrice)} ₽\n`;
-      if (State.finalDetails.manPrice > 0) {
-        const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Доп';
-        text += `${manName}: ${Utils.formatPrice(State.finalDetails.manPrice)} ₽\n`;
-      }
-      if (State.finalDetails.optimalTax > 0) text += `Налог 6%: ${Utils.formatPrice(State.finalDetails.optimalTax)} ₽\n`;
-      text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-      text += `ИТОГО: ${Utils.formatPrice(State.finalDetails.optimalTotal)} ₽\n\n`;
-      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-      
-      // ПРЕМИУМ
-      text += `📦 ВАРИАНТ 3: ПРЕМИУМ\n\n`;
-      if (tpl.premium.description) text += `${tpl.premium.description}\n\n`;
-      if (tpl.premium.bonuses && tpl.premium.bonuses.length > 0) {
-        text += `Бонусы:\n`;
-        tpl.premium.bonuses.forEach(b => {
-          text += `✅ ${b}\n`;
-        });
-        text += `\n`;
-      }
-      
-      if (k > 1) {
-        const markup = State.finalDetails.premiumPrice - tpl.premium.price;
-        text += `Стоимость программы: ${Utils.formatPrice(tpl.premium.price)} ₽\n`;
-        text += `Наценка за праздник (×${k}): +${Utils.formatPrice(markup)} ₽\n`;
-      } else {
-        text += `Стоимость программы: ${Utils.formatPrice(State.finalDetails.premiumPrice)} ₽\n`;
-      }
-      
-      if (State.finalDetails.travel > 0) text += `Логистика: ${Utils.formatPrice(State.finalDetails.travel)} ₽\n`;
-      if (State.finalDetails.guestPrice > 0) text += `Доплата за гостей: ${Utils.formatPrice(State.finalDetails.guestPrice)} ₽\n`;
-      if (State.finalDetails.manPrice > 0) {
-        const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Доп';
-        text += `${manName}: ${Utils.formatPrice(State.finalDetails.manPrice)} ₽\n`;
-      }
-      if (State.finalDetails.premiumTax > 0) text += `Налог 6%: ${Utils.formatPrice(State.finalDetails.premiumTax)} ₽\n`;
-      text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-      text += `ИТОГО: ${Utils.formatPrice(State.finalDetails.premiumTotal)} ₽\n\n`;
-      
-      const depPct = DB.config?.deposit || 30;
-      const depositBasic = Math.round(State.finalDetails.basicTotal * (depPct / 100));
-      const depositOptimal = Math.round(State.finalDetails.optimalTotal * (depPct / 100));
-      const depositPremium = Math.round(State.finalDetails.premiumTotal * (depPct / 100));
-      
-      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-      text += `БРОНЬ ДАТЫ (${depPct}%):\n`;
-      text += `• Базовый: ${Utils.formatPrice(depositBasic)} ₽\n`;
-      text += `• Оптимал: ${Utils.formatPrice(depositOptimal)} ₽\n`;
-      text += `• Премиум: ${Utils.formatPrice(depositPremium)} ₽\n\n`;
-      
-      if (DB.payments && Array.isArray(DB.payments)) {
-        text += `Реквизиты:\n`;
-        DB.payments.forEach(p => {
-          if (Utils.isValidObject(p)) {
-            const title = Utils.sanitizeText(p.title, 100);
-            const payText = Utils.sanitizeText(p.text, 500);
-            text += `${title}: ${payText}\n`;
-          }
-        });
-        text += `\n`;
-      }
-      
-      if (DB.links && Array.isArray(DB.links)) {
-        text += `Ссылки:\n`;
-        DB.links.forEach(l => {
-          if (Utils.isValidObject(l)) {
-            const label = Utils.sanitizeText(l.label, 100);
-            const url = Utils.sanitizeText(l.url, 500);
-            text += `• ${label}: ${url}\n`;
-          }
-        });
-        text += `\n`;
-      }
-      
-      const performer = Utils.sanitizeText(DB.config?.performer || 'Illusionist', 100);
-      text += `Ваш ${performer}`;
-      
-      const success = await Utils.copyToClipboard(text);
-      App.showToast(success ? 'Пакеты скопированы!' : 'Не удалось скопировать');
-      return;
-    }
-    
-    // ОБЫЧНЫЙ ФОРМАТ (без пакетов)
-    const depPct = DB.config?.deposit || 30;
-    const deposit = Math.round(State.finalTotal * (depPct / 100));
 
-    let text = `${client}\n\n`;
-    text += `РАСЧЕТ: ${type.toUpperCase()}\n`;
-    text += `${dateFmt} / ${time}\n`;
-    if (city && city !== 'other') text += `${Utils.sanitizeText(city, 100)}\n`;
-    text += `\nПрограмма:\n`;
+      const variants = [
+        { key: 'basic', title: '📦 Вариант 1: Базовый', total: State.finalDetails.basicTotal || 0, data: tpl.basic },
+        { key: 'optimal', title: '📦 Вариант 2: Оптимал', total: State.finalDetails.optimalTotal || 0, data: tpl.optimal },
+        { key: 'premium', title: '📦 Вариант 3: Премиум', total: State.finalDetails.premiumTotal || 0, data: tpl.premium },
+      ];
 
-    State.cart.forEach(item => {
-      const price = Math.round(item.price * item.qty * State.finalDetails.k);
-      const safeName = Utils.sanitizeText(item.name, 200);
-      text += `• ${safeName}${item.qty > 1 ? ` ×${item.qty}` : ''} — ${Utils.formatPrice(price)} ₽\n`;
-    });
+      variants.forEach(v => {
+        text += `${v.title}\n\n`;
+        if (v.data?.description) text += `${Utils.sanitizeText(v.data.description, 500)}\n\n`;
 
-    if (State.finalDetails.discount > 0) {
-      text += `Скидка 10%: -${Utils.formatPrice(State.finalDetails.discount)} ₽\n`;
-    }
-    if (State.finalDetails.travel > 0) {
-      text += `Логистика: ${Utils.formatPrice(State.finalDetails.travel)} ₽\n`;
-    }
-    if (State.finalDetails.guestPrice > 0) {
-      text += `Доплата за гостей: ${Utils.formatPrice(State.finalDetails.guestPrice)} ₽\n`;
-    }
-    if (State.finalDetails.manPrice > 0) {
-      const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Доп';
-      text += `${manName}: ${Utils.formatPrice(State.finalDetails.manPrice)} ₽\n`;
-    }
-    if (State.finalDetails.tax > 0) {
-      text += `Договор (+6%): ${Utils.formatPrice(State.finalDetails.tax)} ₽\n`;
-    }
-
-    const earned = App.getBonusesForTotal(State.finalTotal);
-    if (earned.length > 0) {
-      text += `\nБонусы:\n`;
-      earned.forEach(b => {
-        text += `• ${Utils.sanitizeText(b.text, 200)}\n`;
-      });
-    }
-
-    text += `\nИТОГО: ${Utils.formatPrice(State.finalTotal)} ₽\n`;
-    text += `Бронь даты (${depPct}%): ${Utils.formatPrice(deposit)} ₽\n`;
-
-    if (DB.payments && Array.isArray(DB.payments)) {
-      text += `\nРеквизиты:\n`;
-      DB.payments.forEach(p => {
-        if (Utils.isValidObject(p)) {
-          const title = Utils.sanitizeText(p.title, 100);
-          const payText = Utils.sanitizeText(p.text, 500);
-          text += `${title}: ${payText}\n`;
+        if (Array.isArray(v.data?.bonuses) && v.data.bonuses.length) {
+          text += `Бонусы:\n`;
+          v.data.bonuses.forEach(b => text += `✅ ${Utils.sanitizeText(b, 160)}\n`);
+          text += `\n`;
         }
+
+        text += `Стоимость: ${Utils.formatPrice(v.total)} ₽\n`;
+        const dep = Math.round(v.total * (depositPct / 100));
+        text += `Бронь ${depositPct}%: ${Utils.formatPrice(dep)} ₽\n`;
+        text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
       });
+
+    } else {
+      // ====== NORMAL MODE ======
+      const serviceNames = (State.cart || [])
+        .filter(it => it && !String(it.name || '').startsWith('ПАКЕТ:'))
+        .map(it => {
+          const n = Utils.sanitizeText(it.name || '', 120);
+          const q = Utils.sanitizeNumber(it.qty || 1, 1, 99, 1);
+          return q > 1 ? `${n} ×${q}` : n;
+        })
+        .filter(Boolean);
+
+      if (serviceNames.length) {
+        text += `Что входит:\n`;
+        serviceNames.forEach(n => text += `• ${n}\n`);
+        text += `\n`;
+      }
+
+      if (Array.isArray(State.activeBonuses) && State.activeBonuses.length) {
+        text += `Бонусы:\n`;
+        State.activeBonuses.forEach(b => text += `✅ ${Utils.sanitizeText(b, 160)}\n`);
+        text += `\n`;
+      }
+
+      text += `Стоимость: ${Utils.formatPrice(State.finalTotal)} ₽\n`;
+      const dep = Math.round(State.finalTotal * (depositPct / 100));
+      text += `Бронь ${depositPct}%: ${Utils.formatPrice(dep)} ₽\n\n`;
     }
 
-    if (DB.links && Array.isArray(DB.links)) {
-      text += `\nСсылки:\n`;
+    // Expiring bonus (сгорающий бонус)
+    const burnEnabled = !!document.getElementById('inp-burn')?.checked;
+    if (burnEnabled) {
+      const hours = Utils.sanitizeNumber(DB.config?.burnHours ?? 48, 1, 240, 48);
+      const bonusTitle = Utils.sanitizeText(DB.config?.burnBonusTitle ?? '', 120) || 'Бонус';
+      const bonusPrice = Utils.sanitizeNumber(DB.config?.burnBonusPrice ?? 0, 0, 99999999, 0);
+      const deadline = new Date(Date.now() + hours * 60 * 60 * 1000);
+      const deadlineStr = new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(deadline);
+      text += `⏳ Сгорающий бонус\n`;
+      text += `Бонус "${bonusTitle}" (цена ${Utils.formatPrice(bonusPrice)} ₽) идет в подарок при бронировании даты до ${deadlineStr}.\n\n`;
+    }
+
+    // Links
+    if (Array.isArray(DB.links) && DB.links.length) {
+      text += `Ссылки:\n`;
       DB.links.forEach(l => {
         if (Utils.isValidObject(l)) {
           const label = Utils.sanitizeText(l.label, 100);
           const url = Utils.sanitizeText(l.url, 500);
-          text += `• ${label}: ${url}\n`;
+          if (label && url) text += `• ${label}: ${url}\n`;
         }
       });
+      text += `\n`;
     }
 
-    const performer = Utils.sanitizeText(DB.config?.performer || 'Illusionist', 100);
-    text += `\nВаш ${performer}`;
+    // Payments
+    if (Array.isArray(DB.payments) && DB.payments.length) {
+      text += `Способы оплаты:\n`;
+      DB.payments.forEach(p => {
+        if (Utils.isValidObject(p)) {
+          const title = Utils.sanitizeText(p.title, 80);
+          const txt = Utils.sanitizeText(p.text, 240);
+          if (title || txt) text += `• ${title}${title && txt ? ': ' : ''}${txt}\n`;
+        }
+      });
+      text += `\n`;
+    }
+
+    // Signature
+    const personalName = Utils.sanitizeText(DB.config?.personalName || '', 100);
+    if (personalName) {
+      text += `С уважением, ${personalName}`;
+    } else {
+      const performer = Utils.sanitizeText(DB.config?.performer || 'Illusionist', 100);
+      text += `Ваш ${performer}`;
+    }
 
     const success = await Utils.copyToClipboard(text);
     App.showToast(success ? 'КП скопировано!' : 'Не удалось скопировать');
@@ -3154,8 +4268,8 @@ const App = {
             
             const delBtn = card.querySelector('[data-del]');
             if (delBtn) {
-              delBtn.addEventListener('click', () => {
-                if (confirm(`Удалить шаблон "${tpl.name}"?`)) {
+              delBtn.addEventListener('click', async () => {
+                if (await PremiumDialog.confirm({ message: `Удалить шаблон "${tpl.name}"?`, danger: true, okText: 'Да', cancelText: 'Отмена', icon: 'shield-alert' })) {
                   const idx = DB.packageTemplates.findIndex(t => t.id === tpl.id);
                   if (idx >= 0) {
                     DB.packageTemplates.splice(idx, 1);
@@ -3247,6 +4361,7 @@ const App = {
 const Admin = {
   render: () => {
     try {
+      Admin.renderPersonalInfo();
       Admin.renderTravel();
       Admin.renderServices();
       Admin.renderHolidays();
@@ -3259,6 +4374,19 @@ const Admin = {
     } catch (err) {
       console.error('❌ Admin render error:', err);
     }
+  },
+  
+  renderPersonalInfo: () => {
+    const input = document.getElementById('personal-name');
+    if (!input) return;
+    
+    input.value = DB.config?.personalName || '';
+    
+    input.addEventListener('input', Utils.debounce(() => {
+      if (!DB.config) DB.config = {};
+      DB.config.personalName = Utils.sanitizeText(input.value, 100);
+      Storage.save();
+    }, 500));
   },
 
   toggleSection: (headerElement) => {
@@ -3401,8 +4529,8 @@ Object.assign(Admin, {
     return row;
   },
 
-  addRegion: () => {
-    const name = prompt('Название региона:');
+  addRegion: async () => {
+    const name = await PremiumDialog.prompt({ title: 'Название региона:', defaultValue: '', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (!name) return;
 
     const sanitized = Utils.sanitizeText(name, 100);
@@ -3421,8 +4549,8 @@ Object.assign(Admin, {
     App.updateUI();
   },
 
-  delRegion: (region) => {
-    if (!confirm(`Удалить регион "${region}"?`)) return;
+  delRegion: async (region) => {
+    if (!(await PremiumDialog.confirm({ message: `Удалить регион "${region}"?`, danger: true, okText: 'Да', cancelText: 'Отмена', icon: 'shield-alert' }))) return;
     delete DB.travel[region];
     Storage.save();
     Admin.render();
@@ -3435,9 +4563,9 @@ Object.assign(Admin, {
     Storage.save();
   },
 
-  addCity: (region) => {
+  addCity: async (region) => {
     if (!DB.travel[region]) return;
-    const name = prompt('Название города:');
+    const name = await PremiumDialog.prompt({ title: 'Название города:', defaultValue: '', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (!name) return;
 
     const sanitized = Utils.sanitizeText(name, 100);
@@ -3569,8 +4697,8 @@ Object.assign(Admin, {
     return row;
   },
 
-  addCategory: () => {
-    const name = prompt('Название категории:');
+  addCategory: async () => {
+    const name = await PremiumDialog.prompt({ title: 'Название категории:', defaultValue: '', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (!name) return;
 
     const sanitized = Utils.sanitizeText(name, 100);
@@ -3589,17 +4717,17 @@ Object.assign(Admin, {
     App.updateUI();
   },
 
-  delCat: (category) => {
-    if (!confirm(`Удалить категорию "${category}"?`)) return;
+  delCat: async (category) => {
+    if (!(await PremiumDialog.confirm({ message: `Удалить категорию "${category}"?`, danger: true, okText: 'Да', cancelText: 'Отмена', icon: 'shield-alert' }))) return;
     delete DB.services[category];
     Storage.save();
     Admin.render();
     App.updateUI();
   },
 
-  addSvc: (category) => {
+  addSvc: async (category) => {
     if (!DB.services[category]) return;
-    const name = prompt('Название услуги:');
+    const name = await PremiumDialog.prompt({ title: 'Название услуги:', defaultValue: '', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (!name) return;
 
     const sanitized = Utils.sanitizeText(name, 200);
@@ -3694,8 +4822,8 @@ Object.assign(Admin, {
     return row;
   },
 
-  addHoliday: () => {
-    const date = prompt('Дата (ММ-ДД):', '12-31');
+  addHoliday: async () => {
+    const date = await PremiumDialog.prompt({ title: 'Дата (ММ-ДД):', defaultValue: '12-31', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (!date) return;
     if (!Utils.validateDateKey(date)) {
       App.showToast('Неверный формат даты (MM-DD)');
@@ -3780,22 +4908,22 @@ Object.assign(Admin, {
     return row;
   },
 
-  addRange: () => {
-    const start = prompt('Старт периода (ММ-ДД):', '12-20');
+  addRange: async () => {
+    const start = await PremiumDialog.prompt({ title: 'Старт периода (ММ-ДД):', defaultValue: '12-20', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (!start) return;
     if (!Utils.validateDateKey(start)) {
       App.showToast('Неверный старт (MM-DD)');
       return;
     }
 
-    const end = prompt('Конец периода (ММ-ДД):', '12-30');
+    const end = await PremiumDialog.prompt({ title: 'Конец периода (ММ-ДД):', defaultValue: '12-30', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (!end) return;
     if (!Utils.validateDateKey(end)) {
       App.showToast('Неверный конец (MM-DD)');
       return;
     }
 
-    const kStr = prompt('Коэффициент (например 1.5):', '1.5');
+    const kStr = await PremiumDialog.prompt({ title: 'Коэффициент (например 1.5):', defaultValue: '1.5', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (kStr === null) return;
     const k = Utils.sanitizeFloat(kStr, 1, 10, 1.5);
 
@@ -3903,12 +5031,12 @@ Object.assign(Admin, {
     return row;
   },
 
-  addBonus: () => {
-    const thr = prompt('Порог (₽):', '50000');
+  addBonus: async () => {
+    const thr = await PremiumDialog.prompt({ title: 'Порог (₽):', defaultValue: '50000', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (thr === null) return;
     const threshold = Utils.sanitizeNumber(thr, 0, 999999, 0);
 
-    const text = prompt('Текст бонуса:', 'Бонус клиенту');
+    const text = await PremiumDialog.prompt({ title: 'Текст бонуса:', defaultValue: 'Бонус клиенту', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (!text) return;
 
     if (!Array.isArray(DB.bonuses)) DB.bonuses = [];
@@ -3921,9 +5049,9 @@ Object.assign(Admin, {
     Admin.renderBonuses();
   },
 
-  delBonus: (idx) => {
+  delBonus: async (idx) => {
     if (!Array.isArray(DB.bonuses) || !DB.bonuses[idx]) return;
-    if (!confirm('Удалить бонус?')) return;
+    if (!(await PremiumDialog.confirm({ message: 'Удалить бонус?', danger: true, okText: 'Да', cancelText: 'Отмена', icon: 'shield-alert' }))) return;
     DB.bonuses.splice(idx, 1);
     Storage.save();
     App.calc();
@@ -3976,10 +5104,10 @@ Object.assign(Admin, {
     return row;
   },
 
-  addPayment: () => {
-    const title = prompt('Название реквизитов:', 'Перевод');
+  addPayment: async () => {
+    const title = await PremiumDialog.prompt({ title: 'Название реквизитов:', defaultValue: 'Перевод', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (!title) return;
-    const text = prompt('Текст реквизитов:', 'СБП / карта: ...');
+    const text = await PremiumDialog.prompt({ title: 'Текст реквизитов:', defaultValue: 'СБП / карта: ...', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (!text) return;
 
     if (!Array.isArray(DB.payments)) DB.payments = [];
@@ -3991,9 +5119,9 @@ Object.assign(Admin, {
     Admin.renderPayments();
   },
 
-  delPayment: (idx) => {
+  delPayment: async (idx) => {
     if (!Array.isArray(DB.payments) || !DB.payments[idx]) return;
-    if (!confirm('Удалить реквизиты?')) return;
+    if (!(await PremiumDialog.confirm({ message: 'Удалить реквизиты?', danger: true, okText: 'Да', cancelText: 'Отмена', icon: 'shield-alert' }))) return;
     DB.payments.splice(idx, 1);
     Storage.save();
     Admin.renderPayments();
@@ -4045,10 +5173,10 @@ Object.assign(Admin, {
     return row;
   },
 
-  addLink: () => {
-    const label = prompt('Название ссылки:', 'Портфолио');
+  addLink: async () => {
+    const label = await PremiumDialog.prompt({ title: 'Название ссылки:', defaultValue: 'Портфолио', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (!label) return;
-    const url = prompt('URL:', 'https://');
+    const url = await PremiumDialog.prompt({ title: 'URL:', defaultValue: 'https://', okText: 'Сохранить', cancelText: 'Отмена', icon: 'edit-3' });
     if (!url) return;
 
     if (!Array.isArray(DB.links)) DB.links = [];
@@ -4060,17 +5188,17 @@ Object.assign(Admin, {
     Admin.renderLinks();
   },
 
-  delLink: (idx) => {
+  delLink: async (idx) => {
     if (!Array.isArray(DB.links) || !DB.links[idx]) return;
-    if (!confirm('Удалить ссылку?')) return;
+    if (!(await PremiumDialog.confirm({ message: 'Удалить ссылку?', danger: true, okText: 'Да', cancelText: 'Отмена', icon: 'shield-alert' }))) return;
     DB.links.splice(idx, 1);
     Storage.save();
     Admin.renderLinks();
   },
 
   // ========== RESET ==========
-  reset: () => {
-    const hard = confirm('Сбросить базу цен на дефолт?\n\nOK = Сбросить\nОтмена = Отмена');
+  reset: async () => {
+    const hard = await PremiumDialog.confirm({ message: 'Сбросить базу цен на дефолт?\n\nOK = Сбросить\nОтмена = Отмена', danger: true, okText: 'Да', cancelText: 'Отмена', icon: 'shield-alert' });
     if (!hard) return;
 
     try {
@@ -4091,7 +5219,6 @@ Object.assign(Admin, {
     App.showToast('База сброшена');
   }
 });
-
 </script>
   <script>
 /* === Inlined from modules.js === */
@@ -4105,7 +5232,6 @@ Object.assign(Admin, {
 // ============================================
 // TEMPLATES MODULE
 // ============================================
-
 
 // ============================================
 // ROUNDING MODULE
@@ -4324,17 +5450,23 @@ function renderResponseTemplates() {
   templates.forEach((tpl, idx) => {
     const card = Utils.createElement('div', 'bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 transition cursor-pointer flex items-center justify-between group');
     
-    const left = Utils.createElement('div', 'flex-1 min-w-0');
+    const left = Utils.createElement('div', 'flex-1 min-w-0 overflow-hidden');
     const title = Utils.createElement('div', 'font-bold text-white truncate');
     title.textContent = tpl.name || 'Без названия';
     
-    const preview = Utils.createElement('div', 'text-sm text-slate-400 truncate mt-1');
-    preview.textContent = tpl.text ? (tpl.text.substring(0, 50) + (tpl.text.length > 50 ? '...' : '')) : '';
+    const preview = Utils.createElement('div', 'text-sm text-slate-400 mt-1');
+    preview.style.display = '-webkit-box';
+    preview.style.webkitLineClamp = '2';
+    preview.style.webkitBoxOrient = 'vertical';
+    preview.style.overflow = 'hidden';
+    preview.style.wordBreak = 'break-word';
+    preview.style.overflowWrap = 'break-word';
+    preview.textContent = tpl.text || '';
     
     left.appendChild(title);
     left.appendChild(preview);
     
-    const right = Utils.createElement('div', 'flex items-center gap-2 ml-3');
+    const right = Utils.createElement('div', 'flex items-center gap-2 ml-3 flex-shrink-0');
     
     const copyBtn = Utils.createElement('button', 'btn-icon opacity-0 group-hover:opacity-100 transition');
     copyBtn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i>';
@@ -4348,9 +5480,9 @@ function renderResponseTemplates() {
     const delBtn = Utils.createElement('button', 'btn-icon opacity-0 group-hover:opacity-100 transition');
     delBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
     delBtn.title = 'Удалить';
-    delBtn.addEventListener('click', (e) => {
+    delBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
-      if (confirm(`Удалить шаблон "${tpl.name}"?`)) {
+      if (await PremiumDialog.confirm({ message: `Удалить шаблон "${tpl.name}"?`, danger: true, okText: 'Да', cancelText: 'Отмена', icon: 'shield-alert' })) {
         const updated = loadResponseTemplates();
         updated.splice(idx, 1);
         saveResponseTemplates(updated);
@@ -4378,11 +5510,11 @@ function renderResponseTemplates() {
 }
 
 // Создание нового шаблона ответа
-function createResponseTemplate() {
-  const name = prompt('Название шаблона:');
+async function createResponseTemplate() {
+  const name = await PremiumDialog.prompt({ title: 'Название шаблона:', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
   if (!name) return;
   
-  const text = prompt('Текст ответа:');
+  const text = await PremiumDialog.prompt({ title: 'Текст ответа:', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
   if (!text) return;
   
   const templates = loadResponseTemplates();
@@ -4410,11 +5542,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // КНОПКА "ПАКЕТЫ" - добавляет в корзину
   const packagesBtn = document.getElementById('btn-open-packages');
   if (packagesBtn) {
-    packagesBtn.addEventListener('click', () => {
+    packagesBtn.addEventListener('click', async () => {
       const templates = DB.packageTemplates || [];
       
       if (templates.length === 0) {
-        alert('Нет шаблонов!\n\nСоздайте шаблон в Настройках → Шаблоны пакетов');
+        await PremiumDialog.alert({ message: 'Нет шаблонов!\n\nСоздайте шаблон в Настройках → Шаблоны пакетов', okText: 'Ок', icon: 'sparkles' });
         return;
       }
       
@@ -4425,12 +5557,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       message += '\nВведите номер:';
       
-      const choice = prompt(message);
+      const choice = await PremiumDialog.prompt({ title: 'Выбор шаблона', message: message, defaultValue: '', okText: 'Выбрать', cancelText: 'Отмена', icon: 'list' });
       if (!choice) return;
       
       const num = parseInt(choice);
       if (isNaN(num) || num < 1 || num > templates.length) {
-        alert('Неверный номер!');
+        await PremiumDialog.alert({ message: 'Неверный номер!', okText: 'Ок', icon: 'sparkles' });
         return;
       }
       
@@ -4590,8 +5722,8 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const delBtn = card.querySelector('[data-del]');
       if (delBtn) {
-        delBtn.addEventListener('click', () => {
-          if (confirm(`Удалить шаблон "${tpl.name}"?`)) {
+        delBtn.addEventListener('click', async () => {
+          if (await PremiumDialog.confirm({ message: `Удалить шаблон "${tpl.name}"?`, danger: true, okText: 'Да', cancelText: 'Отмена', icon: 'shield-alert' })) {
             const templates = DB.packageTemplates || [];
             const idx = templates.findIndex(t => t.id === tpl.id);
             if (idx >= 0) {
@@ -4614,46 +5746,46 @@ document.addEventListener('DOMContentLoaded', () => {
   // КНОПКА СОЗДАНИЯ ШАБЛОНА
   const createBtn = document.getElementById('btn-create-template');
   if (createBtn) {
-    createBtn.addEventListener('click', () => {
-      const templateName = prompt('Название шаблона (например: Свадьба, Выпускной, Корпоратив):');
+    createBtn.addEventListener('click', async () => {
+      const templateName = await PremiumDialog.prompt({ title: 'Название шаблона (например: Свадьба, Выпускной, Корпоратив):', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (!templateName || !templateName.trim()) {
-        alert('Отменено');
+        await PremiumDialog.alert({ message: 'Отменено', okText: 'Ок', icon: 'sparkles' });
         return;
       }
       
-      alert('Сейчас заполним 3 пакета: Базовый, Оптимал, Премиум');
+      await PremiumDialog.alert({ message: 'Сейчас заполним 3 пакета: Базовый, Оптимал, Премиум', okText: 'Ок', icon: 'sparkles' });
       
       // ===== БАЗОВЫЙ =====
-      alert('📦 БАЗОВЫЙ ПАКЕТ');
+      await PremiumDialog.alert({ message: '📦 БАЗОВЫЙ ПАКЕТ', okText: 'Ок', icon: 'sparkles' });
       
-      const basicDesc = prompt('БАЗОВЫЙ — Описание (что входит):\n\nНапример: Микромагия 60 минут, фокусы с картами', '');
+      const basicDesc = await PremiumDialog.prompt({ title: 'БАЗОВЫЙ — Описание (что входит):\n\nНапример: Микромагия 60 минут, фокусы с картами', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (basicDesc === null) return;
       
-      const basicBonuses = prompt('БАЗОВЫЙ — Бонусы (через запятую):\n\nНапример: Мини-сувенир гостям', '');
+      const basicBonuses = await PremiumDialog.prompt({ title: 'БАЗОВЫЙ — Бонусы (через запятую):\n\nНапример: Мини-сувенир гостям', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       
-      const basicPrice = prompt('БАЗОВЫЙ — Базовая цена (₽):', '50000');
+      const basicPrice = await PremiumDialog.prompt({ title: 'БАЗОВЫЙ — Базовая цена (₽):', defaultValue: '50000', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (!basicPrice) return;
       
       // ===== ОПТИМАЛ =====
-      alert('📦 ОПТИМАЛ ПАКЕТ');
+      await PremiumDialog.alert({ message: '📦 ОПТИМАЛ ПАКЕТ', okText: 'Ок', icon: 'sparkles' });
       
-      const optimalDesc = prompt('ОПТИМАЛ — Описание (что входит):\n\nНапример: Микромагия 90 минут, фокусы с картами, шоу с голубями', '');
+      const optimalDesc = await PremiumDialog.prompt({ title: 'ОПТИМАЛ — Описание (что входит):\n\nНапример: Микромагия 90 минут, фокусы с картами, шоу с голубями', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (optimalDesc === null) return;
       
-      const optimalBonuses = prompt('ОПТИМАЛ — Бонусы (через запятую):\n\nНапример: Мини-сувенир гостям, фото/видео с фишкой', '');
+      const optimalBonuses = await PremiumDialog.prompt({ title: 'ОПТИМАЛ — Бонусы (через запятую):\n\nНапример: Мини-сувенир гостям, фото/видео с фишкой', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       
-      const optimalPrice = prompt('ОПТИМАЛ — Базовая цена (₽):', '75000');
+      const optimalPrice = await PremiumDialog.prompt({ title: 'ОПТИМАЛ — Базовая цена (₽):', defaultValue: '75000', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (!optimalPrice) return;
       
       // ===== ПРЕМИУМ =====
-      alert('📦 ПРЕМИУМ ПАКЕТ');
+      await PremiumDialog.alert({ message: '📦 ПРЕМИУМ ПАКЕТ', okText: 'Ок', icon: 'sparkles' });
       
-      const premiumDesc = prompt('ПРЕМИУМ — Описание (что входит):\n\nНапример: Микромагия 120 минут, фокусы с картами, шоу с голубями, левитация', '');
+      const premiumDesc = await PremiumDialog.prompt({ title: 'ПРЕМИУМ — Описание (что входит):\n\nНапример: Микромагия 120 минут, фокусы с картами, шоу с голубями, левитация', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (premiumDesc === null) return;
       
-      const premiumBonuses = prompt('ПРЕМИУМ — Бонусы (через запятую):\n\nНапример: Все включено, сувениры всем гостям', '');
+      const premiumBonuses = await PremiumDialog.prompt({ title: 'ПРЕМИУМ — Бонусы (через запятую):\n\nНапример: Все включено, сувениры всем гостям', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       
-      const premiumPrice = prompt('ПРЕМИУМ — Базовая цена (₽):', '120000');
+      const premiumPrice = await PremiumDialog.prompt({ title: 'ПРЕМИУМ — Базовая цена (₽):', defaultValue: '120000', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (!premiumPrice) return;
       
       // Собираем данные
@@ -4686,10 +5818,10 @@ document.addEventListener('DOMContentLoaded', () => {
       Storage.save();
       renderTemplatesAdmin();
       
-      alert('✅ Шаблон "' + templateName + '" создан!\n\n' +
+      await PremiumDialog.alert({ message: '✅ Шаблон "' + templateName + '" создан!\n\n' +
         '📦 Базовый: ' + Utils.formatPrice(template.basic.price) + ' ₽\n' +
         '📦 Оптимал: ' + Utils.formatPrice(template.optimal.price) + ' ₽\n' +
-        '📦 Премиум: ' + Utils.formatPrice(template.premium.price) + ' ₽');
+        '📦 Премиум: ' + Utils.formatPrice(template.premium.price) + ' ₽', okText: 'Ок', icon: 'sparkles' });
     });
   }
   
@@ -4699,7 +5831,482 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCreateResponse.addEventListener('click', createResponseTemplate);
   }
 });
+</script>
+<script>
+
+/* ============================================
+   PREMIUM DIALOG (replaces native prompt/confirm)
+   ============================================ */
+window.PremiumDialog = (() => {
+  let overlay, card, titleEl, msgEl, inputEl, okBtn, cancelBtn, iconWrap;
+  let resolver = null;
+  let mode = 'confirm';
+
+  const ensure = () => {
+    if (overlay) return;
+
+    overlay = document.createElement('div');
+    overlay.id = 'premium-dialog-overlay';
+    overlay.innerHTML = `
+      <div id="premium-dialog" role="dialog" aria-modal="true">
+        <div class="pd-head">
+          <div class="pd-icon"><span id="pd-icon-inner"></span></div>
+          <div class="pd-text">
+            <div class="pd-title" id="pd-title"></div>
+            <div class="pd-msg" id="pd-msg"></div>
+          </div>
+        </div>
+        <div class="pd-body" id="pd-body"></div>
+        <div class="pd-actions">
+          <button class="pd-btn ghost" id="pd-cancel" type="button">Отмена</button>
+          <button class="pd-btn ok" id="pd-ok" type="button">Ок</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    card = overlay.querySelector('#premium-dialog');
+    titleEl = overlay.querySelector('#pd-title');
+    msgEl = overlay.querySelector('#pd-msg');
+    okBtn = overlay.querySelector('#pd-ok');
+    cancelBtn = overlay.querySelector('#pd-cancel');
+    iconWrap = overlay.querySelector('#pd-icon-inner');
+
+    const body = overlay.querySelector('#pd-body');
+
+    inputEl = document.createElement('input');
+    inputEl.className = 'pd-input';
+    inputEl.type = 'text';
+    inputEl.autocomplete = 'off';
+    inputEl.autocapitalize = 'sentences';
+    inputEl.spellcheck = false;
+
+    const close = (value) => {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', onKeyDown, true);
+
+      const r = resolver;
+      resolver = null;
+      if (r) r(value);
+    };
+
+    const onKeyDown = (e) => {
+      if (!overlay.classList.contains('active')) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close(mode === 'alert' ? true : (mode === 'prompt' ? null : false));
+      }
+      if (e.key === 'Enter') {
+        if (mode === 'prompt') {
+          e.preventDefault();
+          close(inputEl.value);
+        } else {
+          e.preventDefault();
+          close(true);
+        }
+      }
+    };
+
+    okBtn.addEventListener('click', () => {
+      if (mode === 'prompt') close(inputEl.value);
+      else close(true);
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      close(mode === 'alert' ? true : (mode === 'prompt' ? null : false));
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) cancelBtn.click();
+    });
+
+    // expose helpers
+    ensure._body = body;
+    ensure._close = close;
+    ensure._onKeyDown = onKeyDown;
+  };
+
+  const setIcon = (name, danger) => {
+    // Use lucide if present; otherwise fallback to simple symbol
+    iconWrap.innerHTML = '';
+    const span = document.createElement('span');
+    span.style.display = 'inline-flex';
+    span.style.alignItems = 'center';
+    span.style.justifyContent = 'center';
+    span.style.width = '22px';
+    span.style.height = '22px';
+    span.style.color = danger ? '#fecaca' : '#fde68a';
+
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      const i = document.createElement('i');
+      i.setAttribute('data-lucide', name || (danger ? 'alert-triangle' : 'sparkles'));
+      i.style.width = '22px';
+      i.style.height = '22px';
+      span.appendChild(i);
+      iconWrap.appendChild(span);
+      try { window.lucide.createIcons(); } catch (e) {}
+    } else {
+      span.textContent = danger ? '!' : '✦';
+      iconWrap.appendChild(span);
+    }
+  };
+
+  const open = (opts = {}) => {
+    ensure();
+    mode = opts.mode || 'confirm';
+
+    titleEl.textContent = (opts.title ?? (mode === 'prompt' ? 'Введите значение' : 'Подтвердите действие'));
+    msgEl.textContent = (opts.message ?? '');
+
+    const danger = !!opts.danger;
+    setIcon(opts.icon, danger);
+
+    okBtn.textContent = opts.okText || (mode === 'prompt' ? 'Сохранить' : 'Ок');
+    cancelBtn.textContent = opts.cancelText || 'Отмена';
+    cancelBtn.style.display = (mode === 'alert') ? 'none' : 'inline-flex';
+
+    okBtn.classList.remove('danger');
+    okBtn.classList.add('ok');
+    if (danger) okBtn.classList.add('danger');
+
+    // body
+    ensure._body.innerHTML = '';
+    if (mode === 'prompt') {
+      inputEl.value = (opts.defaultValue ?? '');
+      inputEl.placeholder = (opts.placeholder ?? '');
+      ensure._body.appendChild(inputEl);
+    }
+
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', ensure._onKeyDown, true);
+
+    // focus
+    setTimeout(() => {
+      try {
+        if (mode === 'prompt') inputEl.focus();
+        else okBtn.focus();
+      } catch (e) {}
+    }, 0);
+
+    return new Promise((resolve) => { resolver = resolve; });
+  };
+
+  const confirm = (opts) => open({ ...(typeof opts === 'string' ? { message: opts } : opts), mode: 'confirm' });
+  const prompt = (opts) => open({ ...(typeof opts === 'string' ? { title: opts } : opts), mode: 'prompt' });
+  const alert = async (opts) => { await open({ ...(typeof opts === 'string' ? { message: opts } : opts), mode: 'alert', okText: (opts && opts.okText) || 'Ок' }); return true; };
+
+  return { open, confirm, prompt, alert };
+})();
 
 </script>
+
+<script>
+// ============================================
+// ПРОСТАЯ ЛИЦЕНЗИОННАЯ ЗАЩИТА
+// ============================================
+
+(function() {
+  'use strict';
+  
+  // СЕКРЕТНЫЙ КЛЮЧ для генерации лицензий (храни в секрете!)
+  const SECRET = 'ILLUSIONIST_' + Date.now();
+  
+  // Функция генерации хеша устройства
+  function getDeviceId() {
+    const nav = navigator;
+    const screen = window.screen;
+    
+    const components = [
+      nav.userAgent,
+      nav.language,
+      screen.colorDepth,
+      screen.width + 'x' + screen.height,
+      new Date().getTimezoneOffset(),
+    ];
+    
+    // Простой хеш
+    let hash = 0;
+    const str = components.join('|');
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    
+    return Math.abs(hash).toString(36);
+  }
+  
+  // Функция проверки лицензионного ключа
+  function validateLicense(key) {
+    if (!key || key.length !== 19) return false;
+    
+    // Формат: XXXX-XXXX-XXXX-XXXX
+    const parts = key.split('-');
+    if (parts.length !== 4) return false;
+    
+    // Простая проверка контрольной суммы
+    const check = parts[3];
+    const data = parts.slice(0, 3).join('');
+    
+    let sum = 0;
+    for (let i = 0; i < data.length; i++) {
+      sum += data.charCodeAt(i);
+    }
+    
+    const expected = (sum % 10000).toString(36).toUpperCase().padStart(4, '0');
+    return check === expected;
+  }
+  
+  // Проверка активации
+  function checkActivation() {
+    const stored = localStorage.getItem('illusionist_license');
+    
+    if (stored) {
+      try {
+        const data = JSON.parse(atob(stored));
+        
+        // Проверяем ключ
+        if (!validateLicense(data.key)) {
+          return false;
+        }
+        
+        // Проверяем привязку к устройству
+        const currentDevice = getDeviceId();
+        if (data.device !== currentDevice) {
+          console.warn('Лицензия привязана к другому устройству');
+          return false;
+        }
+        
+        // Проверяем дату активации (не слишком старая)
+        const activated = new Date(data.activated);
+        const now = new Date();
+        const daysDiff = (now - activated) / (1000 * 60 * 60 * 24);
+        
+        // Если больше года - просим подтверждение
+        if (daysDiff > 365) {
+          return 'expired';
+        }
+        
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+    
+    return false;
+  }
+  
+  // Активация лицензии
+  function activateLicense(key) {
+    if (!validateLicense(key)) {
+      return { success: false, error: 'Неверный формат ключа' };
+    }
+    
+    const deviceId = getDeviceId();
+    const data = {
+      key: key,
+      device: deviceId,
+      activated: new Date().toISOString()
+    };
+    
+    // Сохраняем в base64
+    const encoded = btoa(JSON.stringify(data));
+    localStorage.setItem('illusionist_license', encoded);
+    
+    return { success: true };
+  }
+  
+  // UI для ввода ключа
+  function showLicensePrompt(reason) {
+    const overlay = document.createElement('div');
+    overlay.id = 'license-overlay';
+    overlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999999;
+      font-family: 'Inter', -apple-system, sans-serif;
+    `;
+    
+    const box = document.createElement('div');
+    box.style.cssText = `
+      background: linear-gradient(135deg, rgba(26,26,46,0.98), rgba(15,15,25,0.98));
+      border: 2px solid rgba(245,158,11,0.5);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    `;
+    
+    const title = document.createElement('h2');
+    title.textContent = reason === 'expired' ? 'Продление лицензии' : 'Активация приложения';
+    title.style.cssText = `
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+    `;
+    
+    const subtitle = document.createElement('p');
+    subtitle.textContent = reason === 'expired' 
+      ? 'Ваша лицензия истекла. Введите новый ключ.'
+      : 'Введите лицензионный ключ для активации';
+    subtitle.style.cssText = `
+      color: rgba(148,163,184,0.8);
+      margin-bottom: 24px;
+      font-size: 14px;
+    `;
+    
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'XXXX-XXXX-XXXX-XXXX';
+    input.maxLength = 19;
+    input.style.cssText = `
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid rgba(245,158,11,0.3);
+      background: rgba(0,0,0,0.3);
+      color: #f8fafc;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: monospace;
+      text-align: center;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    `;
+    
+    // Автоматическое добавление дефисов
+    input.addEventListener('input', function(e) {
+      let value = e.target.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+      let formatted = '';
+      for (let i = 0; i < value.length && i < 16; i++) {
+        if (i > 0 && i % 4 === 0) formatted += '-';
+        formatted += value[i];
+      }
+      e.target.value = formatted;
+    });
+    
+    const button = document.createElement('button');
+    button.textContent = 'Активировать';
+    button.style.cssText = `
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      border: none;
+      border-radius: 8px;
+      color: #0a0a0f;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    `;
+    
+    button.addEventListener('mousedown', () => {
+      button.style.transform = 'scale(0.98)';
+    });
+    
+    button.addEventListener('mouseup', () => {
+      button.style.transform = 'scale(1)';
+    });
+    
+    const error = document.createElement('div');
+    error.style.cssText = `
+      color: #ef4444;
+      font-size: 14px;
+      margin-top: 12px;
+      min-height: 20px;
+    `;
+    
+     text-decoration: none;">Свяжитесь с нами</a>';
+    info.style.cssText = `
+      color: rgba(148,163,184,0.6);
+      font-size: 12px;
+      margin-top: 16px;
+    `;
+    
+    button.addEventListener('click', () => {
+      const key = input.value.trim();
+      const result = activateLicense(key);
+      
+      if (result.success) {
+        document.body.removeChild(overlay);
+        location.reload();
+      } else {
+        error.textContent = result.error || 'Неверный ключ';
+        input.style.borderColor = '#ef4444';
+        setTimeout(() => {
+          input.style.borderColor = 'rgba(245,158,11,0.3)';
+        }, 2000);
+      }
+    });
+    
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') button.click();
+    });
+    
+    box.appendChild(title);
+    box.appendChild(subtitle);
+    box.appendChild(input);
+    box.appendChild(button);
+    box.appendChild(error);overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    
+    input.focus();
+  }
+  
+  // Проверка при загрузке
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      const status = checkActivation();
+      
+      if (status === true) {
+        // Всё ок, ничего не делаем
+        console.log('✅ Лицензия активна');
+      } else if (status === 'expired') {
+        showLicensePrompt('expired');
+      } else {
+        showLicensePrompt('first');
+      }
+    }, 100);
+  });
+  
+  // Экспорт для генератора ключей (только для тебя)
+  window.generateLicenseKey = function() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let key = '';
+    
+    // Генерируем 3 блока по 4 символа
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        key += chars[Math.floor(Math.random() * chars.length)];
+      }
+      if (i < 2) key += '-';
+    }
+    
+    // Контрольная сумма
+    let sum = 0;
+    const data = key.replace(/-/g, '');
+    for (let i = 0; i < data.length; i++) {
+      sum += data.charCodeAt(i);
+    }
+    
+    const check = (sum % 10000).toString(36).toUpperCase().padStart(4, '0');
+    key += '-' + check;
+    
+    return key;
+  };
+  
+})();
+</script>
+
 </body>
 </html>
