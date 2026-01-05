@@ -11,14 +11,21 @@
   <meta name="apple-mobile-web-app-title" content="Illusionist OS" />
   <meta name="theme-color" content="#050507" />
 
+  
+
   <!-- Icons (iOS/Android/PWA) -->
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png" />
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180.png" />
-  <link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png" />
-  <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png" />
-  <link rel="apple-touch-icon" sizes="120x120" href="icons/apple-touch-icon-120.png" />
+  <!-- Основная иконка для браузера -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png" />
+  
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png" />
+  <link rel="apple-touch-icon" sizes="120x120" href="icons/icon-120.png" />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.webmanifest" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="application-name" content="Illusionist OS" />
 
@@ -45,7 +52,6 @@
   <!-- Critical CSS для мгновенного рендера -->
   <style>
     body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,sans-serif}
-    #splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#050507;z-index:50}
     .hide{opacity:0;pointer-events:none}
   
 /* Mini chips for quick percent presets */
@@ -104,7 +110,7 @@ html, body {
   background: var(--bg);
   color: var(--text);
   overflow-x: hidden !important;
-  max-width: 100vw;
+  max-width: 100vw !important;
   height: -webkit-fill-available;
   scroll-behavior: smooth;
   font-size: 16px; /* было 14px */
@@ -141,6 +147,19 @@ body {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 4px 24px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.05) inset;
+}
+
+/* Уровни глубины (elevation) */
+.glass-level-1 {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05) inset;
+}
+
+.glass-level-2 {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.05) inset;
+}
+
+.glass-level-3 {
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.08) inset;
 }
 
 /* ============================================
@@ -187,12 +206,13 @@ main {
 }
 
 .form-input:disabled {
-  opacity: 0.4;
+  opacity: 0.5;  /* Было 0.4 - теперь лучше видно */
   cursor: not-allowed;
+  background: rgba(255,255,255,.04);  /* НОВОЕ - чуть затемнено */
 }
 
 .form-input::placeholder {
-  color: #64748b;
+  color: #94a3b8;  /* Было #64748b - светлее */
 }
 
 /* Mobile: prevent zoom on focus */
@@ -203,7 +223,7 @@ main {
   input[type="time"],
   select,
   textarea {
-    font-size: 16px; /* iOS не зумит при >= 16px */
+    font-size: 16px !important; /* iOS не зумит при >= 16px */
   }
 }
 
@@ -252,15 +272,17 @@ button {
   padding: 14px 18px;
   font-size: 14px;
   font-weight: 700;
-  background: rgba(255,255,255,.08);
-  color: #e2e8f0;
-  border: 1.5px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.12);  /* Было .08 - увеличен контраст */
+  color: #f1f5f9;  /* Было #e2e8f0 - ярче */
+  border: 1.5px solid rgba(255,255,255,.18);  /* Было .12 - ярче */
   min-height: 52px;
 }
 
 .btn-secondary:hover {
-  background: rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.2);
+  background: rgba(255,255,255,.16);  /* Было .12 - ярче */
+  border-color: rgba(255,255,255,.25);  /* Было .2 - ярче */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 /* Кнопка-иконка */
@@ -277,8 +299,10 @@ button {
 }
 
 .btn-icon:hover {
-  background: rgba(255,255,255,.12);
-  border-color: rgba(255,255,255,.2);
+  background: rgba(255,255,255,.14);  /* Было .12 - ярче */
+  border-color: rgba(255,255,255,.22);  /* Было .2 - ярче */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 /* Кнопка количества */
@@ -295,26 +319,30 @@ button {
 }
 
 .btn-qty:hover {
-  background: rgba(255,255,255,.12);
-  border-color: rgba(245,158,11,.3);
+  background: rgba(255,255,255,.14);  /* Было .12 - ярче */
+  border-color: rgba(245,158,11,.4);  /* Было .3 - ярче */
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(245,158,11,0.15);
 }
 
 /* Кнопка добавления */
 .btn-add {
-  background: rgba(245,158,11,.12);
-  border: 1.5px solid rgba(245,158,11,.25);
-  color: rgba(245,158,11,.95);
+  background: rgba(245,158,11,.16);  /* Было .12 - ярче */
+  border: 1.5px solid rgba(245,158,11,.30);  /* Было .25 - ярче */
+  color: rgba(245,158,11,1);  /* Было .95 - ярче */
   border-radius: 14px;
-  padding: 12px 16px; /* было 7px 10px */
-  font-size: 14px; /* было 11px */
+  padding: 12px 16px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.02em;
   min-height: 48px;
 }
 
 .btn-add:hover {
-  background: rgba(245,158,11,.18);
-  border-color: rgba(245,158,11,.35);
+  background: rgba(245,158,11,.24);  /* Было .18 - ярче */
+  border-color: rgba(245,158,11,.45);  /* Было .35 - ярче */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245,158,11,0.2);
 }
 
 /* Кнопка удаления (мини) */
@@ -344,7 +372,7 @@ button {
   gap: 8px;
   padding: 12px 16px; /* было 10px 14px */
   border-radius: 14px;
-  font-size: 14px; /* было 11px */
+  font-size: 13px; /* было 11px */
   font-weight: 700;
   transition: all 0.2s;
   min-height: 48px;
@@ -372,27 +400,8 @@ button {
 .btn-backup:hover { background: rgba(168, 85, 247, 0.18); }
 
 /* ============================================
-   SPLASH
+   СТАРАЯ ЗАСТАВКА УДАЛЕНА
    ============================================ */
-#splash {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom) 20px;
-  background: radial-gradient(800px 600px at 30% 20%, rgba(245,158,11,.12), transparent 60%),
-              radial-gradient(700px 500px at 70% 80%, rgba(99,102,241,.12), transparent 60%),
-              var(--bg);
-  z-index: 50;
-  transition: opacity .65s ease, transform .65s ease;
-}
-
-#splash.hide {
-  opacity: 0;
-  transform: translateY(-8px);
-  pointer-events: none;
-}
 
 /* ============================================
    TOAST
@@ -431,9 +440,7 @@ button {
 /* ============================================
    MODALS
    ============================================ */
-#view-settings,
-#templates-modal,
-#variants-modal {
+#view-settings {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,.75);
@@ -443,9 +450,7 @@ button {
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
-#view-settings.active,
-#templates-modal.active,
-#variants-modal.active {
+#view-settings.active {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -460,9 +465,9 @@ button {
   bottom: env(safe-area-inset-bottom) !important;
   transform: none !important;
   width: 100% !important;
-  max-width: 100%;
-  max-height: none;
-  margin: 0;
+  max-width: 100% !important;
+  max-height: none !important;
+  margin: 0 !important;
   border-radius: 0 !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
@@ -471,38 +476,17 @@ button {
 
 @media (min-width: 768px) {
   #view-settings .panel {
-    position: absolute;
+    position: absolute !important;
     left: 50% !important;
     top: 50% !important;
     right: auto !important;
     bottom: auto !important;
     transform: translate(-50%, -50%) !important;
     width: min(920px, calc(100% - 48px)) !important;
-    max-width: min(920px, calc(100% - 48px));
-    max-height: calc(100vh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    max-width: min(920px, calc(100% - 48px)) !important;
+    max-height: calc(100vh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
     border-radius: 24px !important;
   }
-}
-
-/* Templates & Variants modals */
-.modal-content,
-.variants-modal-content {
-  background: #0a0a0c;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
-  border-radius: 24px;
-  width: min(480px, calc(100% - 40px));
-  max-height: calc(100vh - 80px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.variants-modal-content {
-  width: min(580px, calc(100% - 40px));
-}
-
-#variants-modal {
-  align-items: flex-start !important;
-  padding-top: max(24px, env(safe-area-inset-top)) !important;
 }
 
 /* ============================================
@@ -593,7 +577,7 @@ button {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
+  font-size: 11px;
   color: var(--muted);
 }
 
@@ -617,10 +601,11 @@ button {
    CART ITEMS
    ============================================ */
 #cart-list > div {
-  background: rgba(255,255,255,0.06);
-  border: 1.5px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.08);  /* Было .06 - ярче */
+  border: 1.5px solid rgba(255,255,255,0.12);  /* Было .08 - ярче */
+  border-left: 3px solid rgba(245,158,11,0.3);  /* НОВОЕ - золотой акцент */
   border-radius: 16px;
-  padding: 14px 16px; /* было меньше */
+  padding: 14px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -629,8 +614,11 @@ button {
 }
 
 #cart-list > div:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.11);  /* Было .08 - ярче */
+  border-color: rgba(255,255,255,0.16);  /* Было .12 - ярче */
+  border-left-color: rgba(245,158,11,0.5);  /* Золотой акцент ярче */
+  transform: translateX(2px);  /* НОВОЕ - лёгкий сдвиг */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);  /* НОВОЕ - тень */
 }
 
 /* ============================================
@@ -656,7 +644,7 @@ button {
 }
 
 .template-card .template-name {
-  font-size: 14px; /* было 11px */
+  font-size: 13px; /* было 11px */
   font-weight: 700;
   color: #f59e0b;
   margin-bottom: 4px;
@@ -666,12 +654,12 @@ button {
 }
 
 .template-card .template-info {
-  font-size: 14px; /* было 9px */
+  font-size: 11px; /* было 9px */
   color: #64748b;
 }
 
 .template-card .template-price {
-  font-size: 14px; /* было 10px */
+  font-size: 12px; /* было 10px */
   font-weight: 800;
   color: #e2e8f0;
   font-family: "JetBrains Mono", monospace;
@@ -715,7 +703,7 @@ button {
   background: rgba(255, 255, 255, 0.06);
   border: 1.5px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
-  font-size: 14px; /* было 10px */
+  font-size: 12px; /* было 10px */
   font-weight: 600;
   font-family: "JetBrains Mono", monospace;
   transition: all 0.2s;
@@ -813,7 +801,7 @@ button {
 }
 
 .variant-badge {
-  font-size: 14px; /* было 9px */
+  font-size: 10px; /* было 9px */
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -847,7 +835,7 @@ button {
 .variant-price.price-premium { color: #a855f7; }
 
 .variant-items {
-  font-size: 14px; /* было 11px */
+  font-size: 13px; /* было 11px */
   color: #94a3b8;
   line-height: 1.6;
 }
@@ -873,7 +861,7 @@ button {
 
 .variant-bonus-tag {
   display: inline-block;
-  font-size: 14px;
+  font-size: 10px;
   font-weight: 700;
   background: rgba(34, 197, 94, 0.18);
   color: #22c55e;
@@ -891,7 +879,7 @@ button {
   opacity: 0;
   transition: opacity 0.2s;
   color: #64748b;
-  font-size: 14px;
+  font-size: 12px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -905,7 +893,7 @@ button {
   position: absolute;
   top: -10px;
   right: 16px;
-  font-size: 14px;
+  font-size: 9px;
   font-weight: 800;
   text-transform: uppercase;
   background: linear-gradient(135deg, #f59e0b, #f97316);
@@ -1020,61 +1008,8 @@ button {
 }
 
 /* ============================================
-   FLOATING CARDS
+   FLOATING CARDS УДАЛЕНЫ
    ============================================ */
-#floating-cards {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.floating-card {
-  position: absolute;
-  font-size: 120px;
-  opacity: 0.04;
-  color: #f59e0b;
-  animation: float var(--duration, 30s) ease-in-out infinite;
-  animation-delay: var(--delay, 0s);
-  filter: blur(1px);
-}
-
-.floating-card:nth-child(1) {
-  left: 15%;
-  top: -10%;
-}
-
-.floating-card:nth-child(2) {
-  left: 60%;
-  top: -15%;
-}
-
-.floating-card:nth-child(3) {
-  left: 80%;
-  top: -8%;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.04;
-  }
-  50% {
-    transform: translateY(100vh) rotate(180deg);
-    opacity: 0.04;
-  }
-  90% {
-    opacity: 0.04;
-  }
-  100% {
-    transform: translateY(120vh) rotate(360deg);
-    opacity: 0;
-  }
-}
 
 /* ============================================
    UTILITIES
@@ -1092,7 +1027,7 @@ button {
    ============================================ */
 @media (max-width: 768px) {
   .lg\:grid-cols-2 {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
   
   .lg\:col-span-2 {
@@ -1102,7 +1037,7 @@ button {
 
 @media (max-width: 640px) {
   .grid-cols-2.md\:grid-cols-4 {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
   }
   
   .grid-cols-5 {
@@ -1113,17 +1048,17 @@ button {
 @media (max-width: 480px) {
   /* Уменьшение отступов на очень маленьких экранах */
   .glass.rounded-3xl {
-    border-radius: 24px;
-    padding: 20px;
+    border-radius: 24px !important;
+    padding: 20px !important;
   }
   
   header {
-    padding: 12px 16px;
+    padding: 12px 16px !important;
   }
   
   .btn-gold,
   .btn-secondary {
-    padding: 12px 16px;
+    padding: 12px 16px !important;
     font-size: 14px !important;
   }
   
@@ -1133,14 +1068,14 @@ button {
   }
   
   .backup-slot {
-    padding: 8px;
-    min-height: 56px;
+    padding: 8px !important;
+    min-height: 56px !important;
   }
 }
 
 @media (max-width: 380px) {
   header .font-cinzel {
-    font-size: 16px;
+    font-size: 16px !important;
   }
   
   .backup-status {
@@ -1180,495 +1115,67 @@ button {
 #premium-dialog .pd-btn.ghost{background:rgba(15,23,42,.25)}
 
 </style>
-<style>
-
-/* RESPONSIVE TYPOGRAPHY */
-body {
-  font-size: clamp(14px, 3.5vw, 16px) !important;
-}
-
-h1, .title {
-  font-size: clamp(24px, 6vw, 32px) !important;
-}
-
-h2, .subtitle {
-  font-size: clamp(20px, 5vw, 24px) !important;
-}
-
-h3 {
-  font-size: clamp(18px, 4.5vw, 20px) !important;
-}
-
-button, .btn {
-  font-size: clamp(14px, 3.5vw, 16px) !important;
-  min-height: 44px;
-  min-width: 44px;
-}
-
-input, select, textarea {
-  font-size: clamp(16px, 4vw, 18px) !important;
-  min-height: 44px;
-  padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 16px);
-}
-
-.modal-content, .panel {
-  padding: clamp(16px, 4vw, 24px);
-}
-
-/* ADAPTIVE SPACING */
-.space-sm {
-  margin: clamp(8px, 2vw, 12px);
-}
-
-.space-md {
-  margin: clamp(12px, 3vw, 16px);
-}
-
-.space-lg {
-  margin: clamp(16px, 4vw, 24px);
-}
-
-/* RESPONSIVE GRID */
-.grid {
-  gap: clamp(12px, 3vw, 20px);
-}
-
-/* RESPONSIVE TOUCH TARGETS */
-[role="button"],
-a,
-button,
-.clickable {
-  min-width: 44px;
-  min-height: 44px;
-}
-
-/* RESPONSIVE ICONS */
-svg, i[class*="icon"] {
-  width: clamp(20px, 5vw, 24px) !important;
-  height: clamp(20px, 5vw, 24px) !important;
-}
-
-/* MOBILE OPTIMIZATIONS */
-@media (max-width: 768px) {
-  body {
-    font-size: 14px;
-  }
-  
-  h1 {
-    font-size: 24px !important;
-  }
-  
-  h2 {
-    font-size: 20px !important;
-  }
-  
-  input, select, textarea {
-    font-size: 16px !important;
-  }
-  
-  .modal-content {
-    width: 95vw !important;
-    max-height: 85vh;
-  }
-}
-
-/* LARGE SCREENS */
-@media (min-width: 1200px) {
-  body {
-    font-size: 16px;
-  }
-  
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-}
-
-</style>
-<style>
-
-/* ENHANCED SAFE-AREA SUPPORT */
-html {
-  height: 100%;
-  height: -webkit-fill-available;
-}
-
-body {
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  padding-top: env(safe-area-inset-top, 0px);
-}
-
-/* Fixed elements safe-area */
-.fixed-top {
-  padding-top: env(safe-area-inset-top, 0px) !important;
-}
-
-.fixed-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
-}
-
-/* Modals safe-area */
-.modal {
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-.modal-content {
-  max-height: calc(90vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
-}
-
-</style>
 </head>
 
 <body class="min-h-screen">
-  <input type="file" id="import-file-input" accept=".json,.backup" />
-  <canvas id="bg-canvas"></canvas>
-  
-  <!-- ========== FLOATING CARDS ========== -->
-  <div id="floating-cards">
-    <div class="floating-card" style="--delay: 0s; --duration: 30s;">♠</div>
-    <div class="floating-card" style="--delay: 10s; --duration: 35s;">♥</div>
-    <div class="floating-card" style="--delay: 20s; --duration: 40s;">♣</div>
+
+<!-- МИНИМАЛИСТИЧНАЯ ЗАСТАВКА -->
+<div id="simple-splash" style="position:fixed;inset:0;background:#050507;display:flex;align-items:center;justify-content:center;z-index:999999;">
+  <div style="text-align:center;">
+    <div style="font-size:80px;margin-bottom:20px;animation:pulse 2s ease-in-out infinite;">🎩</div>
+    <h1 style="font-family:'Cinzel',serif;font-size:36px;background:linear-gradient(135deg,#f59e0b,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 6px 0;letter-spacing:3px;">ILLUSIONIST OS</h1>
+    <p style="font-family:'Inter',sans-serif;font-size:11px;color:rgba(148,163,184,0.75);letter-spacing:1.5px;text-transform:uppercase;margin:0 0 16px 0;">Для тех, кто творит магию</p>
+    <p style="font-size:12px;color:rgba(148,163,184,0.5);letter-spacing:2px;">Загрузка...</p>
   </div>
+</div>
 
-  <!-- ========== SPLASH ========== -->
-  
-<!-- SPLASH SCREEN -->
-<div id="splash" style="
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 99999;
-  opacity: 1;
-  transition: opacity 0.8s ease;
-  overflow: hidden;
-">
-  <!-- Animated Background Particles -->
-  <canvas id="particles-canvas" style="
-    position: absolute;
-    inset: 0;
-    opacity: 0.3;
-  "></canvas>
-
-  <!-- Magic Cards Floating Animation -->
-  <div style="
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    opacity: 0.15;
-  ">
-    <div class="floating-card" style="position: absolute; top: 10%; left: 5%; font-size: 60px; animation: float1 6s ease-in-out infinite;">♠️</div>
-    <div class="floating-card" style="position: absolute; top: 20%; right: 10%; font-size: 50px; animation: float2 7s ease-in-out infinite;">♥️</div>
-    <div class="floating-card" style="position: absolute; bottom: 15%; left: 15%; font-size: 55px; animation: float3 8s ease-in-out infinite;">♦️</div>
-    <div class="floating-card" style="position: absolute; bottom: 25%; right: 20%; font-size: 45px; animation: float1 9s ease-in-out infinite;">♣️</div>
-    <div class="floating-card" style="position: absolute; top: 50%; left: 25%; font-size: 40px; animation: float2 5s ease-in-out infinite;">🎩</div>
-    <div class="floating-card" style="position: absolute; top: 60%; right: 30%; font-size: 50px; animation: float3 7s ease-in-out infinite;">🎴</div>
-    <div class="floating-card" style="position: absolute; top: 30%; left: 50%; font-size: 35px; animation: float1 6s ease-in-out infinite;">✨</div>
-  </div>
-
-  <!-- Main Content -->
-  <div style="
-    position: relative;
-    z-index: 10;
-    text-align: center;
-    padding: 20px;
-    animation: fadeInUp 1s ease-out;
-  ">
-    <!-- Logo/Icon -->
-    <div style="
-      width: 120px;
-      height: 120px;
-      margin: 0 auto 30px;
-      background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(251,191,36,0.2));
-      border: 3px solid rgba(245,158,11,0.5);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 60px;
-      animation: pulse 2s ease-in-out infinite, rotate 20s linear infinite;
-      box-shadow: 0 0 40px rgba(245,158,11,0.3), 0 0 80px rgba(245,158,11,0.1);
-    ">
-      🎩
-    </div>
-
-    <!-- Title with Glitch Effect -->
-    <h1 style="
-      font-family: 'Cinzel', serif;
-      font-size: clamp(32px, 8vw, 56px);
-      font-weight: 700;
-      background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #f59e0b 100%);
-      background-size: 200% 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin: 0 0 12px 0;
-      letter-spacing: 4px;
-      animation: shimmer 3s ease-in-out infinite, textGlow 2s ease-in-out infinite;
-      text-shadow: 0 0 30px rgba(245,158,11,0.5);
-      position: relative;
-    ">
-      ILLUSIONIST OS
-    </h1>
-
-    <!-- Subtitle with Typewriter Effect -->
-    <p style="
-      font-size: clamp(12px, 3vw, 16px);
-      color: rgba(148,163,184,0.9);
-      margin: 0 0 40px 0;
-      letter-spacing: 2px;
-      font-weight: 300;
-      animation: fadeIn 1.5s ease-out 0.5s both;
-    ">
-      Для профессионалов иллюзии
-    </p>
-
-    <!-- Magic Wand Divider -->
-    <div style="
-      width: 60px;
-      height: 3px;
-      background: linear-gradient(90deg, transparent, #f59e0b, transparent);
-      margin: 0 auto 30px;
-      animation: expandWidth 2s ease-out;
-    "></div>
-
-    <!-- Loading Bar with Sparkles -->
-    <div style="
-      width: clamp(200px, 60vw, 300px);
-      height: 3px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 3px;
-      overflow: hidden;
-      margin: 0 auto;
-      position: relative;
-      box-shadow: 0 0 20px rgba(245,158,11,0.2);
-    ">
-      <div style="
-        height: 100%;
-        background: linear-gradient(90deg, 
-          rgba(245,158,11,0.5) 0%, 
-          #f59e0b 50%, 
-          rgba(245,158,11,0.5) 100%
-        );
-        background-size: 200% 100%;
-        animation: loading 1.8s ease-in-out infinite, shimmer 2s linear infinite;
-        box-shadow: 0 0 20px rgba(245,158,11,0.8);
-      "></div>
-      
-      <!-- Sparkle Effects -->
-      <div style="
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
-        background-size: 20px 20px;
-        animation: sparkle 1.5s linear infinite;
-      "></div>
-    </div>
-
-    <!-- Loading Text -->
-    <div style="
-      margin-top: 20px;
-      font-size: 12px;
-      color: rgba(148,163,184,0.6);
-      letter-spacing: 1px;
-      animation: pulse 2s ease-in-out infinite;
-    ">
-      Загрузка магии...
-    </div>
+<!-- МАГИЧЕСКАЯ АНИМАЦИЯ -->
+<div id="magic-welcome" style="position:fixed;inset:0;background:rgba(10,10,15,0.95);display:none;align-items:center;justify-content:center;z-index:999998;opacity:0;">
+  <div style="text-align:center;">
+    <div style="font-size:100px;margin-bottom:20px;animation:magic-spin 1s ease-out;">✨</div>
+    <h2 style="font-family:'Cinzel',serif;font-size:32px;background:linear-gradient(135deg,#f59e0b,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 10px 0;">Добро пожаловать</h2>
+    <p style="font-family:'Cinzel',serif;font-size:20px;color:#f59e0b;">в магическое пространство</p>
   </div>
 </div>
 
 <style>
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-@keyframes pulse {
-  0%, 100% { 
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% { 
-    transform: scale(1.05);
-    opacity: 0.9;
-  }
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes textGlow {
-  0%, 100% {
-    filter: drop-shadow(0 0 10px rgba(245,158,11,0.5));
-  }
-  50% {
-    filter: drop-shadow(0 0 20px rgba(245,158,11,0.8));
-  }
-}
-
-@keyframes loading {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
-}
-
-@keyframes expandWidth {
-  from { width: 0; }
-  to { width: 60px; }
-}
-
-@keyframes sparkle {
-  0%, 100% { opacity: 0; }
-  50% { opacity: 1; }
-}
-
-@keyframes float1 {
-  0%, 100% { 
-    transform: translate(0, 0) rotate(0deg);
-    opacity: 0.3;
-  }
-  33% { 
-    transform: translate(20px, -30px) rotate(120deg);
-    opacity: 0.6;
-  }
-  66% { 
-    transform: translate(-15px, 20px) rotate(240deg);
-    opacity: 0.4;
-  }
-}
-
-@keyframes float2 {
-  0%, 100% { 
-    transform: translate(0, 0) rotate(0deg) scale(1);
-    opacity: 0.3;
-  }
-  50% { 
-    transform: translate(-25px, 30px) rotate(180deg) scale(1.2);
-    opacity: 0.7;
-  }
-}
-
-@keyframes float3 {
-  0%, 100% { 
-    transform: translate(0, 0) rotate(0deg);
-    opacity: 0.4;
-  }
-  25% { 
-    transform: translate(30px, -20px) rotate(90deg);
-    opacity: 0.6;
-  }
-  75% { 
-    transform: translate(-20px, 15px) rotate(270deg);
-    opacity: 0.5;
-  }
-}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:0.9}}
+@keyframes magic-spin{0%{transform:scale(0) rotate(0deg);opacity:0}50%{transform:scale(1.2) rotate(180deg);opacity:1}100%{transform:scale(1) rotate(360deg);opacity:1}}
 </style>
 
 <script>
-// Particles Canvas Animation
-(function() {
-  const canvas = document.getElementById('particles-canvas');
-  if (!canvas) return;
+(function(){
+  // 1. Скрываем заставку через 2.5 сек
+  setTimeout(function(){
+    var s=document.getElementById('simple-splash');
+    if(s){s.style.opacity='0';s.style.transition='opacity 0.8s';setTimeout(function(){s.remove();checkLicense()},800)}
+  },2500);
   
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  
-  const particles = [];
-  const particleCount = 50;
-  
-  class Particle {
-    constructor() {
-      this.reset();
-    }
-    
-    reset() {
-      this.x = Math.random() * canvas.width;
-      this.y = Math.random() * canvas.height;
-      this.vx = (Math.random() - 0.5) * 0.5;
-      this.vy = (Math.random() - 0.5) * 0.5;
-      this.size = Math.random() * 2 + 1;
-      this.opacity = Math.random() * 0.5 + 0.2;
-    }
-    
-    update() {
-      this.x += this.vx;
-      this.y += this.vy;
-      
-      if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-      if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-    }
-    
-    draw() {
-      ctx.fillStyle = `rgba(245, 158, 11, ${this.opacity})`;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fill();
-    }
+  function checkLicense(){
+    var hasLic=typeof checkActivation==='function'?checkActivation():false;
+    if(hasLic===true){showMagic()}
+    else if(typeof showLicensePrompt==='function'){showLicensePrompt(hasLic==='expired'?'expired':'first')}
   }
   
-  for (let i = 0; i < particleCount; i++) {
-    particles.push(new Particle());
+  function showMagic(){
+    var m=document.getElementById('magic-welcome');
+    if(!m)return;
+    m.style.display='flex';
+    setTimeout(function(){m.style.transition='opacity 0.8s';m.style.opacity='1'},50);
+    setTimeout(function(){m.style.opacity='0';setTimeout(function(){m.remove()},800)},3000);
   }
   
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    particles.forEach(particle => {
-      particle.update();
-      particle.draw();
-    });
-    
-    // Draw connections
-    particles.forEach((p1, i) => {
-      particles.slice(i + 1).forEach(p2 => {
-        const dx = p1.x - p2.x;
-        const dy = p1.y - p2.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance < 150) {
-          ctx.strokeStyle = `rgba(245, 158, 11, ${0.2 * (1 - distance / 150)})`;
-          ctx.lineWidth = 0.5;
-          ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
-          ctx.stroke();
-        }
-      });
-    });
-    
-    requestAnimationFrame(animate);
-  }
-  
-  animate();
+  window.showMagicAfterActivation=showMagic;
 })();
 </script>
-<!-- /SPLASH SCREEN -->
 
-  </div>
+
+  <input type="file" id="import-file-input" accept=".json,.backup" />
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- ========== FLOATING CARDS УДАЛЕНЫ ========== -->
+
+  <!-- ========== СТАРАЯ ЗАСТАВКА УДАЛЕНА ========== -->
 
   <!-- ========== TOAST ========== -->
   <div id="toast">
@@ -1712,7 +1219,7 @@ body {
       <!-- ========== LEFT PANEL ========== -->
       <section class="glass rounded-3xl p-6">
         <div class="flex items-center justify-between mb-4">
-          <div class="text-base font-extrabold text-white tracking-wide">Данные</div>
+          <div class="text-lg font-extrabold text-white tracking-wide">Данные</div>
           <div id="holiday-alert" class="hidden text-xs font-extrabold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-4 py-2 rounded-full">
             Праздник: x<span id="holiday-k">1</span>
           </div>
@@ -1733,19 +1240,6 @@ body {
             <input type="time" id="inp-time" class="form-input" value="18:00" />
           </div>
         </div>
-        <!-- Event Type -->
-        <div class="mb-4">
-          <label class="text-sm text-slate-400 font-bold mb-2 block">Тип события</label>
-          <select id="inp-event-type" class="form-input">
-            <option>Мероприятие</option>
-            <option>Микромагия</option>
-            <option>Сцена</option>
-            <option>Концерт</option>
-            <option>Репетиция</option>
-            <option>Детское шоу</option>
-          </select>
-        </div>
-
         <!-- Region & City -->
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
@@ -1794,7 +1288,7 @@ body {
 
         <!-- Extras -->
         <div class="border-t border-white/10 pt-6">
-          <div class="text-base font-extrabold text-white mb-4">Доплаты</div>
+          <div class="text-lg font-extrabold text-white mb-4">Доплаты</div>
 
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -1831,6 +1325,7 @@ body {
                   
                 </div>
                 </label>
+              
 
                 <label class="flex items-center gap-3 text-sm text-slate-200 font-bold bg-white/5 px-4 py-2 rounded-2xl w-full cursor-pointer hover:bg-white/10 transition">
                   <input type="checkbox" id="inp-burn" class="accent-amber-500 w-5 h-5" />
@@ -1875,8 +1370,8 @@ body {
         <!-- Cart -->
         <div class="mb-4">
           <div class="flex items-center justify-between mb-4">
-            <div class="text-base font-extrabold text-white tracking-wide">Корзина</div>
-            <div id="discount-badge" class="hidden text-xs font-extrabold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-full">
+            <div class="text-lg font-extrabold text-white tracking-wide">Корзина</div>
+            <div id="discount-badge" class="hidden text-sm font-extrabold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-full animate-pulse">
               Скидка 10%
             </div>
           </div>
@@ -1955,7 +1450,7 @@ body {
       <div class="glass rounded-2xl p-5 mb-6 border-2 border-amber-500/20">
         <div class="flex items-center gap-3 mb-4">
           <i data-lucide="user" class="w-6 h-6 text-amber-400"></i>
-          <span class="text-base font-extrabold text-white">Персональные данные</span>
+          <span class="text-lg font-extrabold text-white">Персональные данные</span>
         </div>
         
         <div class="space-y-3">
@@ -1982,7 +1477,7 @@ body {
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <i data-lucide="database" class="w-6 h-6 text-emerald-400"></i>
-            <span class="text-base font-extrabold text-white">Управление данными</span>
+            <span class="text-lg font-extrabold text-white">Управление данными</span>
           </div>
           <div class="text-xs text-slate-500 mono" id="db-version-display">v2.0</div>
         </div>
@@ -2028,7 +1523,7 @@ body {
 
       <!-- Profile -->
       <div class="glass rounded-2xl p-5 mb-6">
-        <div class="text-base font-extrabold text-white mb-4">Профиль</div>
+        <div class="text-lg font-extrabold text-white mb-4">Профиль</div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="text-sm text-slate-400 font-bold mb-2 block">Бронь (%)</label>
@@ -2135,7 +1630,6 @@ body {
     </div>
   </div>
 
-  <!-- ========== TEMPLATES MODAL ========== -->
   <!-- Scripts -->
   <script>
 /* === Inlined from app.js === */
@@ -2233,7 +1727,7 @@ const Utils = {
         await navigator.clipboard.writeText(text);
         return true;
       } catch (err) {
-        console.warn('Clipboard API failed, trying fallback...', err);
+        // Clipboard API failed, trying fallback...
       }
     }
     try {
@@ -2251,7 +1745,7 @@ const Utils = {
       document.body.removeChild(textArea);
       return successful;
     } catch (err) {
-      console.error('Fallback clipboard failed:', err);
+      // Fallback clipboard failed
       return false;
     }
   },
@@ -2290,7 +1784,6 @@ const Utils = {
         weekday: 'short'
       });
     } catch (e) {
-      console.error('Date formatting error:', e);
       return dateString;
     }
   },
@@ -2431,7 +1924,8 @@ const DEFAULT_DB = {
     burnBonusTitle: "Появление Гендиректора",
     burnBonusPrice: 15000,
     burnHours: 48,
-    personalName: ""
+    personalName: "",
+    enableBackgroundAnimation: false  // Фоновая анимация отключена для экономии батареи
   }
 };
 
@@ -2807,7 +2301,7 @@ const DataManager = {
       fileInput.addEventListener('change', (e) => {
         if (e.target.files && e.target.files[0]) {
           DataManager.importData(e.target.files[0])
-            .catch(err => console.error(err))
+            .catch(() => {}) // Ошибка уже обработана в importData
             .finally(() => {
               fileInput.value = '';
             });
@@ -2937,15 +2431,12 @@ const App = {
         }, 100);
       }
       
-      App.startSplash();
+      // App.startSplash(); // УДАЛЕНО - используем новую заставку
       App.registerSWInline();
 
       DataManager.updateBackupIndicator('saved');
       
-      // Помечаем что приложение готово к работе
-      if (window.markAppReady) {
-        window.markAppReady();
-      }
+      // Приложение готово к работе
     } catch (err) {
       console.error('❌ App initialization failed:', err);
       App.showToast('Ошибка инициализации');
@@ -2986,6 +2477,7 @@ const App = {
       });
       applyTimeMode();
     }
+
 
     // Region & City
     document.getElementById('inp-region')?.addEventListener('change', App.updateRegion);
@@ -3077,6 +2569,8 @@ const App = {
       }, 350));
     }
 
+
+
     const burnTitleInput = document.getElementById('cfg-burn-title');
     if (burnTitleInput) {
       burnTitleInput.value = DB.config?.burnBonusTitle ?? "Появление Гендиректора";
@@ -3111,6 +2605,7 @@ const App = {
       }, 350));
     }
 
+
     App.updatePercentLabels();
 
   },
@@ -3128,6 +2623,7 @@ updatePercentLabels: () => {
     // silent
   }
 },
+
 
   updateBurnLabel: () => {
     try {
@@ -3153,6 +2649,7 @@ updatePercentLabels: () => {
 
   registerSWInline: () => {
     try {
+      if (!('serviceWorker' in navigator)) return;
       const swCode = `
         const CACHE = 'illusionist-os-cache-v1';
         self.addEventListener('install', (e) => {
@@ -3188,6 +2685,7 @@ updatePercentLabels: () => {
       const blob = new Blob([swCode], { type: 'text/javascript' });
       const swUrl = URL.createObjectURL(blob);
 
+      navigator.serviceWorker.register(swUrl).catch(() => {});
       setTimeout(() => {
         try {
           URL.revokeObjectURL(swUrl);
@@ -3196,66 +2694,7 @@ updatePercentLabels: () => {
     } catch (e) {}
   },
 
-  startSplash: () => {
-    const splash = document.getElementById('splash');
-    if (!splash) return;
-
-    setTimeout(() => {
-      if (window.lucide) {
-        try { lucide.createIcons(); } catch (err) {}
-      }
-    }, 100);
-
-    const MIN_MS = 2800;
-    const MAX_MS = 5000;
-    let dismissed = false;
-    let appReady = false;
-
-    const hide = () => {
-      if (dismissed) return;
-      dismissed = true;
-      
-      // Скрываем splash только когда приложение готово
-      const doHide = () => {
-        splash.classList.add('hide');
-        setTimeout(() => {
-          if (splash.parentNode) splash.remove();
-        }, 700);
-      };
-      
-      // Если приложение уже готово - сразу скрываем
-      if (appReady) {
-        doHide();
-      } else {
-        // Иначе ждём готовности (но не больше 500мс)
-        const checkReady = setInterval(() => {
-          if (appReady) {
-            clearInterval(checkReady);
-            doHide();
-          }
-        }, 50);
-        
-        setTimeout(() => {
-          clearInterval(checkReady);
-          doHide();
-        }, 500);
-      }
-    };
-    
-    // Помечаем что приложение готово
-    window.markAppReady = () => {
-      appReady = true;
-    };
-
-    splash.addEventListener('click', hide, { once: true });
-    splash.addEventListener('touchstart', hide, { once: true, passive: true });
-    setTimeout(hide, MIN_MS);
-    setTimeout(() => {
-      if (!dismissed) {
-        hide();
-      }
-    }, MAX_MS);
-  },
+  // startSplash УДАЛЕНА - используется новая система загрузки
 
   updateUI: () => {
     try {
@@ -3529,6 +2968,7 @@ updatePercentLabels: () => {
     if (window.lucide) lucide.createIcons();
   },
 
+
   renderBreakdown: () => {
     const wrap = document.getElementById('cart-breakdown');
     if (!wrap) return;
@@ -3637,6 +3077,7 @@ updatePercentLabels: () => {
     }
   },
 
+
   calc: () => {
     try {
       const k = State.holidayK || 1;
@@ -3686,12 +3127,14 @@ updatePercentLabels: () => {
         const basicPreTax = basicPrice + extras;
         const optimalPreTax = optimalPrice + extras;
         const premiumPreTax = premiumPrice + extras;
-
+        
+        
         const cashlessPct = Utils.sanitizeNumber(DB.config?.cashlessPercent ?? 6, 0, 100, 6);
         const agencyPct = Utils.sanitizeNumber(DB.config?.agencyPercent ?? 15, 0, 99, 15);
 
         const agencyCheckbox = document.getElementById('inp-agency');
         const useAgency = agencyCheckbox ? agencyCheckbox.checked : false;
+
 
       const burnCheckbox = document.getElementById('inp-burn');
       const useBurn = burnCheckbox ? burnCheckbox.checked : false;
@@ -3718,6 +3161,7 @@ updatePercentLabels: () => {
         const optimalAgencyMarkup = useAgency ? Math.max(0, optimalTotal - optimalSub) : 0;
         const premiumAgencyMarkup = useAgency ? Math.max(0, premiumTotal - premiumSub) : 0;
 
+        
         // Сохраняем в State для копирования
         State.finalTotal = basicTotal; // Для совместимости показываем базовый
         State.finalDetails = { 
@@ -3847,6 +3291,7 @@ updatePercentLabels: () => {
 
       const tax = useTax ? Math.round(preTax * (cashlessPct / 100)) : 0;
 
+
       const subTotal = preTax + tax;
 
       const toClient = (sub) => {
@@ -3938,6 +3383,7 @@ updatePercentLabels: () => {
       .sort((a, b) => (a.threshold || 0) - (b.threshold || 0));
   },
 
+  
   copyPriceList: async () => {
     const catSelect = document.getElementById('inp-cat');
     if (!catSelect) return;
@@ -4046,6 +3492,7 @@ updatePercentLabels: () => {
     text += lines.join('\n\n') + '\n\n';
     text += `Бронь: ${depositPct}% (фиксирует дату)\n\n`;
 
+
     // Expiring bonus (сгорающий бонус)
     const burnEnabled = !!document.getElementById('inp-burn')?.checked;
     if (burnEnabled) {
@@ -4057,6 +3504,7 @@ updatePercentLabels: () => {
       text += `⏳ Сгорающий бонус\n`;
       text += `Бонус "${bonusTitle}" (цена ${Utils.formatPrice(bonusPrice)} ₽) идет в подарок при бронировании даты до ${deadlineStr}.\n\n`;
     }
+
 
     if (Array.isArray(DB.links) && DB.links.length) {
       text += `Ссылки:\n`;
@@ -4094,6 +3542,8 @@ updatePercentLabels: () => {
     App.showToast(success ? 'Цены скопированы!' : 'Не удалось скопировать');
   },
 
+
+
   copyQuote: async () => {
     if (!State.finalTotal || State.finalTotal <= 0) {
       App.showToast('Сумма 0 ₽');
@@ -4101,8 +3551,6 @@ updatePercentLabels: () => {
     }
 
     const depositPct = Utils.sanitizeNumber(DB.config?.deposit ?? 30, 0, 100, 30);
-
-    const type = Utils.sanitizeText(document.getElementById('inp-event-type')?.value || 'Мероприятие', 60);
 
     const dateRaw = document.getElementById('inp-date')?.value || '';
     const dateFmt = Utils.formatDate(dateRaw) || dateRaw || 'по согласованию';
@@ -4116,7 +3564,6 @@ updatePercentLabels: () => {
     const locationLine = [city, region].filter(Boolean).join(', ') || 'по согласованию';
 
     let text = `Ваше персональное предложение\n\n`;
-    text += `🎩 Формат: ${type}\n`;
     text += `📅 Дата: ${dateFmt}\n`;
     text += `⏰ Время: ${timeFmt}\n`;
     text += `📍 Локация: ${locationLine}\n\n`;
@@ -4174,6 +3621,7 @@ updatePercentLabels: () => {
       const dep = Math.round(State.finalTotal * (depositPct / 100));
       text += `Бронь ${depositPct}%: ${Utils.formatPrice(dep)} ₽\n\n`;
     }
+
 
     // Expiring bonus (сгорающий бонус)
     const burnEnabled = !!document.getElementById('inp-burn')?.checked;
@@ -4308,6 +3756,9 @@ updatePercentLabels: () => {
   },
 
   renderParticles: () => {
+    // Проверяем настройку анимации фона
+    if (DB.config && DB.config.enableBackgroundAnimation === false) return;
+    
     const canvas = document.getElementById('bg-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -5233,6 +4684,7 @@ Object.assign(Admin, {
 // TEMPLATES MODULE
 // ============================================
 
+
 // ============================================
 // ROUNDING MODULE
 // ============================================
@@ -6004,14 +5456,11 @@ window.PremiumDialog = (() => {
 
 <script>
 // ============================================
-// ПРОСТАЯ ЛИЦЕНЗИОННАЯ ЗАЩИТА
+// ЛИЦЕНЗИОННАЯ ЗАЩИТА
 // ============================================
 
 (function() {
   'use strict';
-  
-  // СЕКРЕТНЫЙ КЛЮЧ для генерации лицензий (храни в секрете!)
-  const SECRET = 'ILLUSIONIST_' + Date.now();
   
   // Функция генерации хеша устройства
   function getDeviceId() {
@@ -6026,7 +5475,6 @@ window.PremiumDialog = (() => {
       new Date().getTimezoneOffset(),
     ];
     
-    // Простой хеш
     let hash = 0;
     const str = components.join('|');
     for (let i = 0; i < str.length; i++) {
@@ -6042,11 +5490,9 @@ window.PremiumDialog = (() => {
   function validateLicense(key) {
     if (!key || key.length !== 19) return false;
     
-    // Формат: XXXX-XXXX-XXXX-XXXX
     const parts = key.split('-');
     if (parts.length !== 4) return false;
     
-    // Простая проверка контрольной суммы
     const check = parts[3];
     const data = parts.slice(0, 3).join('');
     
@@ -6067,24 +5513,20 @@ window.PremiumDialog = (() => {
       try {
         const data = JSON.parse(atob(stored));
         
-        // Проверяем ключ
         if (!validateLicense(data.key)) {
           return false;
         }
         
-        // Проверяем привязку к устройству
         const currentDevice = getDeviceId();
         if (data.device !== currentDevice) {
           console.warn('Лицензия привязана к другому устройству');
           return false;
         }
         
-        // Проверяем дату активации (не слишком старая)
         const activated = new Date(data.activated);
         const now = new Date();
         const daysDiff = (now - activated) / (1000 * 60 * 60 * 24);
         
-        // Если больше года - просим подтверждение
         if (daysDiff > 365) {
           return 'expired';
         }
@@ -6111,7 +5553,6 @@ window.PremiumDialog = (() => {
       activated: new Date().toISOString()
     };
     
-    // Сохраняем в base64
     const encoded = btoa(JSON.stringify(data));
     localStorage.setItem('illusionist_license', encoded);
     
@@ -6184,7 +5625,6 @@ window.PremiumDialog = (() => {
       margin-bottom: 16px;
     `;
     
-    // Автоматическое добавление дефисов
     input.addEventListener('input', function(e) {
       let value = e.target.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
       let formatted = '';
@@ -6210,14 +5650,6 @@ window.PremiumDialog = (() => {
       transition: transform 0.2s;
     `;
     
-    button.addEventListener('mousedown', () => {
-      button.style.transform = 'scale(0.98)';
-    });
-    
-    button.addEventListener('mouseup', () => {
-      button.style.transform = 'scale(1)';
-    });
-    
     const error = document.createElement('div');
     error.style.cssText = `
       color: #ef4444;
@@ -6226,20 +5658,29 @@ window.PremiumDialog = (() => {
       min-height: 20px;
     `;
     
-     text-decoration: none;">Свяжитесь с нами</a>';
-    info.style.cssText = `
-      color: rgba(148,163,184,0.6);
-      font-size: 12px;
-      margin-top: 16px;
-    `;
-    
     button.addEventListener('click', () => {
       const key = input.value.trim();
       const result = activateLicense(key);
       
       if (result.success) {
-        document.body.removeChild(overlay);
-        location.reload();
+        // Плавно убираем окно активации
+        overlay.style.transition = 'opacity 0.5s';
+        overlay.style.opacity = '0';
+        
+        setTimeout(function(){
+          document.body.removeChild(overlay);
+          
+          // Показываем магическую анимацию
+          if(typeof window.showMagicAfterActivation === 'function'){
+            window.showMagicAfterActivation();
+          }
+          
+          // Перезагружаем через 3.5 секунды (после анимации)
+          setTimeout(function(){
+            location.reload();
+          }, 3500);
+        }, 500);
+        
       } else {
         error.textContent = result.error || 'Неверный ключ';
         input.style.borderColor = '#ef4444';
@@ -6257,7 +5698,8 @@ window.PremiumDialog = (() => {
     box.appendChild(subtitle);
     box.appendChild(input);
     box.appendChild(button);
-    box.appendChild(error);overlay.appendChild(box);
+    box.appendChild(error);
+    overlay.appendChild(box);
     document.body.appendChild(overlay);
     
     input.focus();
@@ -6269,7 +5711,6 @@ window.PremiumDialog = (() => {
       const status = checkActivation();
       
       if (status === true) {
-        // Всё ок, ничего не делаем
         console.log('✅ Лицензия активна');
       } else if (status === 'expired') {
         showLicensePrompt('expired');
@@ -6278,32 +5719,6 @@ window.PremiumDialog = (() => {
       }
     }, 100);
   });
-  
-  // Экспорт для генератора ключей (только для тебя)
-  window.generateLicenseKey = function() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let key = '';
-    
-    // Генерируем 3 блока по 4 символа
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 4; j++) {
-        key += chars[Math.floor(Math.random() * chars.length)];
-      }
-      if (i < 2) key += '-';
-    }
-    
-    // Контрольная сумма
-    let sum = 0;
-    const data = key.replace(/-/g, '');
-    for (let i = 0; i < data.length; i++) {
-      sum += data.charCodeAt(i);
-    }
-    
-    const check = (sum % 10000).toString(36).toUpperCase().padStart(4, '0');
-    key += '-' + check;
-    
-    return key;
-  };
   
 })();
 </script>
