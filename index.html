@@ -1153,7 +1153,10 @@ button {
   
   function checkLicense(){
     var hasLic=typeof checkActivation==='function'?checkActivation():false;
-    if(hasLic===true){showMagic()}
+    if(hasLic===true){
+      // Лицензия уже есть - просто ничего не делаем, приложение загрузится
+      // "Добро пожаловать" показывается ТОЛЬКО при первой активации
+    }
     else if(typeof showLicensePrompt==='function'){showLicensePrompt(hasLic==='expired'?'expired':'first')}
   }
   
@@ -5705,20 +5708,7 @@ window.PremiumDialog = (() => {
     input.focus();
   }
   
-  // Проверка при загрузке
-  document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-      const status = checkActivation();
-      
-      if (status === true) {
-        console.log('✅ Лицензия активна');
-      } else if (status === 'expired') {
-        showLicensePrompt('expired');
-      } else {
-        showLicensePrompt('first');
-      }
-    }, 100);
-  });
+  // Проверка лицензии управляется заставкой (см. скрипт в начале body)
   
 })();
 </script>
