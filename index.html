@@ -1575,6 +1575,7 @@ button {
         <button id="btn-add-bonus" class="btn-add">+ Бонус</button>
         <button id="btn-add-payment" class="btn-add">+ Реквизиты</button>
         <button id="btn-add-link" class="btn-add">+ Ссылка</button>
+        <button id="btn-reset-license" class="btn-add bg-amber-500/10 border-amber-500/25 text-amber-300 hover:bg-amber-500/20">🔑 Сбросить лицензию (тест)</button>
         <button id="btn-reset-db" class="btn-add bg-red-500/10 border-red-500/25 text-red-300 hover:bg-red-500/20">Сброс БД</button>
       </div>
 
@@ -2529,6 +2530,12 @@ const App = {
     bind('btn-add-range', () => Admin.addRange());
     bind('btn-add-payment', () => Admin.addPayment());
     bind('btn-add-link', () => Admin.addLink());
+    bind('btn-reset-license', () => {
+      if (confirm('🔑 Сбросить лицензию?\n\nПри следующей загрузке появится экран активации.\n\nЭто для тестирования!')) {
+        localStorage.removeItem('illusionist_license');
+        App.showToast('Лицензия сброшена! Перезагрузите страницу.');
+      }
+    });
     bind('btn-reset-db', () => Admin.reset());
   },
 
@@ -5509,7 +5516,20 @@ window.PremiumDialog = (() => {
   }
   
   // Проверка активации
+  // ============================================
+  // DEMO MODE - для тестирования
+  // ============================================
+  // Установите true чтобы ВСЕГДА показывать экран активации
+  // Установите false для нормальной работы (production)
+  const DEMO_MODE = true;  // ← ИЗМЕНИТЕ НА false ДЛЯ PRODUCTION
+  
   function checkActivation() {
+    // Если DEMO MODE - всегда возвращаем false (нет лицензии)
+    if (DEMO_MODE) {
+      console.log('🎭 DEMO MODE: Принудительно показываем экран активации');
+      return false;
+    }
+    
     const stored = localStorage.getItem('illusionist_license');
     
     if (stored) {
