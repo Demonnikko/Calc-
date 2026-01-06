@@ -1758,6 +1758,21 @@ const AUTO_BACKUP_INTERVAL = 5 * 60 * 1000; // 5 минут
 // UTILITIES
 // ============================================
 const Utils = {
+  // Debounced lucide icons для производительности
+  _lucideTimer: null,
+  updateIcons: () => {
+    clearTimeout(Utils._lucideTimer);
+    Utils._lucideTimer = setTimeout(() => {
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        try {
+          window.lucide.createIcons();
+        } catch (e) {
+          console.warn('Lucide icons error:', e);
+        }
+      }
+    }, 50); // Debounce 50ms
+  },
+
   escapeHtml: (text) => {
     if (!text) return '';
     const map = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'};
@@ -1915,16 +1930,6 @@ const Utils = {
       hash = hash & hash;
     }
     return Math.abs(hash).toString(16);
-  },
-
-  saveToStorage: (key, value) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch (err) {
-      console.error('Storage save error:', err);
-      return false;
-    }
   },
 
   // Кеш для localStorage
@@ -2636,58 +2641,77 @@ const App = {
     bind('btn-add-range', () => Admin.addRange());
     bind('btn-add-payment', () => Admin.addPayment());
     bind('btn-add-link', () => Admin.addLink());
-    bind('btn-reset-license-user', () => {
+    bind('btn-reset-license-user', async () => {
       console.log('🔘 Кнопка "Сбросить активацию" нажата');
       
-      // Двойное подтверждение для безопасности
-      if (confirm('⚠️ Сбросить активацию?\n\nПосле этого потребуется заново ввести ключ активации.')) {
-        console.log('✅ Первое подтверждение получено');
-        
-        if (confirm('🔑 Вы точно уверены?\n\nЛицензия будет удалена, и все данные активации будут стёрты.\n\nПродолжить?')) {
-          console.log('✅ Второе подтверждение получено');
-          
-          // Удаляем лицензию
-          localStorage.removeItem('illusionist_license');
-          console.log('🗑️ Лицензия удалена из localStorage');
-          
-          // Обновляем статус в UI
-          App.updateLicenseStatus();
-          console.log('📊 Статус обновлён');
-          
-          // Закрываем настройки
-          const settingsModal = document.getElementById('settings-modal');
-          if (settingsModal) {
-            settingsModal.classList.remove('show');
-            console.log('❌ Настройки закрыты');
-          }
-          
-          // Показываем toast
-          App.showToast('✅ Активация сброшена! Показываю экран активации...');
-          console.log('💬 Toast показан');
-          
-          // Показываем экран активации через 1 секунду
-          setTimeout(() => {
-            console.log('⏰ Таймер сработал, проверяем функцию...');
-            console.log('typeof showLicensePrompt:', typeof showLicensePrompt);
-            console.log('window.showLicensePrompt:', typeof window.showLicensePrompt);
-            
-            if (typeof window.showLicensePrompt === 'function') {
-              console.log('🎯 Вызываем window.showLicensePrompt("first")');
-              window.showLicensePrompt('first');
-            } else if (typeof showLicensePrompt === 'function') {
-              console.log('🎯 Вызываем showLicensePrompt("first")');
-              showLicensePrompt('first');
-            } else {
-              console.error('❌ Функция showLicensePrompt не найдена!');
-              App.showToast('Ошибка! Перезагрузите страницу вручную (F5).');
-            }
-          }, 1000);
-        } else {
-          console.log('❌ Второе подтверждение отменено');
-        }
-      } else {
+      // Первое подтверждение
+      const confirm1 = await PremiumDialog.confirm({
+        message: 'Сбросить активацию?\n\nПосле этого потребуется заново ввести ключ активации.',
+        danger: true,
+        okText: 'Продолжить',
+        cancelText: 'Отмена',
+        icon: 'alert-triangle'
+      });
+      
+      if (!confirm1) {
         console.log('❌ Первое подтверждение отменено');
+        return;
       }
+      
+      console.log('✅ Первое подтверждение получено');
+      
+      // Второе подтверждение
+      const confirm2 = await PremiumDialog.confirm({
+        message: 'Вы точно уверены?\n\nЛицензия будет удалена, и все данные активации будут стёрты.\n\nПродолжить?',
+        danger: true,
+        okText: 'Да, сбросить',
+        cancelText: 'Отмена',
+        icon: 'key'
+      });
+      
+      if (!confirm2) {
+        console.log('❌ Второе подтверждение отменено');
+        return;
+      }
+      
+      console.log('✅ Второе подтверждение получено');
+      
+      // Удаляем лицензию
+      localStorage.removeItem('illusionist_license');
+      console.log('🗑️ Лицензия удалена из localStorage');
+      
+      // Обновляем статус в UI
+      App.updateLicenseStatus();
+      console.log('📊 Статус обновлён');
+      
+      // Закрываем настройки
+      const settingsModal = document.getElementById('view-settings');
+      if (settingsModal) {
+        settingsModal.classList.remove('active');
+        console.log('❌ Настройки закрыты');
+      }
+      
+      // Показываем toast
+      App.showToast('✅ Активация сброшена! Показываю экран активации...');
+      console.log('💬 Toast показан');
+      
+      // Показываем экран активации через 1 секунду
+      setTimeout(() => {
+        console.log('⏰ Таймер сработал, проверяем функцию...');
+        console.log('typeof showLicensePrompt:', typeof showLicensePrompt);
+        console.log('window.showLicensePrompt:', typeof window.showLicensePrompt);
+        
+        if (typeof window.showLicensePrompt === 'function') {
+          console.log('🎯 Вызываем window.showLicensePrompt("first")');
+          window.showLicensePrompt('first');
+        } else if (typeof showLicensePrompt === 'function') {
+          console.log('🎯 Вызываем showLicensePrompt("first")');
+          showLicensePrompt('first');
+        } else {
+          console.error('❌ Функция showLicensePrompt не найдена!');
+          App.showToast('Ошибка! Перезагрузите страницу вручную (F5).');
+        }
+      }, 1000);
     });
     bind('btn-reset-db', () => Admin.reset());
   },
@@ -2868,7 +2892,7 @@ updatePercentLabels: () => {
         App.updateCat();
         
         requestAnimationFrame(() => {
-          if (window.lucide) lucide.createIcons();
+          Utils.updateIcons(); // Debounced вызов
           DataManager.updateStats();
           DataManager.renderBackupSlots();
           Admin.render();
@@ -3167,7 +3191,7 @@ updatePercentLabels: () => {
       cartList.appendChild(wrapper);
     });
 
-    if (window.lucide) lucide.createIcons();
+    Utils.updateIcons(); // Debounced вызов
   },
 
   updateBulkSelection: () => {
@@ -3192,7 +3216,7 @@ updatePercentLabels: () => {
     App.updateBulkSelection();
   },
 
-  deleteSelectedCartItems: () => {
+  deleteSelectedCartItems: async () => {
     const checkboxes = document.querySelectorAll('.cart-item-checkbox');
     const selectedIndices = Array.from(checkboxes)
       .map((cb, i) => cb.checked ? i : -1)
@@ -3205,34 +3229,45 @@ updatePercentLabels: () => {
     }
 
     const count = selectedIndices.length;
+    const word = count === 1 ? 'услугу' : count < 5 ? 'услуги' : 'услуг';
     
-    // Подтверждение
-    if (confirm(`Удалить ${count} ${count === 1 ? 'услугу' : count < 5 ? 'услуги' : 'услуг'}?`)) {
-      // Сохраняем удалённые элементы для undo
-      const removedItems = selectedIndices.map(idx => ({
-        item: { ...State.cart[idx] },
-        index: idx
-      }));
-      
-      // Удаляем (начиная с конца чтобы индексы не сбивались)
-      selectedIndices.forEach(idx => {
-        State.cart.splice(idx, 1);
+    // Подтверждение через PremiumDialog
+    const confirmed = await PremiumDialog.confirm({
+      message: `Удалить ${count} ${word}?\n\nВы сможете отменить это действие в течение 5 секунд.`,
+      danger: true,
+      okText: 'Удалить',
+      cancelText: 'Отмена',
+      icon: 'trash-2'
+    });
+    
+    if (!confirmed) return;
+    
+    // Сохраняем удалённые элементы для undo
+    const removedItems = selectedIndices.map(idx => ({
+      item: { ...State.cart[idx] },
+      index: idx
+    }));
+    
+    // Удаляем (начиная с конца чтобы индексы не сбивались)
+    selectedIndices.forEach(idx => {
+      State.cart.splice(idx, 1);
+    });
+    
+    App.renderCart();
+    App.calc();
+    
+    const word2 = count === 1 ? 'услуга' : count < 5 ? 'услуги' : 'услуг';
+    
+    // Toast с UNDO
+    App.showToastWithUndo(`Удалено: ${count} ${word2}`, () => {
+      // Восстанавливаем все элементы
+      removedItems.reverse().forEach(({ item, index }) => {
+        State.cart.splice(index, 0, item);
       });
-      
       App.renderCart();
       App.calc();
-      
-      // Toast с UNDO
-      App.showToastWithUndo(`Удалено: ${count} ${count === 1 ? 'услуга' : count < 5 ? 'услуги' : 'услуг'}`, () => {
-        // Восстанавливаем все элементы
-        removedItems.reverse().forEach(({ item, index }) => {
-          State.cart.splice(index, 0, item);
-        });
-        App.renderCart();
-        App.calc();
-        App.showToast('✅ Услуги восстановлены');
-      });
-    }
+      App.showToast('✅ Услуги восстановлены');
+    });
   },
 
 
