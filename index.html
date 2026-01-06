@@ -11,19 +11,19 @@
   <meta name="apple-mobile-web-app-title" content="Illusionist OS" />
   <meta name="theme-color" content="#050507" />
 
-  
+
 
   <!-- Icons (iOS/Android/PWA) -->
   <!-- Основная иконка для браузера -->
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png" />
-  
+
   <!-- Apple Touch Icons -->
   <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png" />
   <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png" />
   <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png" />
   <link rel="apple-touch-icon" sizes="120x120" href="icons/icon-120.png" />
-  
+
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -44,1076 +44,22 @@
   <!-- Tailwind -->
   <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
   <script src="https://cdn.tailwindcss.com" defer></script>
-  
+
   <!-- Lucide -->
   <link rel="preload" href="https://unpkg.com/lucide@latest" as="script">
   <script src="https://unpkg.com/lucide@latest" defer></script>
 
   <!-- Critical CSS для мгновенного рендера -->
   <style>
-    body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,sans-serif}
-    .hide{opacity:0;pointer-events:none}
-  
-/* Mini chips for quick percent presets */
-.mini-chip{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:0.22rem 0.5rem;
-  border-radius:999px;
-  font-size:0.72rem;
-  font-weight:800;
-  letter-spacing:0.02em;
-  border:1px solid rgba(245,158,11,0.25);
-  background:rgba(245,158,11,0.10);
-  color:rgba(245,158,11,0.95);
-  transition:transform .12s ease, background .12s ease, border-color .12s ease;
-  cursor:pointer;
-  user-select:none;
-  white-space:nowrap;
-}
-.mini-chip:hover{ transform:translateY(-1px); background:rgba(245,158,11,0.14); border-color:rgba(245,158,11,0.35); }
-.mini-chip:active{ transform:translateY(0px) scale(.98); }
-.mini-chip--ghost{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.12); color:rgba(226,232,240,0.9); }
-
+body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,sans-serif}.hide{opacity:0;pointer-events:none}.mini-chip{display:inline-flex;align-items:center;justify-content:center;padding:0.22rem 0.5rem;border-radius:999px;font-size:0.72rem;font-weight:800;letter-spacing:0.02em;border:1px solid rgba(245,158,11,0.25);background:rgba(245,158,11,0.10);color:rgba(245,158,11,0.95);transition:transform .12s ease,background .12s ease,border-color .12s ease;cursor:pointer;user-select:none;white-space:nowrap;}.mini-chip:hover{transform:translateY(-1px);background:rgba(245,158,11,0.14);border-color:rgba(245,158,11,0.35);}.mini-chip:active{transform:translateY(0px) scale(.98);}.mini-chip--ghost{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.12);color:rgba(226,232,240,0.9);}
 </style>
 
   <!-- Styles -->
   <style>
-/* === Inlined from styles.css === */
-/* ============================================
-   ILLUSIONIST OS - STYLES (УЛУЧШЕННАЯ ВЕРСИЯ)
-   ============================================ */
-
-:root {
-  /* Colors - улучшенная контрастность */
-  --bg: #050507;
-  --panel: rgba(255,255,255,.10);
-  --panel2: rgba(255,255,255,.12);
-  --stroke: rgba(255,255,255,.15);
-  --gold: #f59e0b;
-  --muted: #94a3b8;
-  --text: #f1f5f9;  /* было #e5e7eb - увеличена яркость */
-
-  /* Safe-area */
-  --safe-top: env(safe-area-inset-top);
-  --safe-bottom: env(safe-area-inset-bottom);
-  --safe-left: env(safe-area-inset-left);
-  --safe-right: env(safe-area-inset-right);
-}
-
-/* ============================================
-   BASE
-   ============================================ */
-html, body {
-  height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
-  height: -webkit-fill-available;
-  scroll-behavior: smooth;
-  font-size: 16px; /* было 14px */
-}
-
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  overflow-x: hidden;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  padding-top: var(--safe-top);
-  padding-bottom: var(--safe-bottom);
-  padding-left: var(--safe-left);
-  padding-right: var(--safe-right);
-  overscroll-behavior: none;
-}
-
-/* ============================================
-   FONTS
-   ============================================ */
-.font-cinzel { font-family: Cinzel, serif; }
-.mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
-
-/* ============================================
-   GLASS EFFECT
-   ============================================ */
-.glass {
-  background: var(--panel);
-  border: 1px solid var(--stroke);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.05) inset;
-}
-
-/* Уровни глубины (elevation) */
-.glass-level-1 {
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05) inset;
-}
-
-.glass-level-2 {
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.05) inset;
-}
-
-.glass-level-3 {
-  box-shadow: 0 8px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.08) inset;
-}
-
-/* ============================================
-   HEADER
-   ============================================ */
-header {
-  padding: 16px 20px; /* увеличено */
-  padding-top: calc(16px + env(safe-area-inset-top)) !important;
-  padding-left: max(20px, env(safe-area-inset-left)) !important;
-  padding-right: max(20px, env(safe-area-inset-right)) !important;
-}
-
-/* ============================================
-   MAIN
-   ============================================ */
-main {
-  padding-left: max(16px, env(safe-area-inset-left)) !important;
-  padding-right: max(16px, env(safe-area-inset-right)) !important;
-  overflow-x: hidden !important;
-}
-
-/* ============================================
-   ФОРМА: INPUTS & SELECTS
-   ============================================ */
-.form-input {
-  width: 100%;
-  background: rgba(255,255,255,.08); /* было .06 */
-  border: 1.5px solid rgba(255,255,255,.12); /* было 1px .10 */
-  border-radius: 14px; /* было 10px */
-  padding: 14px 16px; /* было 8px 10px */
-  font-size: 15px; /* было 12px */
-  color: #e2e8f0;
-  outline: none;
-  transition: all 0.2s;
-  min-height: 50px; /* добавлено для удобства тапа */
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.form-input:focus {
-  border-color: rgba(245,158,11,.4);
-  box-shadow: 0 0 0 4px rgba(245,158,11,.12);
-  background: rgba(255,255,255,.10);
-}
-
-.form-input:disabled {
-  opacity: 0.5;  /* Было 0.4 - теперь лучше видно */
-  cursor: not-allowed;
-  background: rgba(255,255,255,.04);  /* НОВОЕ - чуть затемнено */
-}
-
-.form-input::placeholder {
-  color: #94a3b8;  /* Было #64748b - светлее */
-}
-
-/* Mobile: prevent zoom on focus */
-@media (max-width: 768px) {
-  input[type="text"],
-  input[type="number"],
-  input[type="date"],
-  input[type="time"],
-  select,
-  textarea {
-    font-size: 16px !important; /* iOS не зумит при >= 16px */
-  }
-}
-
-/* ============================================
-   BUTTONS
-   ============================================ */
-button {
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-/* Золотая кнопка */
-.btn-gold {
-  width: 100%;
-  border-radius: 16px;
-  padding: 14px 18px;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  background: linear-gradient(135deg, rgba(245,158,11,.95), rgba(245,158,11,.75));
-  color: #120a00;
-  border: 1.5px solid rgba(245,158,11,.4);
-  box-shadow: 0 12px 30px rgba(245,158,11,.2);
-  min-height: 52px;
-  animation: goldGlow 4s ease-in-out infinite;
-}
-
-.btn-gold:hover {
-  filter: brightness(1.08);
-  transform: translateY(-1px);
-  box-shadow: 0 16px 40px rgba(245,158,11,.3), 0 0 20px rgba(245,158,11,.15);
-}
-
-.btn-gold:active {
-  transform: translateY(0);
-}
-
-/* Вторичная кнопка */
-.btn-secondary {
-  width: 100%;
-  border-radius: 16px;
-  padding: 14px 18px;
-  font-size: 14px;
-  font-weight: 700;
-  background: rgba(255,255,255,.12);  /* Было .08 - увеличен контраст */
-  color: #f1f5f9;  /* Было #e2e8f0 - ярче */
-  border: 1.5px solid rgba(255,255,255,.18);  /* Было .12 - ярче */
-  min-height: 52px;
-}
-
-.btn-secondary:hover {
-  background: rgba(255,255,255,.16);  /* Было .12 - ярче */
-  border-color: rgba(255,255,255,.25);  /* Было .2 - ярче */
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-/* Кнопка-иконка */
-.btn-icon {
-  width: 50px; /* было 44px */
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 16px; /* было 14px */
-  background: rgba(255,255,255,.08);
-  border: 1.5px solid rgba(255,255,255,.12);
-  flex-shrink: 0;
-}
-
-.btn-icon:hover {
-  background: rgba(255,255,255,.14);  /* Было .12 - ярче */
-  border-color: rgba(255,255,255,.22);  /* Было .2 - ярче */
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-/* Кнопка количества */
-.btn-qty {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 14px;
-  background: rgba(255,255,255,.08);
-  border: 1.5px solid rgba(255,255,255,.12);
-  flex-shrink: 0;
-}
-
-.btn-qty:hover {
-  background: rgba(255,255,255,.14);  /* Было .12 - ярче */
-  border-color: rgba(245,158,11,.4);  /* Было .3 - ярче */
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(245,158,11,0.15);
-}
-
-/* Кнопка добавления */
-.btn-add {
-  background: rgba(245,158,11,.16);  /* Было .12 - ярче */
-  border: 1.5px solid rgba(245,158,11,.30);  /* Было .25 - ярче */
-  color: rgba(245,158,11,1);  /* Было .95 - ярче */
-  border-radius: 14px;
-  padding: 12px 16px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  min-height: 48px;
-}
-
-.btn-add:hover {
-  background: rgba(245,158,11,.24);  /* Было .18 - ярче */
-  border-color: rgba(245,158,11,.45);  /* Было .35 - ярче */
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245,158,11,0.2);
-}
-
-/* Кнопка удаления (мини) */
-.btn-del-mini {
-  background: rgba(239,68,68,.12);
-  border: 1.5px solid rgba(239,68,68,.22);
-  color: rgba(239,68,68,.95);
-  border-radius: 12px;
-  width: 44px; /* было 34px */
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.btn-del-mini:hover {
-  background: rgba(239,68,68,.2);
-  border-color: rgba(239,68,68,.35);
-}
-
-/* Кнопки управления данными */
-.btn-data {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 16px; /* было 10px 14px */
-  border-radius: 14px;
-  font-size: 13px; /* было 11px */
-  font-weight: 700;
-  transition: all 0.2s;
-  min-height: 48px;
-}
-
-.btn-export {
-  background: rgba(34, 197, 94, 0.12);
-  border: 1.5px solid rgba(34, 197, 94, 0.25);
-  color: rgba(34, 197, 94, 0.95);
-}
-.btn-export:hover { background: rgba(34, 197, 94, 0.18); }
-
-.btn-import {
-  background: rgba(59, 130, 246, 0.12);
-  border: 1.5px solid rgba(59, 130, 246, 0.25);
-  color: rgba(59, 130, 246, 0.95);
-}
-.btn-import:hover { background: rgba(59, 130, 246, 0.18); }
-
-.btn-backup {
-  background: rgba(168, 85, 247, 0.12);
-  border: 1.5px solid rgba(168, 85, 247, 0.25);
-  color: rgba(168, 85, 247, 0.95);
-}
-.btn-backup:hover { background: rgba(168, 85, 247, 0.18); }
-
-/* ============================================
-   СТАРАЯ ЗАСТАВКА УДАЛЕНА
-   ============================================ */
-
-/* ============================================
-   TOAST
-   ============================================ */
-#toast {
-  position: fixed;
-  top: calc(20px + env(safe-area-inset-top));
-  left: 20px;
-  right: 20px;
-  z-index: 60;
-  opacity: 0;
-  transform: translateY(-12px);
-  transition: opacity .3s ease, transform .3s ease;
-  pointer-events: none;
-}
-
-#toast.show {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-@media (min-width: 640px) {
-  #toast {
-    left: 50%;
-    right: auto;
-    width: 450px;
-    max-width: calc(100vw - 40px);
-    transform: translateX(-50%) translateY(-12px);
-  }
-  #toast.show {
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-/* ============================================
-   MODALS
-   ============================================ */
-#view-settings {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.75);
-  display: none;
-  z-index: 40;
-  overflow: hidden;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-}
-
-#view-settings.active {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Settings panel */
-#view-settings .panel {
-  position: fixed !important;
-  left: 0 !important;
-  right: 0 !important;
-  top: env(safe-area-inset-top) !important;
-  bottom: env(safe-area-inset-bottom) !important;
-  transform: none !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  max-height: none !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  -webkit-overflow-scrolling: touch;
-}
-
-@media (min-width: 768px) {
-  #view-settings .panel {
-    position: absolute !important;
-    left: 50% !important;
-    top: 50% !important;
-    right: auto !important;
-    bottom: auto !important;
-    transform: translate(-50%, -50%) !important;
-    width: min(920px, calc(100% - 48px)) !important;
-    max-width: min(920px, calc(100% - 48px)) !important;
-    max-height: calc(100vh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
-    border-radius: 24px !important;
-  }
-}
-
-/* ============================================
-   ADMIN SECTIONS
-   ============================================ */
-.admin-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-  gap: 12px;
-  padding: 8px 0;
-}
-
-.admin-content {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height .35s ease;
-  padding-top: 0;
-}
-
-.admin-content.open {
-  max-height: 1800px;
-  padding-top: 12px;
-}
-
-/* ============================================
-   EDIT ROWS
-   ============================================ */
-.edit-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  flex-wrap: wrap;
-}
-
-.edit-input {
-  background: rgba(255,255,255,.08);
-  border: 1.5px solid rgba(255,255,255,.12);
-  border-radius: 12px;
-  padding: 10px 12px; /* было 8px 10px */
-  font-size: 14px; /* было 12px */
-  color: #e2e8f0;
-  outline: none;
-  min-height: 44px;
-  flex: 1;
-  min-width: 0;
-}
-
-.edit-input:focus {
-  border-color: rgba(245,158,11,.4);
-  box-shadow: 0 0 0 3px rgba(245,158,11,.12);
-}
-
-/* ============================================
-   BACKUP SLOTS
-   ============================================ */
-.backup-slot {
-  background: rgba(255,255,255,0.05);
-  border: 1.5px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  padding: 12px; /* было 10px 12px */
-  cursor: pointer;
-  transition: all 0.2s;
-  min-height: 68px; /* было 56px */
-}
-
-.backup-slot:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(245,158,11,0.35);
-  transform: translateY(-1px);
-}
-
-.backup-slot.empty {
-  opacity: 0.3;
-  cursor: default;
-}
-
-.backup-slot.empty:hover {
-  background: rgba(255,255,255,0.05);
-  border-color: rgba(255,255,255,0.1);
-  transform: none;
-}
-
-.backup-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.backup-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #22c55e;
-  animation: pulse 2s infinite;
-}
-
-.backup-dot.warning { background: #f59e0b; }
-.backup-dot.error { background: #ef4444; }
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-/* ============================================
-   CART ITEMS
-   ============================================ */
-#cart-list > div {
-  background: rgba(255,255,255,0.08);  /* Было .06 - ярче */
-  border: 1.5px solid rgba(255,255,255,0.12);  /* Было .08 - ярче */
-  border-left: 3px solid rgba(245,158,11,0.3);  /* НОВОЕ - золотой акцент */
-  border-radius: 16px;
-  padding: 14px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  transition: all 0.2s;
-}
-
-#cart-list > div:hover {
-  background: rgba(255,255,255,0.11);  /* Было .08 - ярче */
-  border-color: rgba(255,255,255,0.16);  /* Было .12 - ярче */
-  border-left-color: rgba(245,158,11,0.5);  /* Золотой акцент ярче */
-  transform: translateX(2px);  /* НОВОЕ - лёгкий сдвиг */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);  /* НОВОЕ - тень */
-}
-
-/* ============================================
-   TEMPLATES
-   ============================================ */
-.template-card {
-  background: rgba(245, 158, 11, 0.08);
-  border: 1.5px solid rgba(245, 158, 11, 0.18);
-  border-radius: 16px;
-  padding: 14px 16px; /* было 10px 12px */
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-  min-height: 90px;
-}
-
-.template-card:hover {
-  background: rgba(245, 158, 11, 0.14);
-  border-color: rgba(245, 158, 11, 0.35);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.15);
-}
-
-.template-card .template-name {
-  font-size: 13px; /* было 11px */
-  font-weight: 700;
-  color: #f59e0b;
-  margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.template-card .template-info {
-  font-size: 11px; /* было 9px */
-  color: #64748b;
-}
-
-.template-card .template-price {
-  font-size: 12px; /* было 10px */
-  font-weight: 800;
-  color: #e2e8f0;
-  font-family: "JetBrains Mono", monospace;
-  margin-top: 6px;
-}
-
-.template-card .template-delete {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  background: rgba(239, 68, 68, 0.15);
-  color: rgba(239, 68, 68, 0.8);
-  opacity: 0;
-  transition: all 0.2s;
-}
-
-.template-card:hover .template-delete {
-  opacity: 1;
-}
-
-.template-card .template-delete:hover {
-  background: rgba(239, 68, 68, 0.3);
-  color: #ef4444;
-}
-
-/* ============================================
-   ROUNDING BUTTONS
-   ============================================ */
-.rounding-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px; /* было 4px 8px */
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  color: #94a3b8;
-  font-size: 12px; /* было 10px */
-  font-weight: 600;
-  font-family: "JetBrains Mono", monospace;
-  transition: all 0.2s;
-  min-height: 42px;
-}
-
-.rounding-btn:hover {
-  background: rgba(245, 158, 11, 0.12);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: #f59e0b;
-  transform: translateY(-1px);
-}
-
-.rounding-btn-main {
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.25);
-  color: #f59e0b;
-  font-weight: 700;
-}
-
-.rounding-btn-main:hover {
-  background: rgba(245, 158, 11, 0.18);
-}
-
-.rounding-btn-reset {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border-radius: 8px;
-  background: rgba(239, 68, 68, 0.12);
-  border: 1.5px solid rgba(239, 68, 68, 0.22);
-  color: rgba(239, 68, 68, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.rounding-btn-reset:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
-}
-
-/* ============================================
-   VARIANTS
-   ============================================ */
-.variant-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
-  padding: 18px 20px; /* было 14px 16px */
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  min-height: 140px;
-}
-
-.variant-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(245, 158, 11, 0.35);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-}
-
-.variant-card.variant-base {
-  border-color: rgba(100, 116, 139, 0.35);
-}
-.variant-card.variant-base:hover {
-  border-color: rgba(100, 116, 139, 0.5);
-}
-
-.variant-card.variant-optimal {
-  border-color: rgba(245, 158, 11, 0.35);
-  background: rgba(245, 158, 11, 0.06);
-}
-.variant-card.variant-optimal:hover {
-  border-color: rgba(245, 158, 11, 0.5);
-  background: rgba(245, 158, 11, 0.12);
-}
-
-.variant-card.variant-premium {
-  border-color: rgba(168, 85, 247, 0.35);
-  background: rgba(168, 85, 247, 0.06);
-}
-.variant-card.variant-premium:hover {
-  border-color: rgba(168, 85, 247, 0.5);
-  background: rgba(168, 85, 247, 0.12);
-}
-
-.variant-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.variant-badge {
-  font-size: 10px; /* было 9px */
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 5px 10px;
-  border-radius: 8px;
-}
-
-.variant-badge.badge-base {
-  background: rgba(100, 116, 139, 0.25);
-  color: #94a3b8;
-}
-
-.variant-badge.badge-optimal {
-  background: rgba(245, 158, 11, 0.25);
-  color: #f59e0b;
-}
-
-.variant-badge.badge-premium {
-  background: rgba(168, 85, 247, 0.25);
-  color: #a855f7;
-}
-
-.variant-price {
-  font-size: 22px; /* было 18px */
-  font-weight: 800;
-  font-family: "JetBrains Mono", monospace;
-}
-
-.variant-price.price-base { color: #94a3b8; }
-.variant-price.price-optimal { color: #f59e0b; }
-.variant-price.price-premium { color: #a855f7; }
-
-.variant-items {
-  font-size: 13px; /* было 11px */
-  color: #94a3b8;
-  line-height: 1.6;
-}
-
-.variant-items li {
-  padding: 4px 0;
-  padding-left: 16px;
-  position: relative;
-}
-
-.variant-items li::before {
-  content: "•";
-  position: absolute;
-  left: 0;
-  color: #64748b;
-}
-
-.variant-bonuses {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.variant-bonus-tag {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 700;
-  background: rgba(34, 197, 94, 0.18);
-  color: #22c55e;
-  padding: 4px 8px;
-  border-radius: 6px;
-  margin-right: 6px;
-  margin-bottom: 6px;
-}
-
-.variant-copy-hint {
-  position: absolute;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  opacity: 0;
-  transition: opacity 0.2s;
-  color: #64748b;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.variant-card:hover .variant-copy-hint {
-  opacity: 1;
-}
-
-.variant-recommended {
-  position: absolute;
-  top: -10px;
-  right: 16px;
-  font-size: 9px;
-  font-weight: 800;
-  text-transform: uppercase;
-  background: linear-gradient(135deg, #f59e0b, #f97316);
-  color: #000;
-  padding: 4px 10px;
-  border-radius: 6px;
-  letter-spacing: 0.06em;
-}
-
-/* ============================================
-   ANIMATIONS
-   ============================================ */
-.animate-enter {
-  animation: enter .25s ease both;
-}
-
-@keyframes iconPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-@keyframes goldGlow {
-  0%, 100% {
-    box-shadow: 
-      0 12px 30px rgba(245,158,11,.2),
-      0 0 0 0 rgba(245,158,11,0);
-  }
-  50% {
-    box-shadow: 
-      0 16px 40px rgba(245,158,11,.35),
-      0 0 25px rgba(245,158,11,.2);
-  }
-}
-
-@keyframes enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-12px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-}
-
-.animate-slide-in {
-  animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes fadeOut {
-  0% {
-    opacity: 1;
-    transform: scale(1) translateX(0);
-    filter: blur(0px) brightness(1);
-  }
-  30% {
-    transform: scale(1.02) translateX(8px);
-    filter: blur(0px) brightness(1.2);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.92) translateX(30px);
-    filter: blur(6px) brightness(0.3);
-  }
-}
-
-.animate-fade-out {
-  animation: fadeOut 0.4s ease-out forwards;
-}
-
-.round-pulse {
-  animation: roundPulse 0.3s ease;
-}
-
-@keyframes roundPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-.error-input {
-  border-color: #ef4444 !important;
-  animation: shake 0.3s;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
-}
-
-/* ============================================
-   BACKGROUND CANVAS
-   ============================================ */
-#bg-canvas {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.6;
-}
-
-/* ============================================
-   FLOATING CARDS УДАЛЕНЫ
-   ============================================ */
-
-/* ============================================
-   UTILITIES
-   ============================================ */
-#import-file-input {
-  display: none;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-@media (max-width: 768px) {
-  .lg\:grid-cols-2 {
-    grid-template-columns: 1fr !important;
-  }
-  
-  .lg\:col-span-2 {
-    grid-column: span 1 !important;
-  }
-}
-
-@media (max-width: 640px) {
-  .grid-cols-2.md\:grid-cols-4 {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-  
-  .grid-cols-5 {
-    grid-template-columns: repeat(3, 1fr) !important;
-  }
-}
-
-@media (max-width: 480px) {
-  /* Уменьшение отступов на очень маленьких экранах */
-  .glass.rounded-3xl {
-    border-radius: 24px !important;
-    padding: 20px !important;
-  }
-  
-  header {
-    padding: 12px 16px !important;
-  }
-  
-  .btn-gold,
-  .btn-secondary {
-    padding: 12px 16px !important;
-    font-size: 14px !important;
-  }
-  
-  .edit-row {
-    flex-wrap: wrap !important;
-    gap: 8px !important;
-  }
-  
-  .backup-slot {
-    padding: 8px !important;
-    min-height: 56px !important;
-  }
-}
-
-@media (max-width: 380px) {
-  header .font-cinzel {
-    font-size: 16px !important;
-  }
-  
-  .backup-status {
-    display: none !important;
-  }
-}
-
+:root{--bg:#050507;--panel:rgba(255,255,255,.10);--panel2:rgba(255,255,255,.12);--stroke:rgba(255,255,255,.15);--gold:#f59e0b;--muted:#94a3b8;--text:#f1f5f9;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom);--safe-left:env(safe-area-inset-left);--safe-right:env(safe-area-inset-right);}html,body{height:100%;background:var(--bg);color:var(--text);overflow-x:hidden !important;max-width:100vw !important;height:-webkit-fill-available;scroll-behavior:smooth;font-size:16px;}*,*::before,*::after{box-sizing:border-box;}body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow-x:hidden;min-height:100vh;min-height:-webkit-fill-available;min-height:100dvh;padding-top:var(--safe-top);padding-bottom:var(--safe-bottom);padding-left:var(--safe-left);padding-right:var(--safe-right);overscroll-behavior:none;}.font-cinzel{font-family:Cinzel,serif;}.mono{font-family:"JetBrains Mono",ui-monospace,monospace;}.glass{background:var(--panel);border:1px solid var(--stroke);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,0.2),0 0 0 1px rgba(255,255,255,0.05) inset;overflow-x:hidden;}.glass-level-1{box-shadow:0 2px 12px rgba(0,0,0,0.15),0 0 0 1px rgba(255,255,255,0.05) inset;}.glass-level-2{box-shadow:0 4px 24px rgba(0,0,0,0.2),0 0 0 1px rgba(255,255,255,0.05) inset;}.glass-level-3{box-shadow:0 8px 40px rgba(0,0,0,0.3),0 0 0 1px rgba(255,255,255,0.08) inset;}header{padding:16px 20px;padding-top:calc(16px+env(safe-area-inset-top)) !important;padding-left:max(20px,env(safe-area-inset-left)) !important;padding-right:max(20px,env(safe-area-inset-right)) !important;}main{padding-left:max(16px,env(safe-area-inset-left)) !important;padding-right:max(16px,env(safe-area-inset-right)) !important;overflow-x:hidden !important;}.form-input{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;font-size:15px;color:#e2e8f0;outline:none;transition:all 0.2s;min-height:50px;-webkit-appearance:none;appearance:none;}.form-input:focus{border-color:rgba(245,158,11,.4);box-shadow:0 0 0 4px rgba(245,158,11,.12);background:rgba(255,255,255,.10);}.form-input:disabled{opacity:0.5;cursor:not-allowed;background:rgba(255,255,255,.04);}.form-input::placeholder{color:#94a3b8;}@media (max-width:768px){input[type="text"],input[type="number"],input[type="date"],input[type="time"],select,textarea{font-size:16px !important;}}button{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;cursor:pointer;transition:all 0.2s;}.btn-gold{width:100%;border-radius:16px;padding:14px 18px;font-size:15px;font-weight:800;letter-spacing:0.02em;background:linear-gradient(135deg,rgba(245,158,11,.95),rgba(245,158,11,.75));color:#120a00;border:1.5px solid rgba(245,158,11,.4);box-shadow:0 12px 30px rgba(245,158,11,.2);min-height:52px;animation:goldGlow 4s ease-in-out infinite;}.btn-gold:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 16px 40px rgba(245,158,11,.3),0 0 20px rgba(245,158,11,.15);}.btn-gold:active{transform:translateY(0);}.btn-secondary{width:100%;border-radius:16px;padding:14px 18px;font-size:14px;font-weight:700;background:rgba(255,255,255,.12);color:#f1f5f9;border:1.5px solid rgba(255,255,255,.18);min-height:52px;}.btn-secondary:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.25);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.2);}.btn-icon{width:50px;height:50px;display:flex;align-items:center;justify-content:center;border-radius:16px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);flex-shrink:0;}.btn-icon:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.15);}.btn-qty{width:50px;height:50px;display:flex;align-items:center;justify-content:center;border-radius:14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);flex-shrink:0;}.btn-qty:hover{background:rgba(255,255,255,.14);border-color:rgba(245,158,11,.4);transform:scale(1.05);box-shadow:0 4px 12px rgba(245,158,11,0.15);}.btn-add{background:rgba(245,158,11,.16);border:1.5px solid rgba(245,158,11,.30);color:rgba(245,158,11,1);border-radius:14px;padding:12px 16px;font-size:13px;font-weight:700;letter-spacing:0.02em;min-height:48px;}.btn-add:hover{background:rgba(245,158,11,.24);border-color:rgba(245,158,11,.45);transform:translateY(-1px);box-shadow:0 4px 12px rgba(245,158,11,0.2);}.btn-del-mini{background:rgba(239,68,68,.12);border:1.5px solid rgba(239,68,68,.22);color:rgba(239,68,68,.95);border-radius:12px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}.btn-del-mini:hover{background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.35);}.btn-data{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:14px;font-size:13px;font-weight:700;transition:all 0.2s;min-height:48px;}.btn-export{background:rgba(34,197,94,0.12);border:1.5px solid rgba(34,197,94,0.25);color:rgba(34,197,94,0.95);}.btn-export:hover{background:rgba(34,197,94,0.18);}.btn-import{background:rgba(59,130,246,0.12);border:1.5px solid rgba(59,130,246,0.25);color:rgba(59,130,246,0.95);}.btn-import:hover{background:rgba(59,130,246,0.18);}.btn-backup{background:rgba(168,85,247,0.12);border:1.5px solid rgba(168,85,247,0.25);color:rgba(168,85,247,0.95);}.btn-backup:hover{background:rgba(168,85,247,0.18);}#toast{position:fixed;top:calc(20px+env(safe-area-inset-top));left:20px;right:20px;z-index:60;opacity:0;transform:translateY(-12px);transition:opacity .3s ease,transform .3s ease;pointer-events:none;}#toast.show{opacity:1;transform:translateY(0);pointer-events:auto;}@media (min-width:640px){#toast{left:50%;right:auto;width:450px;max-width:calc(100vw - 40px);transform:translateX(-50%) translateY(-12px);}#toast.show{transform:translateX(-50%) translateY(0);}}#view-settings{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;z-index:40;overflow:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}#view-settings.active{display:flex;align-items:center;justify-content:center;}#view-settings .panel{position:fixed !important;left:0 !important;right:0 !important;top:env(safe-area-inset-top) !important;bottom:env(safe-area-inset-bottom) !important;transform:none !important;width:100% !important;max-width:100% !important;max-height:none !important;margin:0 !important;border-radius:0 !important;overflow-y:auto !important;overflow-x:hidden !important;-webkit-overflow-scrolling:touch;}@media (min-width:768px){#view-settings .panel{position:absolute !important;left:50% !important;top:50% !important;right:auto !important;bottom:auto !important;transform:translate(-50%,-50%) !important;width:min(920px,calc(100% - 48px)) !important;max-width:min(920px,calc(100% - 48px)) !important;max-height:calc(100vh - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;border-radius:24px !important;}}.admin-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;gap:12px;padding:8px 0;}.admin-content{max-height:0;overflow:hidden;transition:max-height .35s ease;padding-top:0;}.admin-content.open{max-height:1800px;padding-top:12px;}.edit-row{display:flex;align-items:center;gap:10px;padding:8px 0;flex-wrap:wrap;}.edit-input{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 12px;font-size:14px;color:#e2e8f0;outline:none;min-height:44px;flex:1;min-width:0;}.edit-input:focus{border-color:rgba(245,158,11,.4);box-shadow:0 0 0 3px rgba(245,158,11,.12);}.backup-slot{background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px;cursor:pointer;transition:all 0.2s;min-height:68px;}.backup-slot:hover{background:rgba(255,255,255,0.08);border-color:rgba(245,158,11,0.35);transform:translateY(-1px);}.backup-slot.empty{opacity:0.3;cursor:default;}.backup-slot.empty:hover{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);transform:none;}.backup-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);}.backup-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite;}.backup-dot.warning{background:#f59e0b;}.backup-dot.error{background:#ef4444;}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}#cart-list>div{background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.12);border-left:3px solid rgba(245,158,11,0.3);border-radius:16px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:all 0.2s;}#cart-list>div:hover{background:rgba(255,255,255,0.11);border-color:rgba(255,255,255,0.16);border-left-color:rgba(245,158,11,0.5);transform:translateX(2px);box-shadow:0 4px 12px rgba(0,0,0,0.15);}.template-card{background:rgba(245,158,11,0.08);border:1.5px solid rgba(245,158,11,0.18);border-radius:16px;padding:14px 16px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;min-height:90px;}.template-card:hover{background:rgba(245,158,11,0.14);border-color:rgba(245,158,11,0.35);transform:translateY(-2px);box-shadow:0 8px 20px rgba(245,158,11,0.15);}.template-card .template-name{font-size:13px;font-weight:700;color:#f59e0b;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.template-card .template-info{font-size:11px;color:#64748b;}.template-card .template-price{font-size:12px;font-weight:800;color:#e2e8f0;font-family:"JetBrains Mono",monospace;margin-top:6px;}.template-card .template-delete{position:absolute;top:8px;right:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(239,68,68,0.15);color:rgba(239,68,68,0.8);opacity:0;transition:all 0.2s;}.template-card:hover .template-delete{opacity:1;}.template-card .template-delete:hover{background:rgba(239,68,68,0.3);color:#ef4444;}.rounding-btn{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);color:#94a3b8;font-size:12px;font-weight:600;font-family:"JetBrains Mono",monospace;transition:all 0.2s;min-height:42px;}.rounding-btn:hover{background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.3);color:#f59e0b;transform:translateY(-1px);}.rounding-btn-main{background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.25);color:#f59e0b;font-weight:700;}.rounding-btn-main:hover{background:rgba(245,158,11,0.18);}.rounding-btn-reset{width:32px;height:32px;padding:0;border-radius:8px;background:rgba(239,68,68,0.12);border:1.5px solid rgba(239,68,68,0.22);color:rgba(239,68,68,0.8);display:flex;align-items:center;justify-content:center;transition:all 0.2s;}.rounding-btn-reset:hover{background:rgba(239,68,68,0.2);color:#ef4444;}.variant-card{background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:18px;padding:18px 20px;cursor:pointer;transition:all 0.2s;position:relative;min-height:140px;}.variant-card:hover{background:rgba(255,255,255,0.08);border-color:rgba(245,158,11,0.35);transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,0.3);}.variant-card.variant-base{border-color:rgba(100,116,139,0.35);}.variant-card.variant-base:hover{border-color:rgba(100,116,139,0.5);}.variant-card.variant-optimal{border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.06);}.variant-card.variant-optimal:hover{border-color:rgba(245,158,11,0.5);background:rgba(245,158,11,0.12);}.variant-card.variant-premium{border-color:rgba(168,85,247,0.35);background:rgba(168,85,247,0.06);}.variant-card.variant-premium:hover{border-color:rgba(168,85,247,0.5);background:rgba(168,85,247,0.12);}.variant-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}.variant-badge{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;padding:5px 10px;border-radius:8px;}.variant-badge.badge-base{background:rgba(100,116,139,0.25);color:#94a3b8;}.variant-badge.badge-optimal{background:rgba(245,158,11,0.25);color:#f59e0b;}.variant-badge.badge-premium{background:rgba(168,85,247,0.25);color:#a855f7;}.variant-price{font-size:22px;font-weight:800;font-family:"JetBrains Mono",monospace;}.variant-price.price-base{color:#94a3b8;}.variant-price.price-optimal{color:#f59e0b;}.variant-price.price-premium{color:#a855f7;}.variant-items{font-size:13px;color:#94a3b8;line-height:1.6;}.variant-items li{padding:4px 0;padding-left:16px;position:relative;}.variant-items li::before{content:"•";position:absolute;left:0;color:#64748b;}.variant-bonuses{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);}.variant-bonus-tag{display:inline-block;font-size:10px;font-weight:700;background:rgba(34,197,94,0.18);color:#22c55e;padding:4px 8px;border-radius:6px;margin-right:6px;margin-bottom:6px;}.variant-copy-hint{position:absolute;top:50%;right:20px;transform:translateY(-50%);opacity:0;transition:opacity 0.2s;color:#64748b;font-size:12px;display:flex;align-items:center;gap:6px;}.variant-card:hover .variant-copy-hint{opacity:1;}.variant-recommended{position:absolute;top:-10px;right:16px;font-size:9px;font-weight:800;text-transform:uppercase;background:linear-gradient(135deg,#f59e0b,#f97316);color:#000;padding:4px 10px;border-radius:6px;letter-spacing:0.06em;}.animate-enter{animation:enter .25s ease both;}@keyframes iconPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}@keyframes goldGlow{0%,100%{box-shadow:0 12px 30px rgba(245,158,11,.2),0 0 0 0 rgba(245,158,11,0);}50%{box-shadow:0 16px 40px rgba(245,158,11,.35),0 0 25px rgba(245,158,11,.2);}}@keyframes enter{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}@keyframes slideIn{from{opacity:0;transform:translateX(-12px) scale(0.95);}to{opacity:1;transform:translateX(0) scale(1);}}.animate-slide-in{animation:slideIn 0.3s cubic-bezier(0.34,1.56,0.64,1);}@keyframes fadeOut{0%{opacity:1;transform:scale(1) translateX(0);filter:blur(0px) brightness(1);}30%{transform:scale(1.02) translateX(8px);filter:blur(0px) brightness(1.2);}100%{opacity:0;transform:scale(0.92) translateX(30px);filter:blur(6px) brightness(0.3);}}.animate-fade-out{animation:fadeOut 0.4s ease-out forwards;}.round-pulse{animation:roundPulse 0.3s ease;}@keyframes roundPulse{0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);}}.error-input{border-color:#ef4444 !important;animation:shake 0.3s;}@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}#bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.6;}#import-file-input{display:none;}.hidden{display:none !important;}@media (max-width:768px){.lg\:grid-cols-2{grid-template-columns:1fr !important;}.lg\:col-span-2{grid-column:span 1 !important;}}@media (max-width:640px){.grid-cols-2.md\:grid-cols-4{grid-template-columns:repeat(2,1fr) !important;}.grid-cols-5{grid-template-columns:repeat(3,1fr) !important;}}@media (max-width:480px){.glass.rounded-3xl{border-radius:24px !important;padding:20px !important;}header{padding:12px 16px !important;}.btn-gold,.btn-secondary{padding:12px 16px !important;font-size:14px !important;}.edit-row{flex-wrap:wrap !important;gap:8px !important;}.backup-slot{padding:8px !important;min-height:56px !important;}}@media (max-width:430px){main{padding-left:8px !important;padding-right:8px !important;}.glass.rounded-3xl{padding:16px !important;}.grid.gap-6{gap:12px !important;}.grid.gap-4{gap:8px !important;}*{max-width:100%;}}@media (max-width:380px){header .font-cinzel{font-size:16px !important;}.backup-status{display:none !important;}main{padding-left:4px !important;padding-right:4px !important;}.glass.rounded-3xl{padding:12px !important;}}
 </style>
 <style>
-
-/* ============================================
-   PREMIUM DIALOG (replaces native prompt/confirm)
-   ============================================ */
-#premium-dialog-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:99999;background:rgba(0,0,0,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:16px}
-#premium-dialog-overlay.active{display:flex}
-#premium-dialog{width:min(520px,92vw);border-radius:18px;overflow:hidden;
-  background:linear-gradient(180deg, rgba(17,24,39,.92), rgba(2,6,23,.92));
-  border:1px solid rgba(245,158,11,.22);
-  box-shadow:0 20px 60px rgba(0,0,0,.55);
-}
-#premium-dialog .pd-head{display:flex;gap:12px;align-items:flex-start;padding:16px 16px 10px}
-#premium-dialog .pd-icon{flex:0 0 auto;width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;
-  background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25)}
-#premium-dialog .pd-title{font-weight:700;color:#fff;font-size:15px;line-height:1.2;margin-top:2px}
-#premium-dialog .pd-msg{color:rgba(226,232,240,.92);font-size:13px;line-height:1.35;margin-top:6px;white-space:pre-wrap}
-#premium-dialog .pd-body{padding:0 16px 12px}
-#premium-dialog .pd-input{width:100%;margin-top:10px;padding:12px 12px;border-radius:14px;
-  background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.18);color:#fff;outline:none}
-#premium-dialog .pd-input:focus{border-color:rgba(245,158,11,.55);box-shadow:0 0 0 3px rgba(245,158,11,.15)}
-#premium-dialog .pd-actions{display:flex;gap:10px;justify-content:flex-end;padding:12px 16px 16px}
-#premium-dialog .pd-btn{border-radius:14px;padding:10px 14px;font-size:13px;font-weight:600;border:1px solid rgba(148,163,184,.18);
-  background:rgba(15,23,42,.55);color:#fff;cursor:pointer}
-#premium-dialog .pd-btn:hover{transform:translateY(-1px)}
-#premium-dialog .pd-btn:active{transform:translateY(0)}
-#premium-dialog .pd-btn.ok{border-color:rgba(245,158,11,.35);background:linear-gradient(180deg, rgba(245,158,11,.28), rgba(245,158,11,.14))}
-#premium-dialog .pd-btn.danger{border-color:rgba(239,68,68,.35);background:linear-gradient(180deg, rgba(239,68,68,.22), rgba(239,68,68,.10))}
-#premium-dialog .pd-btn.ghost{background:rgba(15,23,42,.25)}
-
+#premium-dialog-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:99999;background:rgba(0,0,0,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:16px}#premium-dialog-overlay.active{display:flex}#premium-dialog{width:min(520px,92vw);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,rgba(17,24,39,.92),rgba(2,6,23,.92));border:1px solid rgba(245,158,11,.22);box-shadow:0 20px 60px rgba(0,0,0,.55);}#premium-dialog .pd-head{display:flex;gap:12px;align-items:flex-start;padding:16px 16px 10px}#premium-dialog .pd-icon{flex:0 0 auto;width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25)}#premium-dialog .pd-title{font-weight:700;color:#fff;font-size:15px;line-height:1.2;margin-top:2px}#premium-dialog .pd-msg{color:rgba(226,232,240,.92);font-size:13px;line-height:1.35;margin-top:6px;white-space:pre-wrap}#premium-dialog .pd-body{padding:0 16px 12px}#premium-dialog .pd-input{width:100%;margin-top:10px;padding:12px 12px;border-radius:14px;background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.18);color:#fff;outline:none}#premium-dialog .pd-input:focus{border-color:rgba(245,158,11,.55);box-shadow:0 0 0 3px rgba(245,158,11,.15)}#premium-dialog .pd-actions{display:flex;gap:10px;justify-content:flex-end;padding:12px 16px 16px}#premium-dialog .pd-btn{border-radius:14px;padding:10px 14px;font-size:13px;font-weight:600;border:1px solid rgba(148,163,184,.18);background:rgba(15,23,42,.55);color:#fff;cursor:pointer}#premium-dialog .pd-btn:hover{transform:translateY(-1px)}#premium-dialog .pd-btn:active{transform:translateY(0)}#premium-dialog .pd-btn.ok{border-color:rgba(245,158,11,.35);background:linear-gradient(180deg,rgba(245,158,11,.28),rgba(245,158,11,.14))}#premium-dialog .pd-btn.danger{border-color:rgba(239,68,68,.35);background:linear-gradient(180deg,rgba(239,68,68,.22),rgba(239,68,68,.10))}#premium-dialog .pd-btn.ghost{background:rgba(15,23,42,.25)}
 </style>
 </head>
 
@@ -1139,17 +85,16 @@ button {
 </div>
 
 <style>
-@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:0.9}}
-@keyframes magic-spin{0%{transform:scale(0) rotate(0deg);opacity:0}50%{transform:scale(1.2) rotate(180deg);opacity:1}100%{transform:scale(1) rotate(360deg);opacity:1}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:0.9}}@keyframes magic-spin{0%{transform:scale(0) rotate(0deg);opacity:0}50%{transform:scale(1.2) rotate(180deg);opacity:1}100%{transform:scale(1) rotate(360deg);opacity:1}}
 </style>
 
 <script>
 (function(){
   console.log('🎬 Скрипт заставки загружен');
-  
+
   function checkLicense(){
     console.log('🔍 Проверка лицензии...');
-    
+
     // Проверяем лицензию (функция checkActivation должна быть определена к этому моменту)
     var hasLic = false;
     try {
@@ -1162,7 +107,7 @@ button {
       console.error('❌ Ошибка проверки лицензии:', e);
       hasLic = false;
     }
-    
+
     if(hasLic===true){
       // Лицензия уже есть - просто ничего не делаем, приложение загрузится
       // "Добро пожаловать" показывается ТОЛЬКО при первой активации
@@ -1182,10 +127,10 @@ button {
       }
     }
   }
-  
+
   // Делаем checkLicense глобальной чтобы можно было вызвать из любого места
   window.checkLicense = checkLicense;
-  
+
   function showMagic(){
     var m=document.getElementById('magic-welcome');
     if(!m)return;
@@ -1193,15 +138,15 @@ button {
     setTimeout(function(){m.style.transition='opacity 0.8s';m.style.opacity='1'},50);
     setTimeout(function(){m.style.opacity='0';setTimeout(function(){m.remove()},800)},3000);
   }
-  
+
   window.showMagicAfterActivation=showMagic;
-  
+
   // ============================================
   // ЗАПУСК ПОСЛЕ ЗАГРУЗКИ СТРАНИЦЫ
   // ============================================
   window.addEventListener('load', function() {
     console.log('📱 Приложение загружено, запускаем заставку');
-    
+
     // Показываем заставку 2.5 сек
     setTimeout(function(){
       console.log('🎩 Скрываем заставку...');
@@ -1209,11 +154,11 @@ button {
       if(s){
         s.style.opacity='0';
         s.style.transition='opacity 0.8s';
-        
+
         setTimeout(function(){
           s.remove();
           console.log('✅ Заставка скрыта, проверяем лицензию');
-          
+
           // Вызываем проверку лицензии
           checkLicense();
         }, 800);
@@ -1223,10 +168,9 @@ button {
 })();
 </script>
 
-
   <input type="file" id="import-file-input" accept=".json,.backup" />
   <canvas id="bg-canvas"></canvas>
-  
+
   <!-- ========== FLOATING CARDS УДАЛЕНЫ ========== -->
 
   <!-- ========== СТАРАЯ ЗАСТАВКА УДАЛЕНА ========== -->
@@ -1365,7 +309,7 @@ button {
                 <option value="3000">+3 000 ₽</option>
               </select>
             </div>
-            
+
             <div class="flex items-end">
               <div class="flex flex-col gap-2 w-full">
                 <label class="flex items-center gap-3 text-sm text-slate-200 font-bold bg-white/5 px-4 py-2 rounded-2xl w-full cursor-pointer hover:bg-white/10 transition">
@@ -1376,10 +320,10 @@ button {
                   <input type="checkbox" id="inp-agency" class="accent-amber-500 w-5 h-5" />
                   <div class="flex items-center justify-between w-full gap-2">
                   <span id="lbl-agency">Комиссия агентства</span>
-                  
+
                 </div>
                 </label>
-              
+
 
                 <label class="flex items-center gap-3 text-sm text-slate-200 font-bold bg-white/5 px-4 py-2 rounded-2xl w-full cursor-pointer hover:bg-white/10 transition">
                   <input type="checkbox" id="inp-burn" class="accent-amber-500 w-5 h-5" />
@@ -1527,16 +471,16 @@ button {
           <i data-lucide="user" class="w-6 h-6 text-amber-400"></i>
           <span class="text-lg font-extrabold text-white">Персональные данные</span>
         </div>
-        
+
         <div class="space-y-3">
           <div>
             <label class="block text-sm font-semibold text-slate-300 mb-2">
               Ваше имя / Псевдоним
             </label>
-            <input 
-              type="text" 
-              id="personal-name" 
-              class="form-input" 
+            <input
+              type="text"
+              id="personal-name"
+              class="form-input"
               placeholder="Например: Александр Великий 🎩"
               maxlength="100"
             />
@@ -1604,7 +548,7 @@ button {
             <label class="text-sm text-slate-400 font-bold mb-2 block">Бронь (%)</label>
             <input id="cfg-deposit" type="number" class="form-input text-right mono" placeholder="30" />
           </div>
-        
+
           <div>
             <label class="text-sm text-slate-400 font-bold mb-2 block">Оплата по безналу (%)</label>
             <input id="cfg-cashless-percent" type="number" class="form-input text-right mono" placeholder="6" />
@@ -1650,7 +594,7 @@ button {
             <span class="text-sm text-slate-400 font-bold">Статус лицензии</span>
             <span id="license-status-badge" class="text-sm font-bold">Проверка...</span>
           </div>
-          
+
           <div class="text-xs text-slate-500 mb-2">Ключ активации</div>
           <div id="license-key-display" class="font-mono text-sm text-slate-300 bg-black/20 rounded px-3 py-2">
             ••••-••••-••••-••••
@@ -1661,7 +605,7 @@ button {
           <i data-lucide="refresh-ccw" class="w-4 h-4"></i>
           <span>Сбросить активацию</span>
         </button>
-        
+
         <div class="text-xs text-slate-500 mt-3 text-center">
           После сброса потребуется ввести ключ заново
         </div>
@@ -1715,14 +659,14 @@ button {
           <div class="text-base font-extrabold text-white mb-3">Ссылки</div>
           <div id="settings-links-list" class="space-y-2"></div>
         </div>
-        
+
         <div class="glass rounded-2xl p-5 lg:col-span-2">
           <div class="text-base font-extrabold text-white mb-3">Шаблоны пакетов</div>
           <div class="text-sm text-slate-400 mb-3">1 шаблон = 3 пакета (Базовый, Оптимал, Премиум)</div>
           <button id="btn-create-template" class="btn-add w-full mb-3">+ Создать шаблон</button>
           <div id="package-templates-list" class="space-y-2"></div>
         </div>
-        
+
         <!-- ШАБЛОНЫ ОТВЕТОВ -->
         <div class="glass rounded-2xl p-5 lg:col-span-2">
           <div class="text-base font-extrabold text-white mb-3">Шаблоны ответов</div>
@@ -1758,21 +702,6 @@ const AUTO_BACKUP_INTERVAL = 5 * 60 * 1000; // 5 минут
 // UTILITIES
 // ============================================
 const Utils = {
-  // Debounced lucide icons для производительности
-  _lucideTimer: null,
-  updateIcons: () => {
-    clearTimeout(Utils._lucideTimer);
-    Utils._lucideTimer = setTimeout(() => {
-      if (window.lucide && typeof window.lucide.createIcons === 'function') {
-        try {
-          window.lucide.createIcons();
-        } catch (e) {
-          console.warn('Lucide icons error:', e);
-        }
-      }
-    }, 50); // Debounce 50ms
-  },
-
   escapeHtml: (text) => {
     if (!text) return '';
     const map = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'};
@@ -1932,19 +861,29 @@ const Utils = {
     return Math.abs(hash).toString(16);
   },
 
+  saveToStorage: (key, value) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (err) {
+      console.error('Storage save error:', err);
+      return false;
+    }
+  },
+
   // Кеш для localStorage
   _storageCache: new Map(),
-  
+
   loadFromStorage: (key, defaultValue = null) => {
     try {
       // Проверяем кеш
       if (Utils._storageCache.has(key)) {
         return Utils._storageCache.get(key);
       }
-      
+
       const item = localStorage.getItem(key);
       if (item === null) return defaultValue;
-      
+
       const parsed = JSON.parse(item);
       Utils._storageCache.set(key, parsed);
       return parsed;
@@ -1953,7 +892,7 @@ const Utils = {
       return defaultValue;
     }
   },
-  
+
   saveToStorage: (key, value) => {
     try {
       localStorage.setItem(key, JSON.stringify(value));
@@ -2540,12 +1479,12 @@ const App = {
           if (window.lucide) lucide.createIcons();
         }, 100);
       }
-      
+
       // App.startSplash(); // УДАЛЕНО - используем новую заставку
       App.registerSWInline();
 
       DataManager.updateBackupIndicator('saved');
-      
+
       // Приложение готово к работе
     } catch (err) {
       console.error('❌ App initialization failed:', err);
@@ -2587,7 +1526,6 @@ const App = {
       });
       applyTimeMode();
     }
-
 
     // Region & City
     document.getElementById('inp-region')?.addEventListener('change', App.updateRegion);
@@ -2641,77 +1579,58 @@ const App = {
     bind('btn-add-range', () => Admin.addRange());
     bind('btn-add-payment', () => Admin.addPayment());
     bind('btn-add-link', () => Admin.addLink());
-    bind('btn-reset-license-user', async () => {
+    bind('btn-reset-license-user', () => {
       console.log('🔘 Кнопка "Сбросить активацию" нажата');
-      
-      // Первое подтверждение
-      const confirm1 = await PremiumDialog.confirm({
-        message: 'Сбросить активацию?\n\nПосле этого потребуется заново ввести ключ активации.',
-        danger: true,
-        okText: 'Продолжить',
-        cancelText: 'Отмена',
-        icon: 'alert-triangle'
-      });
-      
-      if (!confirm1) {
-        console.log('❌ Первое подтверждение отменено');
-        return;
-      }
-      
-      console.log('✅ Первое подтверждение получено');
-      
-      // Второе подтверждение
-      const confirm2 = await PremiumDialog.confirm({
-        message: 'Вы точно уверены?\n\nЛицензия будет удалена, и все данные активации будут стёрты.\n\nПродолжить?',
-        danger: true,
-        okText: 'Да, сбросить',
-        cancelText: 'Отмена',
-        icon: 'key'
-      });
-      
-      if (!confirm2) {
-        console.log('❌ Второе подтверждение отменено');
-        return;
-      }
-      
-      console.log('✅ Второе подтверждение получено');
-      
-      // Удаляем лицензию
-      localStorage.removeItem('illusionist_license');
-      console.log('🗑️ Лицензия удалена из localStorage');
-      
-      // Обновляем статус в UI
-      App.updateLicenseStatus();
-      console.log('📊 Статус обновлён');
-      
-      // Закрываем настройки
-      const settingsModal = document.getElementById('view-settings');
-      if (settingsModal) {
-        settingsModal.classList.remove('active');
-        console.log('❌ Настройки закрыты');
-      }
-      
-      // Показываем toast
-      App.showToast('✅ Активация сброшена! Показываю экран активации...');
-      console.log('💬 Toast показан');
-      
-      // Показываем экран активации через 1 секунду
-      setTimeout(() => {
-        console.log('⏰ Таймер сработал, проверяем функцию...');
-        console.log('typeof showLicensePrompt:', typeof showLicensePrompt);
-        console.log('window.showLicensePrompt:', typeof window.showLicensePrompt);
-        
-        if (typeof window.showLicensePrompt === 'function') {
-          console.log('🎯 Вызываем window.showLicensePrompt("first")');
-          window.showLicensePrompt('first');
-        } else if (typeof showLicensePrompt === 'function') {
-          console.log('🎯 Вызываем showLicensePrompt("first")');
-          showLicensePrompt('first');
+
+      // Двойное подтверждение для безопасности
+      if (confirm('⚠️ Сбросить активацию?\n\nПосле этого потребуется заново ввести ключ активации.')) {
+        console.log('✅ Первое подтверждение получено');
+
+        if (confirm('🔑 Вы точно уверены?\n\nЛицензия будет удалена, и все данные активации будут стёрты.\n\nПродолжить?')) {
+          console.log('✅ Второе подтверждение получено');
+
+          // Удаляем лицензию
+          localStorage.removeItem('illusionist_license');
+          console.log('🗑️ Лицензия удалена из localStorage');
+
+          // Обновляем статус в UI
+          App.updateLicenseStatus();
+          console.log('📊 Статус обновлён');
+
+          // Закрываем настройки
+          const settingsModal = document.getElementById('settings-modal');
+          if (settingsModal) {
+            settingsModal.classList.remove('show');
+            console.log('❌ Настройки закрыты');
+          }
+
+          // Показываем toast
+          App.showToast('✅ Активация сброшена! Показываю экран активации...');
+          console.log('💬 Toast показан');
+
+          // Показываем экран активации через 1 секунду
+          setTimeout(() => {
+            console.log('⏰ Таймер сработал, проверяем функцию...');
+            console.log('typeof showLicensePrompt:', typeof showLicensePrompt);
+            console.log('window.showLicensePrompt:', typeof window.showLicensePrompt);
+
+            if (typeof window.showLicensePrompt === 'function') {
+              console.log('🎯 Вызываем window.showLicensePrompt("first")');
+              window.showLicensePrompt('first');
+            } else if (typeof showLicensePrompt === 'function') {
+              console.log('🎯 Вызываем showLicensePrompt("first")');
+              showLicensePrompt('first');
+            } else {
+              console.error('❌ Функция showLicensePrompt не найдена!');
+              App.showToast('Ошибка! Перезагрузите страницу вручную (F5).');
+            }
+          }, 1000);
         } else {
-          console.error('❌ Функция showLicensePrompt не найдена!');
-          App.showToast('Ошибка! Перезагрузите страницу вручную (F5).');
+          console.log('❌ Второе подтверждение отменено');
         }
-      }, 1000);
+      } else {
+        console.log('❌ Первое подтверждение отменено');
+      }
     });
     bind('btn-reset-db', () => Admin.reset());
   },
@@ -2757,7 +1676,6 @@ const App = {
     }
 
 
-
     const burnTitleInput = document.getElementById('cfg-burn-title');
     if (burnTitleInput) {
       burnTitleInput.value = DB.config?.burnBonusTitle ?? "Появление Гендиректора";
@@ -2792,7 +1710,6 @@ const App = {
       }, 350));
     }
 
-
     App.updatePercentLabels();
 
   },
@@ -2810,7 +1727,6 @@ updatePercentLabels: () => {
     // silent
   }
 },
-
 
   updateBurnLabel: () => {
     try {
@@ -2837,48 +1753,43 @@ updatePercentLabels: () => {
   registerSWInline: () => {
     try {
       if (!('serviceWorker' in navigator)) return;
+      
+      // Минимальный Service Worker только для PWA
+      // БЕЗ офлайн кеширования - работает только онлайн
       const swCode = `
-        const CACHE = 'illusionist-os-cache-v1';
+        // Service Worker для PWA (Progressive Web App)
+        // Позволяет установить приложение на Home Screen
+        // БЕЗ офлайн режима - требуется интернет
+        
         self.addEventListener('install', (e) => {
-          e.waitUntil((async () => {
-            try {
-              const cache = await caches.open(CACHE);
-            } catch (e) {}
-          })());
+          console.log('[SW] Installing...');
           self.skipWaiting();
         });
+        
         self.addEventListener('activate', (e) => {
-          e.waitUntil((async () => {
-            try {
-              const keys = await caches.keys();
-              await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
-            } catch (e) {}
-            self.clients.claim();
-          })());
+          console.log('[SW] Activating...');
+          e.waitUntil(self.clients.claim());
         });
-        self.addEventListener('fetch', (e) => {
-          e.respondWith((async () => {
-            try {
-              const res = await fetch(e.request);
-              return res;
-            } catch (err) {
-              const cached = await caches.match(e.request);
-              if (cached) return cached;
-              throw err;
-            }
-          })());
-        });
+        
+        // НЕТ fetch listener = НЕТ офлайна = только онлайн работа
       `;
+      
       const blob = new Blob([swCode], { type: 'text/javascript' });
       const swUrl = URL.createObjectURL(blob);
 
-      navigator.serviceWorker.register(swUrl).catch(() => {});
+      navigator.serviceWorker
+        .register(swUrl)
+        .then(() => console.log('✅ PWA Service Worker зарегистрирован'))
+        .catch(() => console.log('⚠️ Service Worker не поддерживается'));
+      
       setTimeout(() => {
         try {
           URL.revokeObjectURL(swUrl);
         } catch (e) {}
       }, 5000);
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Service Worker error:', e);
+    }
   },
 
   // startSplash УДАЛЕНА - используется новая система загрузки
@@ -2890,9 +1801,9 @@ updatePercentLabels: () => {
         App.updateRegionSelect();
         App.updateCategorySelect();
         App.updateCat();
-        
+
         requestAnimationFrame(() => {
-          Utils.updateIcons(); // Debounced вызов
+          if (window.lucide) lucide.createIcons();
           DataManager.updateStats();
           DataManager.renderBackupSlots();
           Admin.render();
@@ -3084,21 +1995,21 @@ updatePercentLabels: () => {
       // Сохраняем элемент для возможности undo
       const removedItem = { ...State.cart[idx] };
       const removedIndex = idx;
-      
+
       // Находим элемент в DOM
       const cartList = document.getElementById('cart-list');
       if (cartList && cartList.children[idx]) {
         const element = cartList.children[idx];
-        
+
         // Добавляем класс анимации
         element.classList.add('animate-fade-out');
-        
+
         // Ждём окончания анимации, затем удаляем
         setTimeout(() => {
           State.cart.splice(idx, 1);
           App.renderCart();
           App.calc();
-          
+
           // Показываем toast с кнопкой UNDO
           App.showToastWithUndo('Услуга удалена', () => {
             // Функция восстановления
@@ -3113,7 +2024,7 @@ updatePercentLabels: () => {
         State.cart.splice(idx, 1);
         App.renderCart();
         App.calc();
-        
+
         // Показываем toast с кнопкой UNDO
         App.showToastWithUndo('Услуга удалена', () => {
           State.cart.splice(removedIndex, 0, removedItem);
@@ -3130,7 +2041,7 @@ updatePercentLabels: () => {
     if (!cartList) return;
 
     Utils.clearElement(cartList);
-    
+
     // Показываем/скрываем панель bulk operations
     const bulkPanel = document.getElementById('bulk-actions-panel');
     if (bulkPanel) {
@@ -3144,7 +2055,7 @@ updatePercentLabels: () => {
         'div',
         'animate-slide-in flex items-center gap-3'
       );
-      
+
       // Чекбокс для bulk операций
       const checkbox = Utils.createElement('input');
       checkbox.type = 'checkbox';
@@ -3153,7 +2064,7 @@ updatePercentLabels: () => {
       checkbox.addEventListener('change', () => App.updateBulkSelection());
 
       const contentDiv = Utils.createElement('div', 'flex-1 flex items-center justify-between gap-4');
-      
+
       const leftDiv = Utils.createElement('div', 'flex-1 min-w-0');
 
       const nameDiv = Utils.createElement('div', 'text-base font-semibold text-white mb-1');
@@ -3185,20 +2096,20 @@ updatePercentLabels: () => {
 
       contentDiv.appendChild(leftDiv);
       contentDiv.appendChild(rightDiv);
-      
+
       wrapper.appendChild(checkbox);
       wrapper.appendChild(contentDiv);
       cartList.appendChild(wrapper);
     });
 
-    Utils.updateIcons(); // Debounced вызов
+    if (window.lucide) lucide.createIcons();
   },
 
   updateBulkSelection: () => {
     const checkboxes = document.querySelectorAll('.cart-item-checkbox');
     const selected = Array.from(checkboxes).filter(cb => cb.checked);
     const selectedCount = document.getElementById('selected-count');
-    
+
     if (selectedCount) {
       selectedCount.textContent = selected.length;
     }
@@ -3216,60 +2127,48 @@ updatePercentLabels: () => {
     App.updateBulkSelection();
   },
 
-  deleteSelectedCartItems: async () => {
+  deleteSelectedCartItems: () => {
     const checkboxes = document.querySelectorAll('.cart-item-checkbox');
     const selectedIndices = Array.from(checkboxes)
       .map((cb, i) => cb.checked ? i : -1)
       .filter(i => i >= 0)
       .sort((a, b) => b - a); // Сортируем в обратном порядке
-    
+
     if (selectedIndices.length === 0) {
       App.showToast('⚠️ Выберите услуги для удаления');
       return;
     }
 
     const count = selectedIndices.length;
-    const word = count === 1 ? 'услугу' : count < 5 ? 'услуги' : 'услуг';
-    
-    // Подтверждение через PremiumDialog
-    const confirmed = await PremiumDialog.confirm({
-      message: `Удалить ${count} ${word}?\n\nВы сможете отменить это действие в течение 5 секунд.`,
-      danger: true,
-      okText: 'Удалить',
-      cancelText: 'Отмена',
-      icon: 'trash-2'
-    });
-    
-    if (!confirmed) return;
-    
-    // Сохраняем удалённые элементы для undo
-    const removedItems = selectedIndices.map(idx => ({
-      item: { ...State.cart[idx] },
-      index: idx
-    }));
-    
-    // Удаляем (начиная с конца чтобы индексы не сбивались)
-    selectedIndices.forEach(idx => {
-      State.cart.splice(idx, 1);
-    });
-    
-    App.renderCart();
-    App.calc();
-    
-    const word2 = count === 1 ? 'услуга' : count < 5 ? 'услуги' : 'услуг';
-    
-    // Toast с UNDO
-    App.showToastWithUndo(`Удалено: ${count} ${word2}`, () => {
-      // Восстанавливаем все элементы
-      removedItems.reverse().forEach(({ item, index }) => {
-        State.cart.splice(index, 0, item);
+
+    // Подтверждение
+    if (confirm(`Удалить ${count} ${count === 1 ? 'услугу' : count < 5 ? 'услуги' : 'услуг'}?`)) {
+      // Сохраняем удалённые элементы для undo
+      const removedItems = selectedIndices.map(idx => ({
+        item: { ...State.cart[idx] },
+        index: idx
+      }));
+
+      // Удаляем (начиная с конца чтобы индексы не сбивались)
+      selectedIndices.forEach(idx => {
+        State.cart.splice(idx, 1);
       });
+
       App.renderCart();
       App.calc();
-      App.showToast('✅ Услуги восстановлены');
-    });
-  },
 
+      // Toast с UNDO
+      App.showToastWithUndo(`Удалено: ${count} ${count === 1 ? 'услуга' : count < 5 ? 'услуги' : 'услуг'}`, () => {
+        // Восстанавливаем все элементы
+        removedItems.reverse().forEach(({ item, index }) => {
+          State.cart.splice(index, 0, item);
+        });
+        App.renderCart();
+        App.calc();
+        App.showToast('✅ Услуги восстановлены');
+      });
+    }
+  },
 
   renderBreakdown: () => {
     const wrap = document.getElementById('cart-breakdown');
@@ -3379,20 +2278,19 @@ updatePercentLabels: () => {
     }
   },
 
-
   calc: () => {
     try {
       const k = State.holidayK || 1;
-      
+
       // Проверяем наличие пакета
       const packageItem = State.cart.find(item => item.name.startsWith('ПАКЕТ:') && item.packageTemplate);
-      
+
       if (packageItem && packageItem.packageTemplate) {
         // РАСЧЁТ С ПАКЕТОМ
         const tpl = packageItem.packageTemplate;
         const regionSelect = document.getElementById('inp-region');
         const region = regionSelect ? regionSelect.value : '';
-        
+
         // Логистика
         const citySelect = document.getElementById('inp-city');
         let travel = 0;
@@ -3408,35 +2306,34 @@ updatePercentLabels: () => {
             }
           }
         }
-        
+
         // Доплаты
         const manualPriceInput = document.getElementById('inp-manual-price');
         const manPrice = manualPriceInput ? Utils.sanitizeNumber(manualPriceInput.value, 0, 999999, 0) : 0;
-        
+
         const guestsSelect = document.getElementById('inp-guests');
         const guestPrice = guestsSelect ? Utils.sanitizeNumber(guestsSelect.value, 0, 999999, 0) : 0;
-        
+
         const taxCheckbox = document.getElementById('inp-tax');
         const useTax = taxCheckbox ? taxCheckbox.checked : false;
-        
+
         // Считаем 3 варианта с учётом праздничного коэффициента
         const basicPrice = Math.round(tpl.basic.price * k);
         const optimalPrice = Math.round(tpl.optimal.price * k);
         const premiumPrice = Math.round(tpl.premium.price * k);
-        
+
         const extras = travel + manPrice + guestPrice;
-        
+
         const basicPreTax = basicPrice + extras;
         const optimalPreTax = optimalPrice + extras;
         const premiumPreTax = premiumPrice + extras;
-        
-        
+
+
         const cashlessPct = Utils.sanitizeNumber(DB.config?.cashlessPercent ?? 6, 0, 100, 6);
         const agencyPct = Utils.sanitizeNumber(DB.config?.agencyPercent ?? 15, 0, 99, 15);
 
         const agencyCheckbox = document.getElementById('inp-agency');
         const useAgency = agencyCheckbox ? agencyCheckbox.checked : false;
-
 
       const burnCheckbox = document.getElementById('inp-burn');
       const useBurn = burnCheckbox ? burnCheckbox.checked : false;
@@ -3463,15 +2360,15 @@ updatePercentLabels: () => {
         const optimalAgencyMarkup = useAgency ? Math.max(0, optimalTotal - optimalSub) : 0;
         const premiumAgencyMarkup = useAgency ? Math.max(0, premiumTotal - premiumSub) : 0;
 
-        
+
         // Сохраняем в State для копирования
         State.finalTotal = basicTotal; // Для совместимости показываем базовый
-        State.finalDetails = { 
-          servicesTotal: 0, 
-          discount: 0, 
-          travel, 
-          manPrice, 
-          guestPrice, 
+        State.finalDetails = {
+          servicesTotal: 0,
+          discount: 0,
+          travel,
+          manPrice,
+          guestPrice,
           k,
           isPackage: true,
           packageTemplate: tpl,
@@ -3505,7 +2402,7 @@ updatePercentLabels: () => {
           optimalTotal,
           premiumTotal
         };
-        
+
         // Показываем диапазон в итоге
         const totalSumEl = document.getElementById('total-sum');
         if (totalSumEl) {
@@ -3529,14 +2426,14 @@ updatePercentLabels: () => {
             `}
 `;
         }
-        
+
         // НЕ показываем автоматические бонусы для пакетов (они уже в описании)
         const bonusListEl = document.getElementById('bonus-list');
         if (bonusListEl) Utils.clearElement(bonusListEl);
-        
+
         return;
       }
-      
+
       // ОБЫЧНЫЙ РАСЧЁТ (без пакета)
       let servicesTotal = 0;
 
@@ -3593,7 +2490,6 @@ updatePercentLabels: () => {
 
       const tax = useTax ? Math.round(preTax * (cashlessPct / 100)) : 0;
 
-
       const subTotal = preTax + tax;
 
       const toClient = (sub) => {
@@ -3609,12 +2505,12 @@ updatePercentLabels: () => {
       State.finalTotal = total;
 
       // Детали для КП/копирования
-      State.finalDetails = { 
-        servicesTotal, 
-        discount, 
-        travel, 
-        manPrice, 
-        guestPrice, 
+      State.finalDetails = {
+        servicesTotal,
+        discount,
+        travel,
+        manPrice,
+        guestPrice,
         k,
         isPackage: false,
 
@@ -3675,17 +2571,17 @@ updatePercentLabels: () => {
   getBonusesForTotal: (total) => {
     if (!DB.bonuses || !Array.isArray(DB.bonuses) || DB.bonuses.length === 0) return [];
     return DB.bonuses
-      .filter(b => Utils.isValidObject(b) && 
-                   typeof b.threshold === 'number' && 
-                   !isNaN(b.threshold) && 
-                   typeof b.text === 'string' && 
-                   b.text.length > 0 && 
+      .filter(b => Utils.isValidObject(b) &&
+                   typeof b.threshold === 'number' &&
+                   !isNaN(b.threshold) &&
+                   typeof b.text === 'string' &&
+                   b.text.length > 0 &&
                    total >= b.threshold)
       .slice()
       .sort((a, b) => (a.threshold || 0) - (b.threshold || 0));
   },
 
-  
+
   copyPriceList: async () => {
     const catSelect = document.getElementById('inp-cat');
     if (!catSelect) return;
@@ -3794,7 +2690,6 @@ updatePercentLabels: () => {
     text += lines.join('\n\n') + '\n\n';
     text += `Бронь: ${depositPct}% (фиксирует дату)\n\n`;
 
-
     // Expiring bonus (сгорающий бонус)
     const burnEnabled = !!document.getElementById('inp-burn')?.checked;
     if (burnEnabled) {
@@ -3806,7 +2701,6 @@ updatePercentLabels: () => {
       text += `⏳ Сгорающий бонус\n`;
       text += `Бонус "${bonusTitle}" (цена ${Utils.formatPrice(bonusPrice)} ₽) идет в подарок при бронировании даты до ${deadlineStr}.\n\n`;
     }
-
 
     if (Array.isArray(DB.links) && DB.links.length) {
       text += `Ссылки:\n`;
@@ -3843,7 +2737,6 @@ updatePercentLabels: () => {
     const success = await Utils.copyToClipboard(text);
     App.showToast(success ? 'Цены скопированы!' : 'Не удалось скопировать');
   },
-
 
 
   copyQuote: async () => {
@@ -3924,7 +2817,6 @@ updatePercentLabels: () => {
       text += `Бронь ${depositPct}%: ${Utils.formatPrice(dep)} ₽\n\n`;
     }
 
-
     // Expiring bonus (сгорающий бонус)
     const burnEnabled = !!document.getElementById('inp-burn')?.checked;
     if (burnEnabled) {
@@ -3986,27 +2878,27 @@ updatePercentLabels: () => {
       Admin.render();
       DataManager.renderBackupSlots();
       DataManager.updateStats();
-      
+
       // Рендерим шаблоны пакетов
       const templatesContainer = document.getElementById('package-templates-list');
       if (templatesContainer) {
         templatesContainer.innerHTML = '';
         const templates = DB.packageTemplates || [];
-        
+
         if (templates.length === 0) {
           templatesContainer.innerHTML = '<div class="text-slate-500 text-sm">Нет шаблонов</div>';
         } else {
           templates.forEach(tpl => {
             const card = document.createElement('div');
             card.className = 'glass rounded-xl p-3 mb-2';
-            
+
             card.innerHTML = `
               <div class="flex justify-between items-start">
                 <div class="flex-1">
                   <div class="font-bold text-amber-400 text-sm">${Utils.escapeHtml(tpl.name)}</div>
                   <div class="text-xs text-slate-300 mt-1">
-                    Базовый: ${Utils.formatPrice(tpl.basic.price)} ₽ • 
-                    Оптимал: ${Utils.formatPrice(tpl.optimal.price)} ₽ • 
+                    Базовый: ${Utils.formatPrice(tpl.basic.price)} ₽ •
+                    Оптимал: ${Utils.formatPrice(tpl.optimal.price)} ₽ •
                     Премиум: ${Utils.formatPrice(tpl.premium.price)} ₽
                   </div>
                 </div>
@@ -4015,7 +2907,7 @@ updatePercentLabels: () => {
                 </button>
               </div>
             `;
-            
+
             const delBtn = card.querySelector('[data-del]');
             if (delBtn) {
               delBtn.addEventListener('click', async () => {
@@ -4031,12 +2923,12 @@ updatePercentLabels: () => {
                 }
               });
             }
-            
+
             templatesContainer.appendChild(card);
           });
         }
       }
-      
+
       modal.classList.add('active');
       if (window.lucide) lucide.createIcons();
     } else {
@@ -4051,11 +2943,11 @@ updatePercentLabels: () => {
     if (!toast || !msgEl) return;
 
     msgEl.textContent = Utils.sanitizeText(msg, 200);
-    
+
     // Убираем кнопку undo если была
     const existingUndo = toast.querySelector('.toast-undo-btn');
     if (existingUndo) existingUndo.remove();
-    
+
     toast.classList.add('show');
 
     clearTimeout(App._toastTimer);
@@ -4068,11 +2960,11 @@ updatePercentLabels: () => {
     if (!toast || !msgEl) return;
 
     msgEl.textContent = Utils.sanitizeText(msg, 200);
-    
+
     // Убираем старую кнопку undo если была
     const existingUndo = toast.querySelector('.toast-undo-btn');
     if (existingUndo) existingUndo.remove();
-    
+
     // Создаём кнопку UNDO
     const undoBtn = document.createElement('button');
     undoBtn.className = 'toast-undo-btn';
@@ -4089,29 +2981,29 @@ updatePercentLabels: () => {
       cursor: pointer;
       transition: all 0.2s;
     `;
-    
+
     undoBtn.addEventListener('mouseenter', () => {
       undoBtn.style.background = 'rgba(245,158,11,0.3)';
       undoBtn.style.borderColor = 'rgba(245,158,11,0.6)';
     });
-    
+
     undoBtn.addEventListener('mouseleave', () => {
       undoBtn.style.background = 'rgba(245,158,11,0.2)';
       undoBtn.style.borderColor = 'rgba(245,158,11,0.4)';
     });
-    
+
     undoBtn.addEventListener('click', () => {
       clearTimeout(App._toastTimer);
       toast.classList.remove('show');
       if (undoCallback) undoCallback();
     });
-    
+
     // Добавляем кнопку в toast
     const toastContent = toast.querySelector('.flex');
     if (toastContent) {
       toastContent.appendChild(undoBtn);
     }
-    
+
     toast.classList.add('show');
 
     clearTimeout(App._toastTimer);
@@ -4127,9 +3019,9 @@ updatePercentLabels: () => {
   updateLicenseStatus: () => {
     const statusBadge = document.getElementById('license-status-badge');
     const keyDisplay = document.getElementById('license-key-display');
-    
+
     if (!statusBadge || !keyDisplay) return;
-    
+
     try {
       // Проверяем есть ли функция checkActivation
       if (typeof checkActivation !== 'function') {
@@ -4137,14 +3029,14 @@ updatePercentLabels: () => {
         statusBadge.className = 'text-sm font-bold text-red-400';
         return;
       }
-      
+
       const status = checkActivation();
-      
+
       if (status === true) {
         // Активирована
         statusBadge.textContent = '✅ Активирована';
         statusBadge.className = 'text-sm font-bold text-emerald-400';
-        
+
         // Показываем замаскированный ключ
         const stored = localStorage.getItem('illusionist_license');
         if (stored) {
@@ -4182,7 +3074,7 @@ updatePercentLabels: () => {
   renderParticles: () => {
     // Проверяем настройку анимации фона
     if (DB.config && DB.config.enableBackgroundAnimation === false) return;
-    
+
     const canvas = document.getElementById('bg-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -4250,13 +3142,13 @@ const Admin = {
       console.error('❌ Admin render error:', err);
     }
   },
-  
+
   renderPersonalInfo: () => {
     const input = document.getElementById('personal-name');
     if (!input) return;
-    
+
     input.value = DB.config?.personalName || '';
-    
+
     input.addEventListener('input', Utils.debounce(() => {
       if (!DB.config) DB.config = {};
       DB.config.personalName = Utils.sanitizeText(input.value, 100);
@@ -5108,7 +4000,6 @@ Object.assign(Admin, {
 // TEMPLATES MODULE
 // ============================================
 
-
 // ============================================
 // ROUNDING MODULE
 // ============================================
@@ -5160,8 +4051,8 @@ const Rounding = {
     Rounding.updateUI();
     App.updateBonuses();
 
-    const diffStr = Rounding.state.diff >= 0 
-      ? `+${Utils.formatPrice(Rounding.state.diff)}` 
+    const diffStr = Rounding.state.diff >= 0
+      ? `+${Utils.formatPrice(Rounding.state.diff)}`
       : Utils.formatPrice(Rounding.state.diff);
     App.showToast(`Округлено: ${diffStr} ₽`);
   },
@@ -5226,8 +4117,8 @@ const Rounding = {
       if (resetBtn) resetBtn.classList.remove('hidden');
 
       if (diffEl) {
-        const diffStr = Rounding.state.diff >= 0 
-          ? `+${Utils.formatPrice(Rounding.state.diff)} ₽` 
+        const diffStr = Rounding.state.diff >= 0
+          ? `+${Utils.formatPrice(Rounding.state.diff)} ₽`
           : `${Utils.formatPrice(Rounding.state.diff)} ₽`;
         diffEl.textContent = diffStr;
       }
@@ -5312,24 +4203,24 @@ function saveResponseTemplates(templates) {
 function renderResponseTemplates() {
   const container = document.getElementById('response-templates-list');
   if (!container) return;
-  
+
   const templates = loadResponseTemplates();
   Utils.clearElement(container);
-  
+
   if (templates.length === 0) {
     const empty = Utils.createElement('div', 'text-sm text-slate-500 bg-white/5 border border-white/10 rounded-xl p-4 text-center');
     empty.textContent = 'Нет шаблонов. Создайте первый!';
     container.appendChild(empty);
     return;
   }
-  
+
   templates.forEach((tpl, idx) => {
     const card = Utils.createElement('div', 'bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 transition cursor-pointer flex items-center justify-between group');
-    
+
     const left = Utils.createElement('div', 'flex-1 min-w-0 overflow-hidden');
     const title = Utils.createElement('div', 'font-bold text-white truncate');
     title.textContent = tpl.name || 'Без названия';
-    
+
     const preview = Utils.createElement('div', 'text-sm text-slate-400 mt-1');
     preview.style.display = '-webkit-box';
     preview.style.webkitLineClamp = '2';
@@ -5338,12 +4229,12 @@ function renderResponseTemplates() {
     preview.style.wordBreak = 'break-word';
     preview.style.overflowWrap = 'break-word';
     preview.textContent = tpl.text || '';
-    
+
     left.appendChild(title);
     left.appendChild(preview);
-    
+
     const right = Utils.createElement('div', 'flex items-center gap-2 ml-3 flex-shrink-0');
-    
+
     const copyBtn = Utils.createElement('button', 'btn-icon opacity-0 group-hover:opacity-100 transition');
     copyBtn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i>';
     copyBtn.title = 'Скопировать';
@@ -5352,7 +4243,7 @@ function renderResponseTemplates() {
       const success = await Utils.copyToClipboard(tpl.text || '');
       App.showToast(success ? 'Текст скопирован!' : 'Не удалось скопировать');
     });
-    
+
     const delBtn = Utils.createElement('button', 'btn-icon opacity-0 group-hover:opacity-100 transition');
     delBtn.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i>';
     delBtn.title = 'Удалить';
@@ -5366,22 +4257,22 @@ function renderResponseTemplates() {
         App.showToast('Шаблон удалён');
       }
     });
-    
+
     right.appendChild(copyBtn);
     right.appendChild(delBtn);
-    
+
     card.appendChild(left);
     card.appendChild(right);
-    
+
     // Клик по карточке = копирование
     card.addEventListener('click', async () => {
       const success = await Utils.copyToClipboard(tpl.text || '');
       App.showToast(success ? 'Текст скопирован!' : 'Не удалось скопировать');
     });
-    
+
     container.appendChild(card);
   });
-  
+
   if (window.lucide) lucide.createIcons();
 }
 
@@ -5389,17 +4280,17 @@ function renderResponseTemplates() {
 async function createResponseTemplate() {
   const name = await PremiumDialog.prompt({ title: 'Название шаблона:', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
   if (!name) return;
-  
+
   const text = await PremiumDialog.prompt({ title: 'Текст ответа:', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
   if (!text) return;
-  
+
   const templates = loadResponseTemplates();
   templates.push({
     id: Date.now(),
     name: name.trim(),
     text: text.trim()
   });
-  
+
   saveResponseTemplates(templates);
   renderResponseTemplates();
   App.showToast('Шаблон создан!');
@@ -5410,40 +4301,40 @@ async function createResponseTemplate() {
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
   Rounding.init();
-  
+
   // Рендерим список шаблонов в настройках
   renderTemplatesAdmin();
   renderResponseTemplates();
-  
+
   // КНОПКА "ПАКЕТЫ" - добавляет в корзину
   const packagesBtn = document.getElementById('btn-open-packages');
   if (packagesBtn) {
     packagesBtn.addEventListener('click', async () => {
       const templates = DB.packageTemplates || [];
-      
+
       if (templates.length === 0) {
         await PremiumDialog.alert({ message: 'Нет шаблонов!\n\nСоздайте шаблон в Настройках → Шаблоны пакетов', okText: 'Ок', icon: 'sparkles' });
         return;
       }
-      
+
       // Формируем список для выбора
       let message = 'Выберите шаблон:\n\n';
       templates.forEach((tpl, idx) => {
         message += `${idx + 1}. ${tpl.name}\n`;
       });
       message += '\nВведите номер:';
-      
+
       const choice = await PremiumDialog.prompt({ title: 'Выбор шаблона', message: message, defaultValue: '', okText: 'Выбрать', cancelText: 'Отмена', icon: 'list' });
       if (!choice) return;
-      
+
       const num = parseInt(choice);
       if (isNaN(num) || num < 1 || num > templates.length) {
         await PremiumDialog.alert({ message: 'Неверный номер!', okText: 'Ок', icon: 'sparkles' });
         return;
       }
-      
+
       const selectedTemplate = templates[num - 1];
-      
+
       // Добавляем в корзину специальную услугу ПАКЕТ
       const packageItem = {
         name: `ПАКЕТ: ${selectedTemplate.name}`,
@@ -5451,7 +4342,7 @@ document.addEventListener('DOMContentLoaded', () => {
         qty: 1,
         packageTemplate: selectedTemplate // Сохраняем ссылку на шаблон
       };
-      
+
       // Проверяем, нет ли уже пакета в корзине
       const existingPackageIndex = State.cart.findIndex(item => item.name.startsWith('ПАКЕТ:'));
       if (existingPackageIndex >= 0) {
@@ -5463,12 +4354,12 @@ document.addEventListener('DOMContentLoaded', () => {
         State.cart.push(packageItem);
         App.showToast('Пакет добавлен в корзину');
       }
-      
+
       App.calc(); // ВАЖНО! Пересчитываем корзину
       App.updateUI();
     });
   }
-  
+
   // ГЕНЕРАЦИЯ ТЕКСТА ВСЕХ 3 ПАКЕТОВ
   function generatePackagesText(tpl) {
     // Получаем данные из калькулятора
@@ -5477,13 +4368,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateRaw = document.getElementById('inp-date')?.value || '';
     const time = document.getElementById('inp-time')?.value || '';
     const dateFmt = Utils.formatDate(dateRaw) || dateRaw;
-    
+
     // Региональный множитель
     let regionMult = 1;
     if (region && DB.travel && DB.travel[region]) {
       regionMult = DB.travel[region].multiplier || 1;
     }
-    
+
     // Логистика
     let logistics = 0;
     if (region && city && DB.travel && DB.travel[region] && DB.travel[region].cities) {
@@ -5492,18 +4383,18 @@ document.addEventListener('DOMContentLoaded', () => {
         logistics = cityData.price;
       }
     }
-    
+
     let text = `ПАКЕТЫ ДЛЯ МЕРОПРИЯТИЯ\n\n`;
     if (dateFmt) text += `Дата: ${dateFmt}\n`;
     if (time) text += `Время: ${time}\n`;
     if (region) text += `Регион: ${region}\n`;
     if (city) text += `Город: ${city}\n`;
     text += `\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-    
+
     // БАЗОВЫЙ
     const basicPrice = Math.round(tpl.basic.price * regionMult);
     const basicTotal = basicPrice + logistics;
-    
+
     text += `📦 ВАРИАНТ 1: БАЗОВЫЙ\n\n`;
     if (tpl.basic.description) text += `${tpl.basic.description}\n\n`;
     if (tpl.basic.bonuses && tpl.basic.bonuses.length > 0) {
@@ -5518,11 +4409,11 @@ document.addEventListener('DOMContentLoaded', () => {
     text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
     text += `ИТОГО: ${Utils.formatPrice(basicTotal)} ₽\n\n`;
     text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-    
+
     // ОПТИМАЛ
     const optimalPrice = Math.round(tpl.optimal.price * regionMult);
     const optimalTotal = optimalPrice + logistics;
-    
+
     text += `📦 ВАРИАНТ 2: ОПТИМАЛ\n\n`;
     if (tpl.optimal.description) text += `${tpl.optimal.description}\n\n`;
     if (tpl.optimal.bonuses && tpl.optimal.bonuses.length > 0) {
@@ -5537,11 +4428,11 @@ document.addEventListener('DOMContentLoaded', () => {
     text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
     text += `ИТОГО: ${Utils.formatPrice(optimalTotal)} ₽\n\n`;
     text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-    
+
     // ПРЕМИУМ
     const premiumPrice = Math.round(tpl.premium.price * regionMult);
     const premiumTotal = premiumPrice + logistics;
-    
+
     text += `📦 ВАРИАНТ 3: ПРЕМИУМ\n\n`;
     if (tpl.premium.description) text += `${tpl.premium.description}\n\n`;
     if (tpl.premium.bonuses && tpl.premium.bonuses.length > 0) {
@@ -5555,38 +4446,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (logistics > 0) text += `Логистика: ${Utils.formatPrice(logistics)} ₽\n`;
     text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
     text += `ИТОГО: ${Utils.formatPrice(premiumTotal)} ₽\n\n`;
-    
+
     const performer = Utils.sanitizeText(DB.config?.performer || 'Illusionist', 100);
     text += `Ваш ${performer}`;
-    
+
     return text;
   }
-  
+
   // РЕНДЕР СПИСКА ШАБЛОНОВ В НАСТРОЙКАХ
   function renderTemplatesAdmin() {
     const container = document.getElementById('package-templates-list');
     if (!container) return;
-    
+
     container.innerHTML = '';
-    
+
     const templates = DB.packageTemplates || [];
-    
+
     if (templates.length === 0) {
       container.innerHTML = '<div class="text-slate-500 text-sm">Нет шаблонов</div>';
       return;
     }
-    
+
     templates.forEach(tpl => {
       const card = document.createElement('div');
       card.className = 'glass rounded-xl p-3 mb-2';
-      
+
       card.innerHTML = `
         <div class="flex justify-between items-start">
           <div class="flex-1">
             <div class="font-bold text-amber-400 text-sm">${Utils.escapeHtml(tpl.name)}</div>
             <div class="text-xs text-slate-300 mt-1">
-              Базовый: ${Utils.formatPrice(tpl.basic.price)} ₽ • 
-              Оптимал: ${Utils.formatPrice(tpl.optimal.price)} ₽ • 
+              Базовый: ${Utils.formatPrice(tpl.basic.price)} ₽ •
+              Оптимал: ${Utils.formatPrice(tpl.optimal.price)} ₽ •
               Премиум: ${Utils.formatPrice(tpl.premium.price)} ₽
             </div>
           </div>
@@ -5595,7 +4486,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </button>
         </div>
       `;
-      
+
       const delBtn = card.querySelector('[data-del]');
       if (delBtn) {
         delBtn.addEventListener('click', async () => {
@@ -5612,13 +4503,13 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       }
-      
+
       container.appendChild(card);
     });
-    
+
     if (window.lucide) lucide.createIcons();
   }
-  
+
   // КНОПКА СОЗДАНИЯ ШАБЛОНА
   const createBtn = document.getElementById('btn-create-template');
   if (createBtn) {
@@ -5628,42 +4519,42 @@ document.addEventListener('DOMContentLoaded', () => {
         await PremiumDialog.alert({ message: 'Отменено', okText: 'Ок', icon: 'sparkles' });
         return;
       }
-      
+
       await PremiumDialog.alert({ message: 'Сейчас заполним 3 пакета: Базовый, Оптимал, Премиум', okText: 'Ок', icon: 'sparkles' });
-      
+
       // ===== БАЗОВЫЙ =====
       await PremiumDialog.alert({ message: '📦 БАЗОВЫЙ ПАКЕТ', okText: 'Ок', icon: 'sparkles' });
-      
+
       const basicDesc = await PremiumDialog.prompt({ title: 'БАЗОВЫЙ — Описание (что входит):\n\nНапример: Микромагия 60 минут, фокусы с картами', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (basicDesc === null) return;
-      
+
       const basicBonuses = await PremiumDialog.prompt({ title: 'БАЗОВЫЙ — Бонусы (через запятую):\n\nНапример: Мини-сувенир гостям', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
-      
+
       const basicPrice = await PremiumDialog.prompt({ title: 'БАЗОВЫЙ — Базовая цена (₽):', defaultValue: '50000', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (!basicPrice) return;
-      
+
       // ===== ОПТИМАЛ =====
       await PremiumDialog.alert({ message: '📦 ОПТИМАЛ ПАКЕТ', okText: 'Ок', icon: 'sparkles' });
-      
+
       const optimalDesc = await PremiumDialog.prompt({ title: 'ОПТИМАЛ — Описание (что входит):\n\nНапример: Микромагия 90 минут, фокусы с картами, шоу с голубями', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (optimalDesc === null) return;
-      
+
       const optimalBonuses = await PremiumDialog.prompt({ title: 'ОПТИМАЛ — Бонусы (через запятую):\n\nНапример: Мини-сувенир гостям, фото/видео с фишкой', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
-      
+
       const optimalPrice = await PremiumDialog.prompt({ title: 'ОПТИМАЛ — Базовая цена (₽):', defaultValue: '75000', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (!optimalPrice) return;
-      
+
       // ===== ПРЕМИУМ =====
       await PremiumDialog.alert({ message: '📦 ПРЕМИУМ ПАКЕТ', okText: 'Ок', icon: 'sparkles' });
-      
+
       const premiumDesc = await PremiumDialog.prompt({ title: 'ПРЕМИУМ — Описание (что входит):\n\nНапример: Микромагия 120 минут, фокусы с картами, шоу с голубями, левитация', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (premiumDesc === null) return;
-      
+
       const premiumBonuses = await PremiumDialog.prompt({ title: 'ПРЕМИУМ — Бонусы (через запятую):\n\nНапример: Все включено, сувениры всем гостям', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
-      
+
       const premiumPrice = await PremiumDialog.prompt({ title: 'ПРЕМИУМ — Базовая цена (₽):', defaultValue: '120000', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
       if (!premiumPrice) return;
-      
+
       // Собираем данные
       const template = {
         id: 'tpl_' + Date.now(),
@@ -5687,20 +4578,20 @@ document.addEventListener('DOMContentLoaded', () => {
           bonuses: premiumBonuses ? premiumBonuses.split(',').map(b => b.trim()).filter(b => b) : []
         }
       };
-      
+
       // Сохраняем
       if (!DB.packageTemplates) DB.packageTemplates = [];
       DB.packageTemplates.push(template);
       Storage.save();
       renderTemplatesAdmin();
-      
+
       await PremiumDialog.alert({ message: '✅ Шаблон "' + templateName + '" создан!\n\n' +
         '📦 Базовый: ' + Utils.formatPrice(template.basic.price) + ' ₽\n' +
         '📦 Оптимал: ' + Utils.formatPrice(template.optimal.price) + ' ₽\n' +
         '📦 Премиум: ' + Utils.formatPrice(template.premium.price) + ' ₽', okText: 'Ок', icon: 'sparkles' });
     });
   }
-  
+
   // КНОПКА СОЗДАНИЯ ШАБЛОНА ОТВЕТА
   const btnCreateResponse = document.getElementById('btn-create-response');
   if (btnCreateResponse) {
@@ -5885,12 +4776,12 @@ window.PremiumDialog = (() => {
 
 (function() {
   'use strict';
-  
+
   // Функция генерации хеша устройства
   function getDeviceId() {
     const nav = navigator;
     const screen = window.screen;
-    
+
     const components = [
       nav.userAgent,
       nav.language,
@@ -5898,7 +4789,7 @@ window.PremiumDialog = (() => {
       screen.width + 'x' + screen.height,
       new Date().getTimezoneOffset(),
     ];
-    
+
     let hash = 0;
     const str = components.join('|');
     for (let i = 0; i < str.length; i++) {
@@ -5906,29 +4797,29 @@ window.PremiumDialog = (() => {
       hash = ((hash << 5) - hash) + char;
       hash = hash & hash;
     }
-    
+
     return Math.abs(hash).toString(36);
   }
-  
+
   // Функция проверки лицензионного ключа
   function validateLicense(key) {
     if (!key || key.length !== 19) return false;
-    
+
     const parts = key.split('-');
     if (parts.length !== 4) return false;
-    
+
     const check = parts[3];
     const data = parts.slice(0, 3).join('');
-    
+
     let sum = 0;
     for (let i = 0; i < data.length; i++) {
       sum += data.charCodeAt(i);
     }
-    
+
     const expected = (sum % 10000).toString(36).toUpperCase().padStart(4, '0');
     return check === expected;
   }
-  
+
   // Проверка активации
   // ============================================
   // DEMO MODE - для тестирования
@@ -5936,66 +4827,66 @@ window.PremiumDialog = (() => {
   // Установите true чтобы ВСЕГДА показывать экран активации
   // Установите false для нормальной работы (production)
   const DEMO_MODE = false;  // ✅ PRODUCTION - нормальная работа
-  
+
   function checkActivation() {
     // Если DEMO MODE - всегда возвращаем false (нет лицензии)
     if (DEMO_MODE) {
       console.log('🎭 DEMO MODE: Принудительно показываем экран активации');
       return false;
     }
-    
+
     const stored = localStorage.getItem('illusionist_license');
-    
+
     if (stored) {
       try {
         const data = JSON.parse(atob(stored));
-        
+
         if (!validateLicense(data.key)) {
           return false;
         }
-        
+
         const currentDevice = getDeviceId();
         if (data.device !== currentDevice) {
           console.warn('Лицензия привязана к другому устройству');
           return false;
         }
-        
+
         const activated = new Date(data.activated);
         const now = new Date();
         const daysDiff = (now - activated) / (1000 * 60 * 60 * 24);
-        
+
         if (daysDiff > 365) {
           return 'expired';
         }
-        
+
         return true;
       } catch (e) {
         return false;
       }
     }
-    
+
     return false;
   }
-  
+
   // Активация лицензии
   function activateLicense(key) {
     if (!validateLicense(key)) {
       return { success: false, error: 'Неверный формат ключа' };
     }
-    
+
     const deviceId = getDeviceId();
     const data = {
       key: key,
       device: deviceId,
       activated: new Date().toISOString()
     };
-    
+
     const encoded = btoa(JSON.stringify(data));
     localStorage.setItem('illusionist_license', encoded);
-    
+
     return { success: true };
   }
-  
+
   // UI для ввода ключа
   function showLicensePrompt(reason) {
     const overlay = document.createElement('div');
@@ -6010,7 +4901,7 @@ window.PremiumDialog = (() => {
       z-index: 999999;
       font-family: 'Inter', -apple-system, sans-serif;
     `;
-    
+
     const box = document.createElement('div');
     box.style.cssText = `
       background: linear-gradient(135deg, rgba(26,26,46,0.98), rgba(15,15,25,0.98));
@@ -6022,7 +4913,7 @@ window.PremiumDialog = (() => {
       text-align: center;
       box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     `;
-    
+
     const title = document.createElement('h2');
     title.textContent = reason === 'expired' ? 'Продление лицензии' : 'Активация приложения';
     title.style.cssText = `
@@ -6033,9 +4924,9 @@ window.PremiumDialog = (() => {
       -webkit-text-fill-color: transparent;
       margin-bottom: 16px;
     `;
-    
+
     const subtitle = document.createElement('p');
-    subtitle.textContent = reason === 'expired' 
+    subtitle.textContent = reason === 'expired'
       ? 'Ваша лицензия истекла. Введите новый ключ.'
       : 'Введите лицензионный ключ для активации';
     subtitle.style.cssText = `
@@ -6043,7 +4934,7 @@ window.PremiumDialog = (() => {
       margin-bottom: 24px;
       font-size: 14px;
     `;
-    
+
     const input = document.createElement('input');
     input.type = 'text';
     input.placeholder = 'XXXX-XXXX-XXXX-XXXX';
@@ -6061,7 +4952,7 @@ window.PremiumDialog = (() => {
       text-transform: uppercase;
       margin-bottom: 16px;
     `;
-    
+
     input.addEventListener('input', function(e) {
       let value = e.target.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
       let formatted = '';
@@ -6071,7 +4962,7 @@ window.PremiumDialog = (() => {
       }
       e.target.value = formatted;
     });
-    
+
     const button = document.createElement('button');
     button.textContent = 'Активировать';
     button.style.cssText = `
@@ -6086,7 +4977,7 @@ window.PremiumDialog = (() => {
       cursor: pointer;
       transition: transform 0.2s;
     `;
-    
+
     const error = document.createElement('div');
     error.style.cssText = `
       color: #ef4444;
@@ -6094,29 +4985,29 @@ window.PremiumDialog = (() => {
       margin-top: 12px;
       min-height: 20px;
     `;
-    
+
     button.addEventListener('click', () => {
       const key = input.value.trim();
       const result = activateLicense(key);
-      
+
       if (result.success) {
         // Плавно убираем окно активации
         overlay.style.transition = 'opacity 0.5s';
         overlay.style.opacity = '0';
-        
+
         setTimeout(function(){
           document.body.removeChild(overlay);
-          
+
           // Показываем магическую анимацию
           if(typeof window.showMagicAfterActivation === 'function'){
             window.showMagicAfterActivation();
           }
-          
+
           // НЕ ПЕРЕЗАГРУЖАЕМ! Приложение уже работает!
           // Магическая анимация сама скроется через 3 секунды
           console.log('✅ Активация завершена! Приложение готово к работе.');
         }, 500);
-        
+
       } else {
         error.textContent = result.error || 'Неверный ключ';
         input.style.borderColor = '#ef4444';
@@ -6125,11 +5016,11 @@ window.PremiumDialog = (() => {
         }, 2000);
       }
     });
-    
+
     input.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') button.click();
     });
-    
+
     box.appendChild(title);
     box.appendChild(subtitle);
     box.appendChild(input);
@@ -6137,19 +5028,19 @@ window.PremiumDialog = (() => {
     box.appendChild(error);
     overlay.appendChild(box);
     document.body.appendChild(overlay);
-    
+
     input.focus();
   }
-  
+
   // Экспортируем функции в глобальную область для доступа из других скриптов
   window.showLicensePrompt = showLicensePrompt;
   window.checkActivation = checkActivation;
   window.activateLicense = activateLicense;
-  
+
   console.log('✅ Лицензионные функции экспортированы глобально');
-  
+
   // Проверка лицензии управляется заставкой (см. скрипт в начале body)
-  
+
 })();
 </script>
 
