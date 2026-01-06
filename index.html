@@ -3237,6 +3237,16 @@ Object.assign(Admin, {
         Admin.addCity(region);
       });
       content.appendChild(addCityBtn);
+      
+      // Кнопка массового добавления
+      const addCitiesBulkBtn = Utils.createElement('button', 'btn-secondary mt-2 text-sm w-full', '+ Добавить несколько городов');
+      addCitiesBulkBtn.innerHTML = '<i data-lucide="list-plus" class="w-4 h-4 inline mr-2"></i>Добавить несколько городов';
+      addCitiesBulkBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        Admin.addCitiesBulk(region);
+      });
+      content.appendChild(addCitiesBulkBtn);
+      lucide.createIcons();
 
       const delRegionBtn = Utils.createElement(
         'button',
@@ -3347,6 +3357,150 @@ Object.assign(Admin, {
     App.updateUI();
   },
 
+  // Массовое добавление городов
+  addCitiesBulk: async (region) => {
+    if (!DB.travel[region]) return;
+    
+    // Создаём модалку для массового добавления
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4';
+    modal.innerHTML = `
+      <div class="glass rounded-3xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+              <i data-lucide="map-pin" class="w-5 h-5 text-amber-400"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-white">Добавить города</h3>
+              <p class="text-sm text-slate-400">Регион: ${Utils.escapeHtml(region)}</p>
+            </div>
+          </div>
+          <button class="btn-icon" data-action="close">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <div id="bulk-cities-list" class="space-y-3 mb-4"></div>
+        
+        <div class="flex gap-3">
+          <button class="btn-secondary flex-1" data-action="add-row">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Добавить ещё
+          </button>
+          <button class="btn-gold flex-1" data-action="save">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            Сохранить все
+          </button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    lucide.createIcons();
+    
+    const list = modal.querySelector('#bulk-cities-list');
+    let rowIndex = 0;
+    
+    // Функция добавления строки
+    const addRow = () => {
+      const row = document.createElement('div');
+      row.className = 'glass-level-1 rounded-xl p-3 flex gap-3 items-center';
+      row.dataset.index = rowIndex++;
+      row.innerHTML = `
+        <div class="flex-1 grid grid-cols-2 gap-3">
+          <input 
+            type="text" 
+            class="form-input" 
+            placeholder="Название города"
+            data-field="name"
+          />
+          <input 
+            type="number" 
+            class="form-input" 
+            placeholder="Цена (₽)"
+            min="0"
+            step="100"
+            value="0"
+            data-field="price"
+          />
+        </div>
+        <button class="btn-icon text-red-400 hover:bg-red-500/10" data-action="remove-row">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+      `;
+      list.appendChild(row);
+      lucide.createIcons();
+      
+      // Фокус на первый input
+      row.querySelector('input[data-field="name"]').focus();
+    };
+    
+    // Добавляем первую строку
+    addRow();
+    
+    // Обработчики
+    modal.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      
+      const action = btn.dataset.action;
+      
+      if (action === 'close') {
+        modal.remove();
+      }
+      
+      if (action === 'add-row') {
+        addRow();
+      }
+      
+      if (action === 'remove-row') {
+        const row = btn.closest('[data-index]');
+        if (list.children.length > 1) {
+          row.remove();
+        } else {
+          App.showToast('Должна остаться хотя бы одна строка');
+        }
+      }
+      
+      if (action === 'save') {
+        const rows = list.querySelectorAll('[data-index]');
+        let added = 0;
+        
+        rows.forEach(row => {
+          const nameInput = row.querySelector('input[data-field="name"]');
+          const priceInput = row.querySelector('input[data-field="price"]');
+          
+          const name = Utils.sanitizeText(nameInput.value.trim(), 100);
+          const price = Utils.sanitizeNumber(priceInput.value, 0, 999999);
+          
+          if (name) {
+            DB.travel[region].cities[name] = price;
+            added++;
+          }
+        });
+        
+        if (added > 0) {
+          Storage.save();
+          Admin.render();
+          App.updateUI();
+          App.showToast(`✅ Добавлено городов: ${added}`);
+          modal.remove();
+        } else {
+          App.showToast('Заполните хотя бы один город');
+        }
+      }
+    });
+    
+    // Enter = добавить строку
+    list.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        addRow();
+      }
+    });
+  },
+
   delCity: (region, city) => {
     if (!DB.travel[region] || !DB.travel[region].cities) return;
     delete DB.travel[region].cities[city];
@@ -3418,6 +3572,16 @@ Object.assign(Admin, {
         Admin.addSvc(category);
       });
       content.appendChild(addSvcBtn);
+      
+      // Кнопка массового добавления
+      const addServicesBulkBtn = Utils.createElement('button', 'btn-secondary mt-2 text-sm w-full', '+ Добавить несколько услуг');
+      addServicesBulkBtn.innerHTML = '<i data-lucide="list-plus" class="w-4 h-4 inline mr-2"></i>Добавить несколько услуг';
+      addServicesBulkBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        Admin.addServicesBulk(category);
+      });
+      content.appendChild(addServicesBulkBtn);
+      lucide.createIcons();
 
       const delCatBtn = Utils.createElement(
         'button',
@@ -3507,6 +3671,150 @@ Object.assign(Admin, {
     Storage.save();
     Admin.render();
     App.updateUI();
+  },
+
+  // Массовое добавление услуг
+  addServicesBulk: async (category) => {
+    if (!DB.services[category]) return;
+    
+    // Создаём модалку для массового добавления
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4';
+    modal.innerHTML = `
+      <div class="glass rounded-3xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+              <i data-lucide="sparkles" class="w-5 h-5 text-purple-400"></i>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-white">Добавить услуги</h3>
+              <p class="text-sm text-slate-400">Категория: ${Utils.escapeHtml(category)}</p>
+            </div>
+          </div>
+          <button class="btn-icon" data-action="close">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <div id="bulk-services-list" class="space-y-3 mb-4"></div>
+        
+        <div class="flex gap-3">
+          <button class="btn-secondary flex-1" data-action="add-row">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Добавить ещё
+          </button>
+          <button class="btn-gold flex-1" data-action="save">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            Сохранить все
+          </button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    lucide.createIcons();
+    
+    const list = modal.querySelector('#bulk-services-list');
+    let rowIndex = 0;
+    
+    // Функция добавления строки
+    const addRow = () => {
+      const row = document.createElement('div');
+      row.className = 'glass-level-1 rounded-xl p-3 flex gap-3 items-center';
+      row.dataset.index = rowIndex++;
+      row.innerHTML = `
+        <div class="flex-1 grid grid-cols-2 gap-3">
+          <input 
+            type="text" 
+            class="form-input" 
+            placeholder="Название услуги"
+            data-field="name"
+          />
+          <input 
+            type="number" 
+            class="form-input" 
+            placeholder="Цена (₽)"
+            min="0"
+            step="100"
+            value="0"
+            data-field="price"
+          />
+        </div>
+        <button class="btn-icon text-red-400 hover:bg-red-500/10" data-action="remove-row">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+      `;
+      list.appendChild(row);
+      lucide.createIcons();
+      
+      // Фокус на первый input
+      row.querySelector('input[data-field="name"]').focus();
+    };
+    
+    // Добавляем первую строку
+    addRow();
+    
+    // Обработчики
+    modal.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      
+      const action = btn.dataset.action;
+      
+      if (action === 'close') {
+        modal.remove();
+      }
+      
+      if (action === 'add-row') {
+        addRow();
+      }
+      
+      if (action === 'remove-row') {
+        const row = btn.closest('[data-index]');
+        if (list.children.length > 1) {
+          row.remove();
+        } else {
+          App.showToast('Должна остаться хотя бы одна строка');
+        }
+      }
+      
+      if (action === 'save') {
+        const rows = list.querySelectorAll('[data-index]');
+        let added = 0;
+        
+        rows.forEach(row => {
+          const nameInput = row.querySelector('input[data-field="name"]');
+          const priceInput = row.querySelector('input[data-field="price"]');
+          
+          const name = Utils.sanitizeText(nameInput.value.trim(), 200);
+          const price = Utils.sanitizeNumber(priceInput.value, 0, 999999);
+          
+          if (name) {
+            DB.services[category][name] = price;
+            added++;
+          }
+        });
+        
+        if (added > 0) {
+          Storage.save();
+          Admin.render();
+          App.updateUI();
+          App.showToast(`✅ Добавлено услуг: ${added}`);
+          modal.remove();
+        } else {
+          App.showToast('Заполните хотя бы одну услугу');
+        }
+      }
+    });
+    
+    // Enter = добавить строку
+    list.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        addRow();
+      }
+    });
   },
 
   delSvc: (category, service) => {
