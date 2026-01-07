@@ -714,28 +714,6 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
 'use strict';
 
 // ============================================
-// ICONS: batch Icons.request() calls (perf)
-// ============================================
-const Icons = (() => {
-  let pending = false;
-  const flush = () => {
-    pending = false;
-    try {
-      if (window.lucide && typeof window.lucide.createIcons === 'function') {
-        Icons.request();
-      }
-    } catch (e) {}
-  };
-  const request = () => {
-    if (pending) return;
-    pending = true;
-    (window.requestAnimationFrame || window.setTimeout)(flush, 0);
-  };
-  return { request };
-})();
-
-
-// ============================================
 // КОНСТАНТЫ И КОНФИГУРАЦИЯ
 // ============================================
 const DB_VERSION = '2.0';
@@ -1889,7 +1867,7 @@ const KPBuffer = {
       el.appendChild(card);
     });
 
-    if (window.lucide) Icons.request();
+    if (window.lucide) lucide.createIcons();
   }
 };
 
@@ -1919,12 +1897,12 @@ const App = {
       if (window.requestIdleCallback) {
         requestIdleCallback(() => {
           App.renderParticles();
-          if (window.lucide) Icons.request();
+          if (window.lucide) lucide.createIcons();
         }, { timeout: 2000 });
       } else {
         setTimeout(() => {
           App.renderParticles();
-          if (window.lucide) Icons.request();
+          if (window.lucide) lucide.createIcons();
         }, 100);
       }
 
@@ -2232,7 +2210,7 @@ updatePercentLabels: () => {
         App.updateCat();
 
         requestAnimationFrame(() => {
-          if (window.lucide) Icons.request();
+          if (window.lucide) lucide.createIcons();
           DataManager.updateStats();
           DataManager.renderBackupSlots();
           Admin.render();
@@ -2529,7 +2507,7 @@ updatePercentLabels: () => {
       cartList.appendChild(wrapper);
     });
 
-    if (window.lucide) Icons.request();
+    if (window.lucide) lucide.createIcons();
   },
 
   updateBulkSelection: () => {
@@ -3404,11 +3382,9 @@ updatePercentLabels: () => {
       KPBuffer.render();
 
       modal.classList.add('active');
-      try { App._particlesCtrl?.refresh?.(); } catch (e) {}
-      if (window.lucide) Icons.request();
+      if (window.lucide) lucide.createIcons();
     } else {
       modal.classList.remove('active');
-      try { App._particlesCtrl?.refresh?.(); } catch (e) {}
       App.updateUI();
     }
   },
@@ -3556,17 +3532,6 @@ updatePercentLabels: () => {
     if (!ctx) return;
 
     let particles = [];
-    let rafId = null;
-    let running = false;
-
-    const reduceMotion = (() => {
-      try {
-        return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-      } catch (e) {
-        return false;
-      }
-    })();
-
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -3585,10 +3550,7 @@ updatePercentLabels: () => {
       });
     }
 
-    // Задаём один раз (раньше ставилось в каждой итерации цикла)
-    ctx.globalAlpha = 0.3;
-
-    const draw = () => {
+    function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach(p => {
         p.x += Math.cos(p.d) * p.s;
@@ -3602,59 +3564,12 @@ updatePercentLabels: () => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = p.c;
+        ctx.globalAlpha = 0.3;
         ctx.fill();
       });
-    };
-
-    let lastTs = 0;
-    const tick = (ts) => {
-      if (!running) return;
-
-      // Если пользователь просит "меньше анимаций" — экономим ресурс, но дизайн не меняем.
-      if (reduceMotion) {
-        const minDelta = 1000 / 30; // 30fps
-        if ((ts - lastTs) < minDelta) {
-          rafId = requestAnimationFrame(tick);
-          return;
-        }
-        lastTs = ts;
-      }
-
-      draw();
-      rafId = requestAnimationFrame(tick);
-    };
-
-    const start = () => {
-      if (running) return;
-      running = true;
-      rafId = requestAnimationFrame(tick);
-    };
-
-    const stop = () => {
-      running = false;
-      if (rafId) {
-        try { cancelAnimationFrame(rafId); } catch (e) {}
-        rafId = null;
-      }
-    };
-
-    const shouldPauseForSettings = () => {
-      const modal = document.getElementById('view-settings');
-      return !!(modal && modal.classList.contains('active'));
-    };
-
-    const refresh = () => {
-      if (document.hidden || shouldPauseForSettings()) stop();
-      else start();
-    };
-
-    // Пауза в фоне (экономит батарейку, пользователь не страдает)
-    document.addEventListener('visibilitychange', refresh, { passive: true });
-
-    // Даём App возможность синхронно притормаживать/возобновлять при открытии модалок
-    App._particlesCtrl = { start, stop, refresh };
-
-    refresh();
+      requestAnimationFrame(animate);
+    }
+    animate();
   }
 };
 
@@ -3672,7 +3587,7 @@ const Admin = {
       Admin.renderBonuses();
       Admin.renderPayments();
       Admin.renderLinks();
-      if (window.lucide) Icons.request();
+      if (window.lucide) lucide.createIcons();
       DataManager.updateStats();
     } catch (err) {
     }
@@ -3782,7 +3697,7 @@ Object.assign(Admin, {
         Admin.addCitiesBulk(region);
       });
       content.appendChild(addCitiesBulkBtn);
-      Icons.request();
+      lucide.createIcons();
 
       const delRegionBtn = Utils.createElement(
         'button',
@@ -3933,7 +3848,7 @@ Object.assign(Admin, {
     `;
     
     document.body.appendChild(modal);
-    Icons.request();
+    lucide.createIcons();
     
     const list = modal.querySelector('#bulk-cities-list');
     let rowIndex = 0;
@@ -3966,7 +3881,7 @@ Object.assign(Admin, {
         </button>
       `;
       list.appendChild(row);
-      Icons.request();
+      lucide.createIcons();
       
       // Фокус на первый input
       row.querySelector('input[data-field="name"]').focus();
@@ -4117,7 +4032,7 @@ Object.assign(Admin, {
         Admin.addServicesBulk(category);
       });
       content.appendChild(addServicesBulkBtn);
-      Icons.request();
+      lucide.createIcons();
 
       const delCatBtn = Utils.createElement(
         'button',
@@ -4249,7 +4164,7 @@ Object.assign(Admin, {
     `;
     
     document.body.appendChild(modal);
-    Icons.request();
+    lucide.createIcons();
     
     const list = modal.querySelector('#bulk-services-list');
     let rowIndex = 0;
@@ -4282,7 +4197,7 @@ Object.assign(Admin, {
         </button>
       `;
       list.appendChild(row);
-      Icons.request();
+      lucide.createIcons();
       
       // Фокус на первый input
       row.querySelector('input[data-field="name"]').focus();
@@ -4972,7 +4887,7 @@ const Rounding = {
       if (resetBtn) resetBtn.classList.add('hidden');
     }
 
-    if (window.lucide) Icons.request();
+    if (window.lucide) lucide.createIcons();
   },
 
   setStep: (step) => {
@@ -5157,7 +5072,7 @@ function renderResponseTemplates() {
     container.appendChild(card);
   });
 
-  if (window.lucide) Icons.request();
+  if (window.lucide) lucide.createIcons();
 }
 
 // Создание нового шаблона ответа
@@ -5403,7 +5318,7 @@ document.addEventListener('DOMContentLoaded', () => {
       container.appendChild(card);
     });
 
-    if (window.lucide) Icons.request();
+    if (window.lucide) lucide.createIcons();
   }
 
   // КНОПКА СОЗДАНИЯ ШАБЛОНА
@@ -5638,7 +5553,7 @@ window.PremiumDialog = (() => {
       i.style.height = '22px';
       span.appendChild(i);
       iconWrap.appendChild(span);
-      try { Icons.request(); } catch (e) {}
+      try { window.lucide.createIcons(); } catch (e) {}
     } else {
       span.textContent = danger ? '!' : '✦';
       iconWrap.appendChild(span);
