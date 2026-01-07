@@ -61,6 +61,14 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
 <style>
 #premium-dialog-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:99999;background:rgba(0,0,0,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:16px}#premium-dialog-overlay.active{display:flex}#premium-dialog{width:min(520px,92vw);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,rgba(17,24,39,.92),rgba(2,6,23,.92));border:1px solid rgba(245,158,11,.22);box-shadow:0 20px 60px rgba(0,0,0,.55);}#premium-dialog .pd-head{display:flex;gap:12px;align-items:flex-start;padding:16px 16px 10px}#premium-dialog .pd-icon{flex:0 0 auto;width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25)}#premium-dialog .pd-title{font-weight:700;color:#fff;font-size:15px;line-height:1.2;margin-top:2px}#premium-dialog .pd-msg{color:rgba(226,232,240,.92);font-size:13px;line-height:1.35;margin-top:6px;white-space:pre-wrap}#premium-dialog .pd-body{padding:0 16px 12px}#premium-dialog .pd-input{width:100%;margin-top:10px;padding:12px 12px;border-radius:14px;background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.18);color:#fff;outline:none}#premium-dialog .pd-input:focus{border-color:rgba(245,158,11,.55);box-shadow:0 0 0 3px rgba(245,158,11,.15)}#premium-dialog .pd-actions{display:flex;gap:10px;justify-content:flex-end;padding:12px 16px 16px}#premium-dialog .pd-btn{border-radius:14px;padding:10px 14px;font-size:13px;font-weight:600;border:1px solid rgba(148,163,184,.18);background:rgba(15,23,42,.55);color:#fff;cursor:pointer}#premium-dialog .pd-btn:hover{transform:translateY(-1px)}#premium-dialog .pd-btn:active{transform:translateY(0)}#premium-dialog .pd-btn.ok{border-color:rgba(245,158,11,.35);background:linear-gradient(180deg,rgba(245,158,11,.28),rgba(245,158,11,.14))}#premium-dialog .pd-btn.danger{border-color:rgba(239,68,68,.35);background:linear-gradient(180deg,rgba(239,68,68,.22),rgba(239,68,68,.10))}#premium-dialog .pd-btn.ghost{background:rgba(15,23,42,.25)}
 </style>
+
+<style>
+/* Perf: уменьшение стоимости рендера (не влияет на дизайн/функции) */
+@supports (content-visibility:auto){
+  #view-settings .panel .glass{content-visibility:auto;contain-intrinsic-size:800px}
+}
+</style>
+
 </head>
 
 <body class="min-h-screen">
@@ -88,85 +96,7 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
 @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:0.9}}@keyframes magic-spin{0%{transform:scale(0) rotate(0deg);opacity:0}50%{transform:scale(1.2) rotate(180deg);opacity:1}100%{transform:scale(1) rotate(360deg);opacity:1}}
 </style>
 
-<script>
-(function(){
-  console.log('🎬 Скрипт заставки загружен');
 
-  function checkLicense(){
-    console.log('🔍 Проверка лицензии...');
-
-    // Проверяем лицензию (функция checkActivation должна быть определена к этому моменту)
-    var hasLic = false;
-    try {
-      if(typeof checkActivation !== 'function') {
-        console.error('❌ Функция checkActivation не найдена!');
-        return;
-      }
-      hasLic = checkActivation();
-    } catch(e) {
-      console.error('❌ Ошибка проверки лицензии:', e);
-      hasLic = false;
-    }
-
-    if(hasLic===true){
-      // Лицензия уже есть - просто ничего не делаем, приложение загрузится
-      // "Добро пожаловать" показывается ТОЛЬКО при первой активации
-      console.log('✅ Лицензия активна, приложение загружается');
-    }
-    else {
-      // Лицензии нет или истекла - показываем экран активации
-      console.log('⚠️ Лицензия не найдена, показываем экран активации');
-      try {
-        if(typeof showLicensePrompt !== 'function') {
-          console.error('❌ Функция showLicensePrompt не найдена!');
-          return;
-        }
-        showLicensePrompt(hasLic==='expired'?'expired':'first');
-      } catch(e) {
-        console.error('❌ Ошибка показа окна активации:', e);
-      }
-    }
-  }
-
-  // Делаем checkLicense глобальной чтобы можно было вызвать из любого места
-  window.checkLicense = checkLicense;
-
-  function showMagic(){
-    var m=document.getElementById('magic-welcome');
-    if(!m)return;
-    m.style.display='flex';
-    setTimeout(function(){m.style.transition='opacity 0.8s';m.style.opacity='1'},50);
-    setTimeout(function(){m.style.opacity='0';setTimeout(function(){m.remove()},800)},3000);
-  }
-
-  window.showMagicAfterActivation=showMagic;
-
-  // ============================================
-  // ЗАПУСК ПОСЛЕ ЗАГРУЗКИ СТРАНИЦЫ
-  // ============================================
-  window.addEventListener('load', function() {
-    console.log('📱 Приложение загружено, запускаем заставку');
-
-    // Показываем заставку 2.5 сек
-    setTimeout(function(){
-      console.log('🎩 Скрываем заставку...');
-      var s=document.getElementById('simple-splash');
-      if(s){
-        s.style.opacity='0';
-        s.style.transition='opacity 0.8s';
-
-        setTimeout(function(){
-          s.remove();
-          console.log('✅ Заставка скрыта, проверяем лицензию');
-
-          // Вызываем проверку лицензии
-          checkLicense();
-        }, 800);
-      }
-    }, 2500);
-  });
-})();
-</script>
 
   <input type="file" id="import-file-input" accept=".json,.backup" />
   <canvas id="bg-canvas"></canvas>
@@ -674,12 +604,107 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
           <button id="btn-create-response" class="btn-add w-full mb-3">+ Создать шаблон ответа</button>
           <div id="response-templates-list" class="space-y-2"></div>
         </div>
+
+        <!-- БУФЕР КП -->
+        <div class="glass rounded-2xl p-5 lg:col-span-2">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div>
+              <div class="text-base font-extrabold text-white">Буфер КП</div>
+              <div class="text-sm text-slate-400">Сохранённые КП после нажатия «Скопировать КП». Можно копировать и редактировать.</div>
+            </div>
+            <button id="btn-clear-kp-buffer" class="btn-icon" aria-label="Очистить буфер КП" title="Очистить буфер">
+              <i data-lucide="trash-2" class="w-5 h-5"></i>
+            </button>
+          </div>
+          <div id="kp-buffer-list" class="space-y-2"></div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Scripts -->
-  <script>
+  
+  
+  
+
+
+
+
+
+<script>
+
+
+/* === merged inline scripts (performance: fewer <script> tags) === */
+
+(function(){
+
+  function checkLicense(){
+
+    // Проверяем лицензию (функция checkActivation должна быть определена к этому моменту)
+    var hasLic = false;
+    try {
+      if(typeof checkActivation !== 'function') {
+        return;
+      }
+      hasLic = checkActivation();
+    } catch(e) {
+      hasLic = false;
+    }
+
+    if(hasLic===true){
+      // Лицензия уже есть - просто ничего не делаем, приложение загрузится
+      // "Добро пожаловать" показывается ТОЛЬКО при первой активации
+    }
+    else {
+      // Лицензии нет или истекла - показываем экран активации
+      try {
+        if(typeof showLicensePrompt !== 'function') {
+          return;
+        }
+        showLicensePrompt(hasLic==='expired'?'expired':'first');
+      } catch(e) {
+      }
+    }
+  }
+
+  // Делаем checkLicense глобальной чтобы можно было вызвать из любого места
+  window.checkLicense = checkLicense;
+
+  function showMagic(){
+    var m=document.getElementById('magic-welcome');
+    if(!m)return;
+    m.style.display='flex';
+    setTimeout(function(){m.style.transition='opacity 0.8s';m.style.opacity='1'},50);
+    setTimeout(function(){m.style.opacity='0';setTimeout(function(){m.remove()},800)},3000);
+  }
+
+  window.showMagicAfterActivation=showMagic;
+
+  // ============================================
+  // ЗАПУСК ПОСЛЕ ЗАГРУЗКИ СТРАНИЦЫ
+  // ============================================
+  window.addEventListener('load', function() {
+
+    // Показываем заставку 2.5 сек
+    setTimeout(function(){
+      var s=document.getElementById('simple-splash');
+      if(s){
+        s.style.opacity='0';
+        s.style.transition='opacity 0.8s';
+
+        setTimeout(function(){
+          s.remove();
+
+          // Вызываем проверку лицензии
+          checkLicense();
+        }, 800);
+      }
+    }, 2500);
+  });
+})();
+
+
+
 /* === Inlined from app.js === */
 /* ============================================
    ILLUSIONIST OS - APP.JS
@@ -687,6 +712,28 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
    ============================================ */
 
 'use strict';
+
+// ============================================
+// ICONS: batch Icons.request() calls (perf)
+// ============================================
+const Icons = (() => {
+  let pending = false;
+  const flush = () => {
+    pending = false;
+    try {
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        Icons.request();
+      }
+    } catch (e) {}
+  };
+  const request = () => {
+    if (pending) return;
+    pending = true;
+    (window.requestAnimationFrame || window.setTimeout)(flush, 0);
+  };
+  return { request };
+})();
+
 
 // ============================================
 // КОНСТАНТЫ И КОНФИГУРАЦИЯ
@@ -866,7 +913,6 @@ const Utils = {
       localStorage.setItem(key, JSON.stringify(value));
       return true;
     } catch (err) {
-      console.error('Storage save error:', err);
       return false;
     }
   },
@@ -888,7 +934,6 @@ const Utils = {
       Utils._storageCache.set(key, parsed);
       return parsed;
     } catch (err) {
-      console.error('Storage load error:', err);
       return defaultValue;
     }
   },
@@ -899,7 +944,6 @@ const Utils = {
       Utils._storageCache.set(key, value); // Обновляем кеш
       return true;
     } catch (err) {
-      console.error('Storage save error:', err);
       return false;
     }
   },
@@ -964,6 +1008,7 @@ const DEFAULT_DB = {
   links: [
     { label: "Портфолио", url: "https://example.com" }
   ],
+  kpBuffer: [],
   config: {
     performer: "Illusionist",
     deposit: 30,
@@ -1017,32 +1062,48 @@ const DataManager = {
       return { valid: false, error: 'Некорректный формат данных' };
     }
 
+    // Поддержка новых "полных" бэкапов (v2), где данные лежат в kv[STORAGE_KEY]
+    let candidate = data;
+    const isV2 = (candidate && typeof candidate === 'object' && candidate.__format === 'illusionist_os_backup_v2' && Utils.isValidObject(candidate.kv));
+
+    if (isV2) {
+      const rawDB = candidate.kv && candidate.kv[STORAGE_KEY];
+      if (!rawDB || typeof rawDB !== 'string') {
+        return { valid: false, error: 'В бэкапе нет базы данных приложения' };
+      }
+      try {
+        candidate = JSON.parse(rawDB);
+      } catch {
+        return { valid: false, error: 'База данных в бэкапе повреждена' };
+      }
+    }
+
     const required = ['travel', 'services', 'holidays', 'bonuses', 'payments', 'links', 'config'];
     for (const key of required) {
-      if (!(key in data)) {
+      if (!(key in candidate)) {
         return { valid: false, error: `Отсутствует поле: ${key}` };
       }
     }
 
-    if (!Utils.isValidObject(data.travel)) {
+    if (!Utils.isValidObject(candidate.travel)) {
       return { valid: false, error: 'Некорректная структура travel' };
     }
-    if (!Utils.isValidObject(data.services)) {
+    if (!Utils.isValidObject(candidate.services)) {
       return { valid: false, error: 'Некорректная структура services' };
     }
-    if (!Utils.isValidObject(data.holidays)) {
+    if (!Utils.isValidObject(candidate.holidays)) {
       return { valid: false, error: 'Некорректная структура holidays' };
     }
-    if (!Array.isArray(data.bonuses)) {
+    if (!Array.isArray(candidate.bonuses)) {
       return { valid: false, error: 'bonuses должен быть массивом' };
     }
-    if (!Array.isArray(data.payments)) {
+    if (!Array.isArray(candidate.payments)) {
       return { valid: false, error: 'payments должен быть массивом' };
     }
-    if (!Array.isArray(data.links)) {
+    if (!Array.isArray(candidate.links)) {
       return { valid: false, error: 'links должен быть массивом' };
     }
-    if ('holidayRanges' in data && !Array.isArray(data.holidayRanges)) {
+    if ('holidayRanges' in candidate && !Array.isArray(candidate.holidayRanges)) {
       return { valid: false, error: 'holidayRanges должен быть массивом' };
     }
 
@@ -1051,11 +1112,41 @@ const DataManager = {
 
   exportData: () => {
     try {
+      // Перед экспортом фиксируем всё, что могло "зависнуть" в debounce (включая профиль)
+      try {
+        const pn = document.getElementById('personal-name');
+        if (pn) {
+          if (!DB.config) DB.config = {};
+          DB.config.personalName = Utils.sanitizeText(pn.value, 100);
+        }
+      } catch (e) {}
+      try { Storage.save(); } catch (e) {}
+
+      // Полный экспорт: сохраняем все ключи localStorage, относящиеся к Illusionist OS
+      const kv = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k) continue;
+        if (k.startsWith('illusionist_') || k === 'personal-name' || k === 'personalName' || k === 'illusionist_personal_name') {
+          kv[k] = localStorage.getItem(k);
+        }
+      }
+
+      // На всякий случай гарантируем, что база данных присутствует в экспорте
+      if (!kv[STORAGE_KEY]) {
+        kv[STORAGE_KEY] = JSON.stringify(DB);
+      }
+
+      const cleanPayload = {
+        __format: 'illusionist_os_backup_v2',
+        dbVersion: DB_VERSION,
+        kv
+      };
+
       const exportData = {
-        ...DB,
-        version: DB_VERSION,
+        ...cleanPayload,
         exportedAt: new Date().toISOString(),
-        checksum: DataManager.calculateChecksum(DB)
+        checksum: DataManager.calculateChecksum(cleanPayload)
       };
 
       const blob = new Blob([JSON.stringify(exportData, null, 2)], {
@@ -1065,7 +1156,7 @@ const DataManager = {
 
       const a = document.createElement('a');
       a.href = url;
-      a.download = `illusionist-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `illusionist-os-backup-${new Date().toISOString().slice(0, 10)}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1074,7 +1165,6 @@ const DataManager = {
       App.showToast('Данные экспортированы!');
       return true;
     } catch (err) {
-      console.error('❌ Export error:', err);
       App.showToast('Ошибка экспорта');
       return false;
     }
@@ -1094,6 +1184,7 @@ const DataManager = {
           return;
         }
 
+        // Проверка контрольной суммы (если есть)
         if (data.checksum) {
           const { checksum, exportedAt, ...cleanData } = data;
           const calculated = DataManager.calculateChecksum(cleanData);
@@ -1105,29 +1196,102 @@ const DataManager = {
           }
         }
 
-        DataManager.createBackup('Перед импортом');
+        const isV2 = (data && typeof data === 'object' && data.__format === 'illusionist_os_backup_v2' && Utils.isValidObject(data.kv));
 
-        const { checksum, exportedAt, ...importedData } = data;
-
-        DB = {
-          ...JSON.parse(JSON.stringify(DEFAULT_DB)),
-          ...importedData,
-          version: DB_VERSION
+        // Снимок текущего состояния (чтобы не потерять данные при импорте v2, где мы восстанавливаем весь localStorage)
+        const beforeBackup = {
+          id: Date.now(),
+          label: 'Перед импортом',
+          timestamp: new Date().toISOString(),
+          data: JSON.parse(JSON.stringify(DB)),
+          checksum: DataManager.calculateChecksum(DB)
         };
 
-        if (!Array.isArray(DB.holidayRanges)) {
-          DB.holidayRanges = JSON.parse(JSON.stringify(DEFAULT_DB.holidayRanges));
+        if (isV2) {
+          const kv = data.kv || {};
+
+          // Восстанавливаем все ключи, кроме BACKUP_KEY (его аккуратно смержим ниже)
+          for (const [k, v] of Object.entries(kv)) {
+            if (k === BACKUP_KEY) continue;
+            if (typeof v === 'string') {
+              try {
+                localStorage.setItem(k, v);
+              } catch (err) {
+              }
+            }
+          }
+
+          // Импортируем бэкапы из файла и добавляем наш "Перед импортом" сверху
+          let importedBackups = [];
+          try {
+            const raw = kv[BACKUP_KEY];
+            if (raw && typeof raw === 'string') {
+              const parsed = JSON.parse(raw);
+              importedBackups = Array.isArray(parsed) ? parsed : [];
+            }
+          } catch {
+            importedBackups = [];
+          }
+
+          const merged = [beforeBackup, ...(importedBackups || [])].filter(Boolean).filter(b => b && typeof b === 'object');
+
+          // Дедупликация по id
+          const seen = new Set();
+          const uniq = [];
+          for (const b of merged) {
+            const id = b && b.id;
+            if (id == null) continue;
+            if (seen.has(id)) continue;
+            seen.add(id);
+            uniq.push(b);
+          }
+
+          if (uniq.length > MAX_BACKUPS) uniq.length = MAX_BACKUPS;
+          Utils.saveToStorage(BACKUP_KEY, uniq);
+
+          // Загружаем DB из восстановленного хранилища и нормализуем под текущую версию
+          Storage.load();
+          Storage.save();
+
+        } else {
+          // Старый формат (legacy): файл содержит сам DB
+          DataManager.createBackup('Перед импортом');
+
+          const { checksum, exportedAt, ...importedData } = data;
+
+          DB = {
+            ...JSON.parse(JSON.stringify(DEFAULT_DB)),
+            ...importedData,
+            version: DB_VERSION
+          };
+
+
+          // Миграция профиля (персональное имя) для старых экспортов
+          try {
+            if (!DB.config) DB.config = { ...DEFAULT_DB.config };
+            const hasName = typeof DB.config.personalName === 'string' && DB.config.personalName.trim().length > 0;
+            if (!hasName) {
+              const legacyName =
+                (typeof importedData.personalName === 'string' ? importedData.personalName :
+                 (typeof importedData.personal_name === 'string' ? importedData.personal_name : ''));
+              if (legacyName) DB.config.personalName = Utils.sanitizeText(legacyName, 100);
+            }
+          } catch (e) {}
+          if (!Array.isArray(DB.holidayRanges)) {
+            DB.holidayRanges = JSON.parse(JSON.stringify(DEFAULT_DB.holidayRanges));
+          }
+
+          Storage.save();
         }
 
-        Storage.save();
         App.updateUI();
         Admin.render();
+        DataManager.renderBackupSlots();
         DataManager.updateStats();
 
         App.showToast('Данные импортированы!');
         resolve(true);
       } catch (err) {
-        console.error('❌ Import error:', err);
         App.showToast('Ошибка чтения файла');
         reject(err);
       }
@@ -1160,7 +1324,6 @@ const DataManager = {
       App.showToast('Бэкап создан!');
       return true;
     } catch (err) {
-      console.error('❌ Backup error:', err);
       App.showToast('Ошибка создания бэкапа');
       return false;
     }
@@ -1205,7 +1368,6 @@ const DataManager = {
       App.showToast('Данные восстановлены!');
       return true;
     } catch (err) {
-      console.error('❌ Restore error:', err);
       App.showToast('Ошибка восстановления');
       return false;
     }
@@ -1220,7 +1382,6 @@ const DataManager = {
       App.showToast('Бэкап удалён');
       return true;
     } catch (err) {
-      console.error('❌ Delete backup error:', err);
       return false;
     }
   },
@@ -1250,7 +1411,6 @@ const DataManager = {
 
       DataManager.renderBackupSlots();
     } catch (err) {
-      console.error('❌ Auto-backup error:', err);
     }
   },
 
@@ -1387,7 +1547,6 @@ const Storage = {
       DataManager.updateStats();
       return true;
     } catch (err) {
-      console.error('❌ Storage save error:', err);
       DataManager.updateBackupIndicator('error');
       if (err.name === 'QuotaExceededError') {
         App.showToast('Хранилище переполнено');
@@ -1417,14 +1576,45 @@ const Storage = {
         bonuses: Array.isArray(parsed.bonuses) ? parsed.bonuses : DEFAULT_DB.bonuses,
         payments: Array.isArray(parsed.payments) ? parsed.payments : DEFAULT_DB.payments,
         links: Array.isArray(parsed.links) ? parsed.links : DEFAULT_DB.links,
+        kpBuffer: Array.isArray(parsed.kpBuffer) ? parsed.kpBuffer : [],
+                packageTemplates: Array.isArray(parsed.packageTemplates) ? parsed.packageTemplates : [],
         config: Utils.isValidObject(parsed.config) ? { ...DEFAULT_DB.config, ...parsed.config } : DEFAULT_DB.config,
         version: DB_VERSION
       };
 
+      // Миграция профиля (персональное имя) — поддержка старых версий/бэкапов
+      try {
+        if (!DB.config) DB.config = { ...DEFAULT_DB.config };
+        const hasName = typeof DB.config.personalName === 'string' && DB.config.personalName.trim().length > 0;
+
+        if (!hasName) {
+          let legacyName = '';
+          // 1) Старые поля внутри базы (если вдруг были)
+          if (typeof parsed.personalName === 'string') legacyName = parsed.personalName;
+          else if (typeof parsed.personal_name === 'string') legacyName = parsed.personal_name;
+
+          // 2) Старые отдельные ключи localStorage
+          if (!legacyName) {
+            const legacyKeys = ['personal-name', 'personalName', 'illusionist_personal_name'];
+            for (const k of legacyKeys) {
+              const raw = localStorage.getItem(k);
+              if (!raw) continue;
+              try {
+                const v = JSON.parse(raw);
+                if (typeof v === 'string' && v.trim()) { legacyName = v; break; }
+              } catch {
+                if (typeof raw === 'string' && raw.trim()) { legacyName = raw; break; }
+              }
+            }
+          }
+
+          if (legacyName) DB.config.personalName = Utils.sanitizeText(legacyName, 100);
+        }
+      } catch (e) {}
+
       DataManager.updateBackupIndicator('saved');
       return true;
     } catch (err) {
-      console.error('❌ Storage load error:', err);
       DB = JSON.parse(JSON.stringify(DEFAULT_DB));
       DB.version = DB_VERSION;
       DataManager.updateBackupIndicator('error');
@@ -1438,10 +1628,268 @@ const Storage = {
       DataManager.updateBackupIndicator('saved');
       return true;
     } catch (err) {
-      console.error('❌ Storage reset error:', err);
       DataManager.updateBackupIndicator('error');
       return false;
     }
+  }
+};
+
+
+
+// ============================================
+// KP BUFFER (Сохранённые коммерческие предложения)
+// ============================================
+const KPBuffer = {
+  MAX_ITEMS: 25,
+  // Авто-«самоуважение»: записи, которыми давно не пользовались, уходят сами
+  TTL_DAYS: 30,
+  TTL_MS: 30 * 24 * 60 * 60 * 1000,
+
+  ensure: () => {
+    if (!DB || typeof DB !== 'object') return;
+    if (!Array.isArray(DB.kpBuffer)) DB.kpBuffer = [];
+    // тихо чистим старьё, без лишних сохранений на каждом вызове
+    KPBuffer.prune(false);
+  },
+
+  prune: (save = true) => {
+    try {
+      if (!DB || typeof DB !== 'object') return;
+      if (!Array.isArray(DB.kpBuffer)) DB.kpBuffer = [];
+
+      const now = Date.now();
+      const ttl = KPBuffer.TTL_MS;
+      const before = DB.kpBuffer.length;
+
+      DB.kpBuffer = DB.kpBuffer.filter((e) => {
+        if (!e || typeof e !== 'object') return false;
+        const stamp = e.lastUsedAt || e.touchedAt || e.createdAt;
+        const t = stamp ? Date.parse(stamp) : NaN;
+        if (!Number.isFinite(t)) return false;
+        return (now - t) <= ttl;
+      });
+
+      if (save && DB.kpBuffer.length !== before) Storage.save();
+    } catch (err) {
+    }
+  },
+
+  _formatTs: (iso) => {
+    try {
+      const d = iso ? new Date(iso) : new Date();
+      return new Intl.DateTimeFormat('ru-RU', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      }).format(d);
+    } catch {
+      return '';
+    }
+  },
+
+  _buildTitleFromState: () => {
+    try {
+      const parts = [];
+      const dateStr = Utils.sanitizeText(State?.date || '', 32);
+      if (dateStr) parts.push(dateStr);
+
+      const timeMode = document.getElementById('inp-time-mode')?.value || 'time';
+      const timeVal = Utils.sanitizeText(document.getElementById('inp-time')?.value || '', 16);
+      if (timeMode !== 'none' && timeVal) parts.push(timeVal);
+
+      const citySelect = document.getElementById('inp-city');
+      const regionSelect = document.getElementById('inp-region');
+      const city = citySelect?.value;
+      const region = regionSelect?.value;
+
+      const place = (city && city !== 'other') ? city : (region || '');
+      if (place) parts.push(place);
+
+      const firstSvc = (State?.cart || []).find(it => it && it.name && !String(it.name).startsWith('ПАКЕТ:'));
+      if (firstSvc?.name) parts.push(Utils.sanitizeText(firstSvc.name, 40));
+
+      const title = parts.filter(Boolean).join(' • ');
+      return title || `КП • ${KPBuffer._formatTs(new Date().toISOString())}`;
+    } catch {
+      return `КП • ${KPBuffer._formatTs(new Date().toISOString())}`;
+    }
+  },
+
+  addFromText: (text, meta = {}) => {
+    try {
+      KPBuffer.ensure();
+
+      const nowIso = new Date().toISOString();
+
+      const safeText = String(text || '');
+      if (!safeText.trim()) return;
+
+      const entry = {
+        id: String(Date.now()) + '_' + Math.random().toString(16).slice(2),
+        createdAt: nowIso,
+        lastUsedAt: nowIso,
+        title: Utils.sanitizeText(meta.title || KPBuffer._buildTitleFromState(), 120),
+        total: Utils.sanitizeNumber(meta.total ?? State?.finalTotal ?? 0, 0, 999999999, 0),
+        itemsCount: Utils.sanitizeNumber(meta.itemsCount ?? (State?.cart || []).filter(it => it && it.name && !String(it.name).startsWith('ПАКЕТ:')).length, 0, 99, 0),
+        text: safeText
+      };
+
+      // Удаляем дубликаты (по тексту) чтобы буфер не засорялся
+      DB.kpBuffer = (DB.kpBuffer || []).filter(e => e && e.text !== entry.text);
+
+      DB.kpBuffer.unshift(entry);
+      if (DB.kpBuffer.length > KPBuffer.MAX_ITEMS) DB.kpBuffer.length = KPBuffer.MAX_ITEMS;
+
+      Storage.save();
+
+      // Если настройки открыты — обновим список сразу
+      const settingsOpen = document.getElementById('view-settings')?.classList.contains('active');
+      if (settingsOpen) KPBuffer.render();
+
+    } catch (err) {
+    }
+  },
+
+  remove: async (id) => {
+    KPBuffer.ensure();
+    const idx = (DB.kpBuffer || []).findIndex(e => e && e.id === id);
+    if (idx < 0) return;
+
+    const ok = await PremiumDialog.confirm({
+      message: 'Удалить это КП из буфера?',
+      danger: true,
+      okText: 'Удалить',
+      cancelText: 'Отмена',
+      icon: 'trash-2'
+    });
+
+    if (!ok) return;
+
+    DB.kpBuffer.splice(idx, 1);
+    Storage.save();
+    KPBuffer.render();
+    App.showToast('Удалено');
+  },
+
+  copy: async (id) => {
+    KPBuffer.ensure();
+    const entry = (DB.kpBuffer || []).find(e => e && e.id === id);
+    if (!entry) return;
+
+    // освежаем запись (и тем самым продлеваем ей жизнь в буфере)
+    entry.lastUsedAt = new Date().toISOString();
+    Storage.save();
+
+    const ok = await Utils.copyToClipboard(entry.text || '');
+    App.showToast(ok ? 'КП скопировано!' : 'Не удалось скопировать');
+  },
+
+  edit: async (id) => {
+    KPBuffer.ensure();
+    const entry = (DB.kpBuffer || []).find(e => e && e.id === id);
+    if (!entry) return;
+
+    const updated = await PremiumDialog.prompt({
+      title: 'Редактировать КП',
+      message: 'Исправьте текст (эмодзи и отступы сохранятся).',
+      defaultValue: String(entry.text || ''),
+      multiline: true,
+      rows: 16,
+      okText: 'Сохранить',
+      cancelText: 'Отмена',
+      icon: 'file-text'
+    });
+
+    if (updated === null || updated === undefined) return;
+
+    entry.text = String(updated);
+    entry.lastUsedAt = new Date().toISOString();
+    Storage.save();
+    KPBuffer.render();
+    App.showToast('Сохранено');
+  },
+
+  clearAll: async () => {
+    KPBuffer.ensure();
+    if (!(DB.kpBuffer || []).length) {
+      App.showToast('Буфер уже пуст');
+      return;
+    }
+
+    const ok = await PremiumDialog.confirm({
+      message: 'Очистить весь буфер КП?',
+      danger: true,
+      okText: 'Очистить',
+      cancelText: 'Отмена',
+      icon: 'trash-2'
+    });
+
+    if (!ok) return;
+
+    DB.kpBuffer = [];
+    Storage.save();
+    KPBuffer.render();
+    App.showToast('Очищено');
+  },
+
+  render: () => {
+    const el = document.getElementById('kp-buffer-list');
+    if (!el) return;
+
+    KPBuffer.ensure();
+    KPBuffer.prune(true);
+    el.innerHTML = '';
+
+    const list = DB.kpBuffer || [];
+    if (!list.length) {
+      el.innerHTML = '<div class="text-slate-500 text-sm">Пока пусто. Сгенерируйте КП — оно автоматически сохранится здесь.</div>';
+      return;
+    }
+
+    list.forEach(entry => {
+      if (!entry) return;
+
+      const card = document.createElement('div');
+      card.className = 'glass rounded-xl p-3';
+
+      const title = Utils.escapeHtml(entry.title || 'КП');
+      const ts = KPBuffer._formatTs(entry.createdAt);
+      const meta = [
+        entry.itemsCount ? `Позиции: ${entry.itemsCount}` : '',
+        (entry.total ? `Итого: ${Utils.formatPrice(entry.total)} ₽` : '')
+      ].filter(Boolean).join(' • ');
+
+      card.innerHTML = `
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex-1 min-w-0">
+            <div class="font-bold text-slate-100 text-sm truncate">${title}</div>
+            <div class="text-xs text-slate-400 mt-1 truncate">${Utils.escapeHtml(ts)}${meta ? ' • ' + Utils.escapeHtml(meta) : ''}</div>
+          </div>
+          <div class="flex gap-1 shrink-0">
+            <button class="btn-icon" data-kp-copy="${Utils.escapeHtml(entry.id)}" title="Копировать">
+              <i data-lucide="copy" class="w-4 h-4"></i>
+            </button>
+            <button class="btn-icon" data-kp-edit="${Utils.escapeHtml(entry.id)}" title="Редактировать">
+              <i data-lucide="pencil" class="w-4 h-4"></i>
+            </button>
+            <button class="btn-icon" data-kp-del="${Utils.escapeHtml(entry.id)}" title="Удалить">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      `;
+
+      const copyBtn = card.querySelector('[data-kp-copy]');
+      const editBtn = card.querySelector('[data-kp-edit]');
+      const delBtn = card.querySelector('[data-kp-del]');
+
+      if (copyBtn) copyBtn.addEventListener('click', () => KPBuffer.copy(entry.id));
+      if (editBtn) editBtn.addEventListener('click', () => KPBuffer.edit(entry.id));
+      if (delBtn) delBtn.addEventListener('click', () => KPBuffer.remove(entry.id));
+
+      el.appendChild(card);
+    });
+
+    if (window.lucide) Icons.request();
   }
 };
 
@@ -1471,12 +1919,12 @@ const App = {
       if (window.requestIdleCallback) {
         requestIdleCallback(() => {
           App.renderParticles();
-          if (window.lucide) lucide.createIcons();
+          if (window.lucide) Icons.request();
         }, { timeout: 2000 });
       } else {
         setTimeout(() => {
           App.renderParticles();
-          if (window.lucide) lucide.createIcons();
+          if (window.lucide) Icons.request();
         }, 100);
       }
 
@@ -1487,7 +1935,6 @@ const App = {
 
       // Приложение готово к работе
     } catch (err) {
-      console.error('❌ App initialization failed:', err);
       App.showToast('Ошибка инициализации');
       DataManager.updateBackupIndicator('error');
     }
@@ -1545,6 +1992,9 @@ const App = {
     document.getElementById('btn-copy-prices')?.addEventListener('click', App.copyPriceList);
     document.getElementById('btn-copy-quote')?.addEventListener('click', App.copyQuote);
 
+    // KP buffer
+    document.getElementById('btn-clear-kp-buffer')?.addEventListener('click', () => KPBuffer.clearAll());
+
     // Bulk operations кнопки
     document.getElementById('btn-select-all')?.addEventListener('click', App.selectAllCartItems);
     document.getElementById('btn-deselect-all')?.addEventListener('click', App.deselectAllCartItems);
@@ -1580,56 +2030,41 @@ const App = {
     bind('btn-add-payment', () => Admin.addPayment());
     bind('btn-add-link', () => Admin.addLink());
     bind('btn-reset-license-user', () => {
-      console.log('🔘 Кнопка "Сбросить активацию" нажата');
 
       // Двойное подтверждение для безопасности
       if (confirm('⚠️ Сбросить активацию?\n\nПосле этого потребуется заново ввести ключ активации.')) {
-        console.log('✅ Первое подтверждение получено');
 
         if (confirm('🔑 Вы точно уверены?\n\nЛицензия будет удалена, и все данные активации будут стёрты.\n\nПродолжить?')) {
-          console.log('✅ Второе подтверждение получено');
 
           // Удаляем лицензию
           localStorage.removeItem('illusionist_license');
-          console.log('🗑️ Лицензия удалена из localStorage');
 
           // Обновляем статус в UI
           App.updateLicenseStatus();
-          console.log('📊 Статус обновлён');
 
           // Закрываем настройки
           const settingsModal = document.getElementById('settings-modal');
           if (settingsModal) {
             settingsModal.classList.remove('show');
-            console.log('❌ Настройки закрыты');
           }
 
           // Показываем toast
           App.showToast('✅ Активация сброшена! Показываю экран активации...');
-          console.log('💬 Toast показан');
 
           // Показываем экран активации через 1 секунду
           setTimeout(() => {
-            console.log('⏰ Таймер сработал, проверяем функцию...');
-            console.log('typeof showLicensePrompt:', typeof showLicensePrompt);
-            console.log('window.showLicensePrompt:', typeof window.showLicensePrompt);
 
             if (typeof window.showLicensePrompt === 'function') {
-              console.log('🎯 Вызываем window.showLicensePrompt("first")');
               window.showLicensePrompt('first');
             } else if (typeof showLicensePrompt === 'function') {
-              console.log('🎯 Вызываем showLicensePrompt("first")');
               showLicensePrompt('first');
             } else {
-              console.error('❌ Функция showLicensePrompt не найдена!');
               App.showToast('Ошибка! Перезагрузите страницу вручную (F5).');
             }
           }, 1000);
         } else {
-          console.log('❌ Второе подтверждение отменено');
         }
       } else {
-        console.log('❌ Первое подтверждение отменено');
       }
     });
     bind('btn-reset-db', () => Admin.reset());
@@ -1746,7 +2181,6 @@ updatePercentLabels: () => {
         Storage.save();
       }
     } catch (err) {
-      console.error('Migration error:', err);
     }
   },
 
@@ -1762,12 +2196,10 @@ updatePercentLabels: () => {
         // БЕЗ офлайн режима - требуется интернет
         
         self.addEventListener('install', (e) => {
-          console.log('[SW] Installing...');
           self.skipWaiting();
         });
         
         self.addEventListener('activate', (e) => {
-          console.log('[SW] Activating...');
           e.waitUntil(self.clients.claim());
         });
         
@@ -1779,8 +2211,6 @@ updatePercentLabels: () => {
 
       navigator.serviceWorker
         .register(swUrl)
-        .then(() => console.log('✅ PWA Service Worker зарегистрирован'))
-        .catch(() => console.log('⚠️ Service Worker не поддерживается'));
       
       setTimeout(() => {
         try {
@@ -1788,7 +2218,6 @@ updatePercentLabels: () => {
         } catch (e) {}
       }, 5000);
     } catch (e) {
-      console.warn('Service Worker error:', e);
     }
   },
 
@@ -1803,14 +2232,13 @@ updatePercentLabels: () => {
         App.updateCat();
 
         requestAnimationFrame(() => {
-          if (window.lucide) lucide.createIcons();
+          if (window.lucide) Icons.request();
           DataManager.updateStats();
           DataManager.renderBackupSlots();
           Admin.render();
         });
       });
     } catch (err) {
-      console.error('UI update error:', err);
     }
   },
 
@@ -1901,7 +2329,6 @@ updatePercentLabels: () => {
 
       App.calc();
     } catch (err) {
-      console.error('Date update error:', err);
     }
   },
 
@@ -2102,7 +2529,7 @@ updatePercentLabels: () => {
       cartList.appendChild(wrapper);
     });
 
-    if (window.lucide) lucide.createIcons();
+    if (window.lucide) Icons.request();
   },
 
   updateBulkSelection: () => {
@@ -2545,7 +2972,6 @@ updatePercentLabels: () => {
       App.updateBonuses();
 
     } catch (err) {
-      console.error('Calculation error:', err);
     }
   },
 
@@ -2791,30 +3217,73 @@ updatePercentLabels: () => {
 
     } else {
       // ====== NORMAL MODE ======
-      const serviceNames = (State.cart || [])
-        .filter(it => it && !String(it.name || '').startsWith('ПАКЕТ:'))
+      const details = State.finalDetails || {};
+      const kLine = details.k || State.holidayK || 1;
+      const hasDiscount = !!(details.discount && details.discount > 0);
+      const discountFactor = hasDiscount ? 0.9 : 1;
+
+      const cartItems = (State.cart || [])
+        .filter(it => it && !String(it.name || '').startsWith('ПАКЕТ:'));
+
+      const rows = cartItems
         .map(it => {
-          const n = Utils.sanitizeText(it.name || '', 120);
-          const q = Utils.sanitizeNumber(it.qty || 1, 1, 99, 1);
-          return q > 1 ? `${n} ×${q}` : n;
+          const name = Utils.sanitizeText(it.name || '', 120);
+          const qty = Utils.sanitizeNumber(it.qty || 1, 1, 99, 1);
+          const price = Utils.sanitizeNumber(it.price || 0, 0, 99999999, 0);
+          if (!name || !qty || !price) return null;
+
+          const base = Math.round(price * qty * kLine);
+          const serviceTotal = Math.round(base * discountFactor);
+
+          return { title: qty > 1 ? `${name} ×${qty}` : name, serviceTotal };
         })
         .filter(Boolean);
 
-      if (serviceNames.length) {
-        text += `Что входит:\n`;
-        serviceNames.forEach(n => text += `• ${n}\n`);
-        text += `\n`;
+      if (!rows.length) {
+        App.showToast('Добавьте хотя бы одну услугу');
+        return;
       }
 
-      if (Array.isArray(State.activeBonuses) && State.activeBonuses.length) {
-        text += `Бонусы:\n`;
-        State.activeBonuses.forEach(b => text += `✅ ${Utils.sanitizeText(b, 160)}\n`);
-        text += `\n`;
-      }
+      const servicesSum = rows.reduce((s, r) => s + (r.serviceTotal || 0), 0);
+      const total = Utils.sanitizeNumber(State.finalTotal || 0, 0, 999999999, 0);
+      const extras = Math.max(0, total - servicesSum);
 
-      text += `Стоимость: ${Utils.formatPrice(State.finalTotal)} ₽\n`;
-      const dep = Math.round(State.finalTotal * (depositPct / 100));
-      text += `Бронь ${depositPct}%: ${Utils.formatPrice(dep)} ₽\n\n`;
+      // Раскладываем "скрытые" суммы (логистика/гости/доплаты/безнал/агентство) внутрь услуг,
+      // чтобы клиент видел только позиции услуг, а цифры при этом сходились.
+      let allocatedSoFar = 0;
+      rows.forEach((r, idx) => {
+        const isLast = idx === rows.length - 1;
+
+        let alloc = 0;
+        if (extras > 0 && servicesSum > 0) {
+          if (isLast) {
+            alloc = extras - allocatedSoFar;
+          } else {
+            alloc = Math.round(extras * (r.serviceTotal / servicesSum));
+            allocatedSoFar += alloc;
+          }
+        }
+
+        r.clientTotal = Math.max(0, (r.serviceTotal || 0) + alloc);
+        r.prepay = Math.round(r.clientTotal * (depositPct / 100));
+
+        const bonusTexts = App.getBonusesForTotal(r.clientTotal)
+          .map(b => b?.text)
+          .filter(Boolean)
+          .map(t => Utils.sanitizeText(t, 160))
+          .filter(Boolean);
+
+        r.bonuses = Array.from(new Set(bonusTexts));
+      });
+
+      text += `Позиции и стоимость:\n`;
+      rows.forEach(r => {
+        text += `• ${r.title} — ${Utils.formatPrice(r.clientTotal)} ₽\n`;
+        if (r.bonuses && r.bonuses.length) {
+          text += `  Бонусы: ${r.bonuses.map(t => `✅ ${t}`).join(' ')}\n`;
+        }
+        text += `  Предоплата ${depositPct}%: ${Utils.formatPrice(r.prepay)} ₽\n\n`;
+      });
     }
 
     // Expiring bonus (сгорающий бонус)
@@ -2863,6 +3332,8 @@ updatePercentLabels: () => {
       const performer = Utils.sanitizeText(DB.config?.performer || 'Illusionist', 100);
       text += `Ваш ${performer}`;
     }
+
+    KPBuffer.addFromText(text, { total: State.finalTotal, itemsCount: (State.cart || []).filter(it => it && it.name && !String(it.name).startsWith('ПАКЕТ:')).length });
 
     const success = await Utils.copyToClipboard(text);
     App.showToast(success ? 'КП скопировано!' : 'Не удалось скопировать');
@@ -2929,10 +3400,15 @@ updatePercentLabels: () => {
         }
       }
 
+      // Рендерим буфер КП
+      KPBuffer.render();
+
       modal.classList.add('active');
-      if (window.lucide) lucide.createIcons();
+      try { App._particlesCtrl?.refresh?.(); } catch (e) {}
+      if (window.lucide) Icons.request();
     } else {
       modal.classList.remove('active');
+      try { App._particlesCtrl?.refresh?.(); } catch (e) {}
       App.updateUI();
     }
   },
@@ -3065,7 +3541,6 @@ updatePercentLabels: () => {
         keyDisplay.textContent = 'Требуется активация';
       }
     } catch (e) {
-      console.error('Ошибка обновления статуса лицензии:', e);
       statusBadge.textContent = '⚠️ Ошибка';
       statusBadge.className = 'text-sm font-bold text-red-400';
     }
@@ -3081,6 +3556,17 @@ updatePercentLabels: () => {
     if (!ctx) return;
 
     let particles = [];
+    let rafId = null;
+    let running = false;
+
+    const reduceMotion = (() => {
+      try {
+        return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+      } catch (e) {
+        return false;
+      }
+    })();
+
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -3099,7 +3585,10 @@ updatePercentLabels: () => {
       });
     }
 
-    function animate() {
+    // Задаём один раз (раньше ставилось в каждой итерации цикла)
+    ctx.globalAlpha = 0.3;
+
+    const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach(p => {
         p.x += Math.cos(p.d) * p.s;
@@ -3113,12 +3602,59 @@ updatePercentLabels: () => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = p.c;
-        ctx.globalAlpha = 0.3;
         ctx.fill();
       });
-      requestAnimationFrame(animate);
-    }
-    animate();
+    };
+
+    let lastTs = 0;
+    const tick = (ts) => {
+      if (!running) return;
+
+      // Если пользователь просит "меньше анимаций" — экономим ресурс, но дизайн не меняем.
+      if (reduceMotion) {
+        const minDelta = 1000 / 30; // 30fps
+        if ((ts - lastTs) < minDelta) {
+          rafId = requestAnimationFrame(tick);
+          return;
+        }
+        lastTs = ts;
+      }
+
+      draw();
+      rafId = requestAnimationFrame(tick);
+    };
+
+    const start = () => {
+      if (running) return;
+      running = true;
+      rafId = requestAnimationFrame(tick);
+    };
+
+    const stop = () => {
+      running = false;
+      if (rafId) {
+        try { cancelAnimationFrame(rafId); } catch (e) {}
+        rafId = null;
+      }
+    };
+
+    const shouldPauseForSettings = () => {
+      const modal = document.getElementById('view-settings');
+      return !!(modal && modal.classList.contains('active'));
+    };
+
+    const refresh = () => {
+      if (document.hidden || shouldPauseForSettings()) stop();
+      else start();
+    };
+
+    // Пауза в фоне (экономит батарейку, пользователь не страдает)
+    document.addEventListener('visibilitychange', refresh, { passive: true });
+
+    // Даём App возможность синхронно притормаживать/возобновлять при открытии модалок
+    App._particlesCtrl = { start, stop, refresh };
+
+    refresh();
   }
 };
 
@@ -3136,10 +3672,9 @@ const Admin = {
       Admin.renderBonuses();
       Admin.renderPayments();
       Admin.renderLinks();
-      if (window.lucide) lucide.createIcons();
+      if (window.lucide) Icons.request();
       DataManager.updateStats();
     } catch (err) {
-      console.error('❌ Admin render error:', err);
     }
   },
 
@@ -3176,8 +3711,9 @@ document.addEventListener('DOMContentLoaded', () => {
   App.init();
 });
 
-</script>
-  <script>
+
+
+
 /* === Inlined from admin.js === */
 /* ============================================
    ILLUSIONIST OS - ADMIN.JS
@@ -3246,7 +3782,7 @@ Object.assign(Admin, {
         Admin.addCitiesBulk(region);
       });
       content.appendChild(addCitiesBulkBtn);
-      lucide.createIcons();
+      Icons.request();
 
       const delRegionBtn = Utils.createElement(
         'button',
@@ -3397,7 +3933,7 @@ Object.assign(Admin, {
     `;
     
     document.body.appendChild(modal);
-    lucide.createIcons();
+    Icons.request();
     
     const list = modal.querySelector('#bulk-cities-list');
     let rowIndex = 0;
@@ -3430,7 +3966,7 @@ Object.assign(Admin, {
         </button>
       `;
       list.appendChild(row);
-      lucide.createIcons();
+      Icons.request();
       
       // Фокус на первый input
       row.querySelector('input[data-field="name"]').focus();
@@ -3581,7 +4117,7 @@ Object.assign(Admin, {
         Admin.addServicesBulk(category);
       });
       content.appendChild(addServicesBulkBtn);
-      lucide.createIcons();
+      Icons.request();
 
       const delCatBtn = Utils.createElement(
         'button',
@@ -3713,7 +4249,7 @@ Object.assign(Admin, {
     `;
     
     document.body.appendChild(modal);
-    lucide.createIcons();
+    Icons.request();
     
     const list = modal.querySelector('#bulk-services-list');
     let rowIndex = 0;
@@ -3746,7 +4282,7 @@ Object.assign(Admin, {
         </button>
       `;
       list.appendChild(row);
-      lucide.createIcons();
+      Icons.request();
       
       // Фокус на первый input
       row.querySelector('input[data-field="name"]').focus();
@@ -4294,8 +4830,9 @@ Object.assign(Admin, {
     App.showToast('База сброшена');
   }
 });
-</script>
-  <script>
+
+
+
 /* === Inlined from modules.js === */
 /* ============================================
    ILLUSIONIST OS - MODULES.JS
@@ -4435,7 +4972,7 @@ const Rounding = {
       if (resetBtn) resetBtn.classList.add('hidden');
     }
 
-    if (window.lucide) lucide.createIcons();
+    if (window.lucide) Icons.request();
   },
 
   setStep: (step) => {
@@ -4536,6 +5073,7 @@ function renderResponseTemplates() {
     preview.style.overflow = 'hidden';
     preview.style.wordBreak = 'break-word';
     preview.style.overflowWrap = 'break-word';
+    preview.style.whiteSpace = 'pre-wrap';
     preview.textContent = tpl.text || '';
 
     left.appendChild(title);
@@ -4550,6 +5088,43 @@ function renderResponseTemplates() {
       e.stopPropagation();
       const success = await Utils.copyToClipboard(tpl.text || '');
       App.showToast(success ? 'Текст скопирован!' : 'Не удалось скопировать');
+    });
+
+    const editBtn = Utils.createElement('button', 'btn-icon opacity-0 group-hover:opacity-100 transition');
+    editBtn.innerHTML = '<i data-lucide="pencil" class="w-4 h-4"></i>';
+    editBtn.title = 'Редактировать';
+    editBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+
+      const updated = loadResponseTemplates();
+      const i = updated.findIndex(t => t.id === tpl.id);
+      if (i < 0) return;
+
+      const current = updated[i] || {};
+      const name = await PremiumDialog.prompt({ title: 'Название шаблона:', defaultValue: current.name || '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
+      if (!name) return;
+
+      const text = await PremiumDialog.prompt({
+        title: 'Текст ответа:',
+        defaultValue: current.text || '',
+        okText: 'Сохранить',
+        cancelText: 'Отмена',
+        icon: 'edit-3',
+        multiline: true,
+        rows: 8,
+        placeholder: 'Можно писать с абзацами, списками и эмодзи 🙂\nTab = отступ\nCtrl/⌘ + Enter = сохранить'
+      });
+      if (text === null) return;
+
+      const cleanText = String(text).replace(/\s+$/, '');
+      if (!cleanText.trim()) return;
+
+      updated[i].name = String(name).trim();
+      updated[i].text = cleanText;
+
+      saveResponseTemplates(updated);
+      renderResponseTemplates();
+      App.showToast('Шаблон обновлён');
     });
 
     const delBtn = Utils.createElement('button', 'btn-icon opacity-0 group-hover:opacity-100 transition');
@@ -4567,6 +5142,7 @@ function renderResponseTemplates() {
     });
 
     right.appendChild(copyBtn);
+    right.appendChild(editBtn);
     right.appendChild(delBtn);
 
     card.appendChild(left);
@@ -4581,7 +5157,7 @@ function renderResponseTemplates() {
     container.appendChild(card);
   });
 
-  if (window.lucide) lucide.createIcons();
+  if (window.lucide) Icons.request();
 }
 
 // Создание нового шаблона ответа
@@ -4589,14 +5165,26 @@ async function createResponseTemplate() {
   const name = await PremiumDialog.prompt({ title: 'Название шаблона:', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
   if (!name) return;
 
-  const text = await PremiumDialog.prompt({ title: 'Текст ответа:', defaultValue: '', okText: 'Далее', cancelText: 'Отмена', icon: 'edit-3' });
-  if (!text) return;
+  const text = await PremiumDialog.prompt({
+    title: 'Текст ответа:',
+    defaultValue: '',
+    okText: 'Сохранить',
+    cancelText: 'Отмена',
+    icon: 'edit-3',
+    multiline: true,
+    rows: 8,
+    placeholder: 'Можно писать с абзацами, списками и эмодзи 🙂\nTab = отступ\nCtrl/⌘ + Enter = сохранить'
+  });
+  if (text === null) return;
+
+  const cleanText = String(text).replace(/\s+$/, '');
+  if (!cleanText.trim()) return;
 
   const templates = loadResponseTemplates();
   templates.push({
     id: Date.now(),
-    name: name.trim(),
-    text: text.trim()
+    name: String(name).trim(),
+    text: cleanText
   });
 
   saveResponseTemplates(templates);
@@ -4815,7 +5403,7 @@ document.addEventListener('DOMContentLoaded', () => {
       container.appendChild(card);
     });
 
-    if (window.lucide) lucide.createIcons();
+    if (window.lucide) Icons.request();
   }
 
   // КНОПКА СОЗДАНИЯ ШАБЛОНА
@@ -4906,14 +5494,15 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCreateResponse.addEventListener('click', createResponseTemplate);
   }
 });
-</script>
-<script>
+
+
+
 
 /* ============================================
    PREMIUM DIALOG (replaces native prompt/confirm)
    ============================================ */
 window.PremiumDialog = (() => {
-  let overlay, card, titleEl, msgEl, inputEl, okBtn, cancelBtn, iconWrap;
+  let overlay, card, titleEl, msgEl, inputEl, textareaEl, activePromptEl, okBtn, cancelBtn, iconWrap;
   let resolver = null;
   let mode = 'confirm';
 
@@ -4956,6 +5545,30 @@ window.PremiumDialog = (() => {
     inputEl.autocapitalize = 'sentences';
     inputEl.spellcheck = false;
 
+    // Multiline input for templates / long text
+    textareaEl = document.createElement('textarea');
+    textareaEl.className = 'pd-input';
+    textareaEl.autocomplete = 'off';
+    textareaEl.autocapitalize = 'sentences';
+    textareaEl.spellcheck = false;
+    textareaEl.rows = 7;
+    textareaEl.style.resize = 'none';
+    textareaEl.style.minHeight = '140px';
+    textareaEl.style.whiteSpace = 'pre-wrap';
+
+    // Tab = indentation inside textarea
+    textareaEl.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      e.preventDefault();
+      const start = textareaEl.selectionStart || 0;
+      const end = textareaEl.selectionEnd || 0;
+      const value = textareaEl.value || '';
+      const insertText = '  ';
+      textareaEl.value = value.slice(0, start) + insertText + value.slice(end);
+      const pos = start + insertText.length;
+      textareaEl.selectionStart = textareaEl.selectionEnd = pos;
+    });
+
     const close = (value) => {
       overlay.classList.remove('active');
       document.body.style.overflow = '';
@@ -4974,8 +5587,13 @@ window.PremiumDialog = (() => {
       }
       if (e.key === 'Enter') {
         if (mode === 'prompt') {
+          const el = activePromptEl || inputEl;
+          const isTextarea = el && el.tagName === 'TEXTAREA';
+          // In textarea: Enter creates a new line; Ctrl/⌘+Enter saves
+          if (isTextarea && !(e.ctrlKey || e.metaKey)) return;
+
           e.preventDefault();
-          close(inputEl.value);
+          close(el ? el.value : '');
         } else {
           e.preventDefault();
           close(true);
@@ -4984,7 +5602,7 @@ window.PremiumDialog = (() => {
     };
 
     okBtn.addEventListener('click', () => {
-      if (mode === 'prompt') close(inputEl.value);
+      if (mode === 'prompt') close((activePromptEl || inputEl).value);
       else close(true);
     });
 
@@ -5020,7 +5638,7 @@ window.PremiumDialog = (() => {
       i.style.height = '22px';
       span.appendChild(i);
       iconWrap.appendChild(span);
-      try { window.lucide.createIcons(); } catch (e) {}
+      try { Icons.request(); } catch (e) {}
     } else {
       span.textContent = danger ? '!' : '✦';
       iconWrap.appendChild(span);
@@ -5047,10 +5665,20 @@ window.PremiumDialog = (() => {
 
     // body
     ensure._body.innerHTML = '';
+    activePromptEl = null;
     if (mode === 'prompt') {
-      inputEl.value = (opts.defaultValue ?? '');
-      inputEl.placeholder = (opts.placeholder ?? '');
-      ensure._body.appendChild(inputEl);
+      const multiline = !!opts.multiline;
+      activePromptEl = multiline ? textareaEl : inputEl;
+
+      activePromptEl.value = (opts.defaultValue ?? '');
+      activePromptEl.placeholder = (opts.placeholder ?? '');
+
+      if (multiline) {
+        activePromptEl.rows = (opts.rows ?? 7);
+        if (opts.minHeight) activePromptEl.style.minHeight = String(opts.minHeight);
+      }
+
+      ensure._body.appendChild(activePromptEl);
     }
 
     overlay.classList.add('active');
@@ -5060,7 +5688,7 @@ window.PremiumDialog = (() => {
     // focus
     setTimeout(() => {
       try {
-        if (mode === 'prompt') inputEl.focus();
+        if (mode === 'prompt') (activePromptEl || inputEl).focus();
         else okBtn.focus();
       } catch (e) {}
     }, 0);
@@ -5075,9 +5703,9 @@ window.PremiumDialog = (() => {
   return { open, confirm, prompt, alert };
 })();
 
-</script>
 
-<script>
+
+
 // ============================================
 // ЛИЦЕНЗИОННАЯ ЗАЩИТА
 // ============================================
@@ -5139,7 +5767,6 @@ window.PremiumDialog = (() => {
   function checkActivation() {
     // Если DEMO MODE - всегда возвращаем false (нет лицензии)
     if (DEMO_MODE) {
-      console.log('🎭 DEMO MODE: Принудительно показываем экран активации');
       return false;
     }
 
@@ -5155,7 +5782,6 @@ window.PremiumDialog = (() => {
 
         const currentDevice = getDeviceId();
         if (data.device !== currentDevice) {
-          console.warn('Лицензия привязана к другому устройству');
           return false;
         }
 
@@ -5313,7 +5939,6 @@ window.PremiumDialog = (() => {
 
           // НЕ ПЕРЕЗАГРУЖАЕМ! Приложение уже работает!
           // Магическая анимация сама скроется через 3 секунды
-          console.log('✅ Активация завершена! Приложение готово к работе.');
         }, 500);
 
       } else {
@@ -5345,12 +5970,10 @@ window.PremiumDialog = (() => {
   window.checkActivation = checkActivation;
   window.activateLicense = activateLicense;
 
-  console.log('✅ Лицензионные функции экспортированы глобально');
 
   // Проверка лицензии управляется заставкой (см. скрипт в начале body)
 
 })();
 </script>
-
 </body>
 </html>
