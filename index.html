@@ -205,6 +205,19 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
           </div>
         </div>
 
+        <!-- Описание услуги -->
+        <div class="mb-4">
+          <label class="text-sm text-slate-400 font-bold mb-2 block">Описание услуги (опционально)</label>
+          <textarea 
+            id="inp-service-desc" 
+            class="form-input" 
+            rows="3" 
+            placeholder="Например: Увлекательное шоу с картами и монетами, включает интерактив с гостями..."
+            style="resize: vertical; min-height: 80px;"
+          ></textarea>
+          <div class="text-xs text-slate-500 mt-1">💡 Это описание будет показано в КП</div>
+        </div>
+
         <!-- Quantity & Add Button -->
         <div class="flex items-center gap-4 mb-6">
           <div class="flex items-center gap-3">
@@ -267,6 +280,10 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
                 </div>
                 </label>
 
+                <label class="flex items-center gap-3 text-sm text-slate-200 font-bold bg-white/5 px-4 py-2 rounded-2xl w-full cursor-pointer hover:bg-white/10 transition">
+                  <input type="checkbox" id="inp-show-bonuses" class="accent-amber-500 w-5 h-5" checked />
+                  <span>Показывать бонусы в КП</span>
+                </label>
 
                 <label class="flex items-center gap-3 text-sm text-slate-200 font-bold bg-white/5 px-4 py-2 rounded-2xl w-full cursor-pointer hover:bg-white/10 transition">
                   <input type="checkbox" id="inp-burn" class="accent-amber-500 w-5 h-5" />
@@ -537,21 +554,29 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
           <!-- СГОРАЮЩИЙ БОНУС -->
           <div class="md:col-span-2">
             <div class="text-sm text-slate-400 font-bold mb-2 block">Сгорающий бонус</div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div>
                 <label class="text-xs text-slate-500 font-semibold mb-1 block">Название</label>
                 <input id="cfg-burn-title" type="text" class="form-input" placeholder="Напр. Появление Гендиректора" maxlength="120" />
               </div>
               <div>
-                <label class="text-xs text-slate-500 font-semibold mb-1 block">Цена бонуса (₽)</label>
+                <label class="text-xs text-slate-500 font-semibold mb-1 block">Старая цена (₽)</label>
                 <input id="cfg-burn-price" type="number" class="form-input text-right mono" placeholder="15000" />
+              </div>
+              <div>
+                <label class="text-xs text-slate-500 font-semibold mb-1 block">Новая цена (₽)</label>
+                <input id="cfg-burn-discount-price" type="number" class="form-input text-right mono" placeholder="0" />
               </div>
               <div>
                 <label class="text-xs text-slate-500 font-semibold mb-1 block">Срок (часов)</label>
                 <input id="cfg-burn-hours" type="number" class="form-input text-right mono" placeholder="48" />
               </div>
             </div>
-            <div class="text-xs text-slate-500 mt-2">Если включить галочку в калькуляторе — в КП появится строка про бонус, который действует ограниченное время.</div>
+            <div class="text-xs text-slate-500 mt-2">
+              <strong>Старая цена</strong> — зачёркивается в КП. 
+              <strong>Новая цена</strong> — если 0, то "БЕСПЛАТНО", если больше 0, то показывается эта цена.
+              <br>Например: Старая 15,000 → Новая 10,000 = скидка 5,000. Или: Старая 15,000 → Новая 0 = БЕСПЛАТНО.
+            </div>
           </div>
         </div>
       </div>
@@ -592,7 +617,7 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
         <button id="btn-add-holiday" class="btn-add">+ Праздник</button>
         <button id="btn-add-range" class="btn-add">+ Период</button>
         <button id="btn-add-bonus" class="btn-add">+ Бонус</button>
-        <button id="btn-add-payment" class="btn-add">+ Реквизиты</button>
+        <button id="btn-add-payment" class="btn-add">+ Способ брони</button>
         <button id="btn-add-link" class="btn-add">+ Ссылка</button>
         <button id="btn-reset-db" class="btn-add bg-red-500/10 border-red-500/25 text-red-300 hover:bg-red-500/20">Сброс БД</button>
       </div>
@@ -625,7 +650,7 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
         </div>
 
         <div class="glass rounded-2xl p-5">
-          <div class="text-base font-extrabold text-white mb-3">Реквизиты</div>
+          <div class="text-base font-extrabold text-white mb-3">Предоплата и бронь</div>
           <div id="settings-payments-list" class="space-y-2"></div>
         </div>
 
@@ -819,19 +844,19 @@ const Utils = {
     
     const rounded = Math.round(num);
     
-    // >= 10,000 → округляем до тысяч (14,783 → 15,000)
+    // >= 10,000 → округляем до тысяч В БОЛЬШУЮ СТОРОНУ (14,100 → 15,000)
     if (rounded >= 10000) {
-      return Math.round(rounded / 1000) * 1000;
+      return Math.ceil(rounded / 1000) * 1000;
     }
     
-    // >= 1,000 → округляем до сотен (1,456 → 1,500)
+    // >= 1,000 → округляем до сотен В БОЛЬШУЮ СТОРОНУ (1,420 → 1,500)
     if (rounded >= 1000) {
-      return Math.round(rounded / 100) * 100;
+      return Math.ceil(rounded / 100) * 100;
     }
     
-    // >= 100 → округляем до десятков (347 → 350)
+    // >= 100 → округляем до десятков В БОЛЬШУЮ СТОРОНУ (342 → 350)
     if (rounded >= 100) {
-      return Math.round(rounded / 10) * 10;
+      return Math.ceil(rounded / 10) * 10;
     }
     
     // < 100 → оставляем как есть (47 → 47)
@@ -1069,7 +1094,8 @@ const DEFAULT_DB = {
     cashlessPercent: 6,
     agencyPercent: 15,
     burnBonusTitle: "Появление Гендиректора",
-    burnBonusPrice: 15000,
+    burnBonusPrice: 15000,           // Старая цена (зачёркнутая)
+    burnBonusDiscountPrice: 0,       // Новая цена (0 = БЕСПЛАТНО, >0 = цена со скидкой)
     burnHours: 48,
     personalName: "",
     enableBackgroundAnimation: false,  // Фоновая анимация отключена для экономии батареи
@@ -1094,7 +1120,7 @@ let State = {
   })(),
   holidayK: 1,
   serviceQty: 1,
-  cart: [],
+  cart: [], // Каждая услуга содержит: name, price, qty, city, region, cityName, regionName
   finalTotal: 0,
     expiringOffer: false,
 finalDetails: {
@@ -2226,6 +2252,17 @@ const App = {
       }, 350));
     }
 
+    const burnDiscountPriceInput = document.getElementById('cfg-burn-discount-price');
+    if (burnDiscountPriceInput) {
+      burnDiscountPriceInput.value = DB.config?.burnBonusDiscountPrice ?? 0;
+      burnDiscountPriceInput.addEventListener('input', Utils.debounce(() => {
+        const value = Utils.sanitizeNumber(burnDiscountPriceInput.value, 0, 99999999, 0);
+        burnDiscountPriceInput.value = value;
+        DB.config.burnBonusDiscountPrice = value;
+        Storage.save();
+      }, 350));
+    }
+
     const burnHoursInput = document.getElementById('cfg-burn-hours');
     if (burnHoursInput) {
       burnHoursInput.value = DB.config?.burnHours ?? 48;
@@ -2479,6 +2516,10 @@ updatePercentLabels: () => {
   addService: () => {
     const catSelect = document.getElementById('inp-cat');
     const svcSelect = document.getElementById('inp-svc');
+    const regionSelect = document.getElementById('inp-region');
+    const citySelect = document.getElementById('inp-city');
+    const descInput = document.getElementById('inp-service-desc');
+    
     if (!catSelect || !svcSelect) return;
 
     const cat = catSelect.value;
@@ -2488,22 +2529,43 @@ updatePercentLabels: () => {
       App.showToast('Выберите услугу!');
       return;
     }
+    
+    // Проверяем регион и город
+    const region = regionSelect?.value || '';
+    const city = citySelect?.value || '';
+    
+    if (!region || !city) {
+      App.showToast('Выберите регион и город!');
+      return;
+    }
 
     const basePrice = DB.services?.[cat]?.[svc];
     if (typeof basePrice !== 'number' || isNaN(basePrice) || basePrice < 0) {
       App.showToast('Некорректная цена услуги');
       return;
     }
+    
+    const regionName = regionSelect.options[regionSelect.selectedIndex]?.text || '';
+    const cityName = citySelect.options[citySelect.selectedIndex]?.text || '';
+    const description = Utils.sanitizeText(descInput?.value || '', 500);
 
     State.cart.push({
       name: Utils.sanitizeText(svc, 200),
       price: basePrice,
-      qty: State.serviceQty
+      qty: State.serviceQty,
+      region: region,
+      city: city,
+      regionName: regionName,
+      cityName: cityName === 'Другой город' ? 'Другой' : cityName,
+      description: description
     });
 
     State.serviceQty = 1;
     const qtySpan = document.getElementById('svc-qty');
     if (qtySpan) qtySpan.textContent = 1;
+    
+    // Очищаем поле описания
+    if (descInput) descInput.value = '';
 
     App.renderCart();
     App.calc();
@@ -2568,66 +2630,107 @@ updatePercentLabels: () => {
       bulkPanel.classList.toggle('hidden', State.cart.length === 0);
     }
 
+    // Группируем услуги по городам
+    const cityGroups = {};
     State.cart.forEach((item, idx) => {
-      const total = Utils.prettyRound(item.price * item.qty * State.holidayK);
-
-      const wrapper = Utils.createElement(
-        'div',
-        'animate-slide-in flex items-center gap-3'
-      );
-
-      // Чекбокс для bulk операций
-      const checkbox = Utils.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.className = 'cart-item-checkbox w-5 h-5 rounded border-2 border-amber-500/30 bg-white/5 checked:bg-amber-500 checked:border-amber-500 cursor-pointer transition flex-shrink-0';
-      checkbox.dataset.index = idx;
-      checkbox.addEventListener('change', () => App.updateBulkSelection());
-
-      const contentDiv = Utils.createElement('div', 'flex-1 flex items-center justify-between gap-4');
-
-      const leftDiv = Utils.createElement('div', 'flex-1 min-w-0');
-
-      const nameDiv = Utils.createElement('div', 'text-base font-semibold text-white mb-1');
-      nameDiv.textContent = item.name;
-
-      if (item.qty > 1) {
-        const qtySpan = Utils.createElement('span', 'text-amber-400 text-sm ml-2');
-        qtySpan.textContent = `×${item.qty}`;
-        nameDiv.appendChild(qtySpan);
+      const cityKey = `${item.region || 'unknown'}_${item.city || 'unknown'}`;
+      if (!cityGroups[cityKey]) {
+        cityGroups[cityKey] = {
+          cityName: item.cityName || 'Город не указан',
+          items: []
+        };
       }
+      cityGroups[cityKey].items.push({ item, idx });
+    });
 
-      const priceDiv = Utils.createElement('div', 'text-sm text-slate-400 mono');
-      priceDiv.textContent = `${Utils.formatPrice(item.price)} ₽`;
+    const cityKeys = Object.keys(cityGroups);
 
-      leftDiv.appendChild(nameDiv);
-      leftDiv.appendChild(priceDiv);
+    cityKeys.forEach((cityKey, groupIndex) => {
+      const group = cityGroups[cityKey];
+      
+      // Разделитель между городами
+      if (groupIndex > 0) {
+        const separator = Utils.createElement('div', 'my-4 border-t-2 border-amber-500/20');
+        cartList.appendChild(separator);
+      }
+      
+      // Заголовок города
+      const cityHeader = Utils.createElement('div', 'px-2 py-2 mb-2');
+      cityHeader.innerHTML = `<div class="text-sm font-bold text-amber-400">📍 ${Utils.escapeHtml(group.cityName)}</div>`;
+      cartList.appendChild(cityHeader);
+      
+      // Услуги этого города
+      group.items.forEach(({ item, idx }) => {
+        const total = Utils.prettyRound(item.price * item.qty * State.holidayK);
 
-      const rightDiv = Utils.createElement('div', 'flex items-center gap-4 flex-shrink-0');
+        const wrapper = Utils.createElement(
+          'div',
+          'animate-slide-in flex items-center gap-3 mb-2'
+        );
 
-      const totalSpan = Utils.createElement('span', 'font-extrabold text-amber-400 text-base mono');
-      totalSpan.textContent = `${Utils.formatPrice(total)} ₽`;
-      rightDiv.appendChild(totalSpan);
+        // Чекбокс для bulk операций
+        const checkbox = Utils.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'cart-item-checkbox w-5 h-5 rounded border-2 border-amber-500/30 bg-white/5 checked:bg-amber-500 checked:border-amber-500 cursor-pointer transition flex-shrink-0';
+        checkbox.dataset.index = idx;
+        checkbox.addEventListener('change', () => App.updateBulkSelection());
 
-      // Кнопка редактирования для пакетов
-      if (item.name.startsWith('ПАКЕТ:') && item.packageTemplate) {
+        const contentDiv = Utils.createElement('div', 'flex-1 flex items-center justify-between gap-4');
+
+        const leftDiv = Utils.createElement('div', 'flex-1 min-w-0');
+
+        const nameDiv = Utils.createElement('div', 'text-base font-semibold text-white mb-1');
+        nameDiv.textContent = item.name;
+
+        if (item.qty > 1) {
+          const qtySpan = Utils.createElement('span', 'text-amber-400 text-sm ml-2');
+          qtySpan.textContent = `×${item.qty}`;
+          nameDiv.appendChild(qtySpan);
+        }
+
+        leftDiv.appendChild(nameDiv);
+        
+        // Описание услуги (если есть)
+        if (item.description && item.description.trim()) {
+          const descDiv = Utils.createElement('div', 'text-xs text-slate-500 mt-1 italic');
+          descDiv.textContent = item.description;
+          leftDiv.appendChild(descDiv);
+        }
+
+        const rightDiv = Utils.createElement('div', 'flex items-center gap-4 flex-shrink-0');
+
+        const totalSpan = Utils.createElement('span', 'font-extrabold text-amber-400 text-base mono');
+        totalSpan.textContent = `${Utils.formatPrice(total)} ₽`;
+        rightDiv.appendChild(totalSpan);
+
+        // Кнопка редактирования
         const editBtn = Utils.createElement('button', 'text-slate-400 hover:text-amber-400 transition p-2');
         editBtn.innerHTML = '<i data-lucide="pencil" class="w-5 h-5"></i>';
-        editBtn.title = 'Редактировать пакет';
-        editBtn.addEventListener('click', () => App.editPackageInCart(idx));
+        editBtn.title = 'Редактировать описание';
+        editBtn.addEventListener('click', () => App.editServiceDescription(idx));
         rightDiv.appendChild(editBtn);
-      }
 
-      const delBtn = Utils.createElement('button', 'text-slate-500 hover:text-red-400 transition p-2');
-      delBtn.innerHTML = '<i data-lucide="x" class="w-5 h-5"></i>';
-      delBtn.addEventListener('click', () => App.removeService(idx));
-      rightDiv.appendChild(delBtn);
+        // Кнопка редактирования для пакетов
+        if (item.name.startsWith('ПАКЕТ:')) {
+          const editPkgBtn = Utils.createElement('button', 'text-slate-400 hover:text-amber-400 transition p-2');
+          editPkgBtn.innerHTML = '<i data-lucide="package" class="w-5 h-5"></i>';
+          editPkgBtn.title = 'Редактировать пакет';
+          editPkgBtn.addEventListener('click', () => App.editPackageInCart(idx));
+          rightDiv.appendChild(editPkgBtn);
+        }
 
-      contentDiv.appendChild(leftDiv);
-      contentDiv.appendChild(rightDiv);
+        const delBtn = Utils.createElement('button', 'text-slate-500 hover:text-red-400 transition p-2');
+        delBtn.innerHTML = '<i data-lucide="x" class="w-5 h-5"></i>';
+        delBtn.addEventListener('click', () => App.removeService(idx));
+        rightDiv.appendChild(delBtn);
 
-      wrapper.appendChild(checkbox);
-      wrapper.appendChild(contentDiv);
-      cartList.appendChild(wrapper);
+        contentDiv.appendChild(leftDiv);
+        contentDiv.appendChild(rightDiv);
+
+        wrapper.appendChild(checkbox);
+        wrapper.appendChild(contentDiv);
+        cartList.appendChild(wrapper);
+      });
     });
 
     if (window.lucide) lucide.createIcons();
@@ -2710,7 +2813,7 @@ updatePercentLabels: () => {
     if (!hasAnything) return;
 
     const mkRow = (label, value, opts = {}) => {
-      const { tone = 'default', sign = '+', subtle = false } = opts;
+      const { tone = 'default', sign = '+', subtle = false, deletable = false, onDelete = null } = opts;
 
       const row = Utils.createElement(
         'div',
@@ -2722,8 +2825,10 @@ updatePercentLabels: () => {
       title.textContent = label;
       left.appendChild(title);
 
-      const right = Utils.createElement('div', 'flex items-baseline gap-1 flex-shrink-0');
+      const right = Utils.createElement('div', 'flex items-center gap-3 flex-shrink-0');
 
+      const priceDiv = Utils.createElement('div', 'flex items-baseline gap-1');
+      
       const s = Utils.createElement('span', 'text-xs text-slate-500 font-black');
       s.textContent = sign;
       if (sign === '') s.textContent = '';
@@ -2738,8 +2843,18 @@ updatePercentLabels: () => {
       );
       val.textContent = `${Utils.formatPrice(Math.abs(value))} ₽`;
 
-      if (sign !== '') right.appendChild(s);
-      right.appendChild(val);
+      if (sign !== '') priceDiv.appendChild(s);
+      priceDiv.appendChild(val);
+      right.appendChild(priceDiv);
+
+      // Кнопка удаления (если deletable)
+      if (deletable && onDelete) {
+        const delBtn = Utils.createElement('button', 'text-slate-500 hover:text-red-400 transition p-2');
+        delBtn.innerHTML = '<i data-lucide="x" class="w-4 h-4"></i>';
+        delBtn.title = 'Убрать из расчёта';
+        delBtn.addEventListener('click', onDelete);
+        right.appendChild(delBtn);
+      }
 
       row.appendChild(left);
       row.appendChild(right);
@@ -2760,11 +2875,44 @@ updatePercentLabels: () => {
         wrap.appendChild(row);
       }
 
-      if (d.travel > 0) mkRow('Логистика', d.travel, { sign: '+', tone: 'default' });
-      if (d.guestPrice > 0) mkRow('Гости', d.guestPrice, { sign: '+', tone: 'default' });
+      if (d.travel > 0) mkRow('Логистика', d.travel, { 
+        sign: '+', 
+        tone: 'default',
+        deletable: true,
+        onDelete: () => {
+          const citySelect = document.getElementById('inp-city');
+          if (citySelect) {
+            citySelect.value = '';
+            citySelect.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+      });
+      if (d.guestPrice > 0) mkRow('Гости', d.guestPrice, { 
+        sign: '+', 
+        tone: 'default',
+        deletable: true,
+        onDelete: () => {
+          const guestsInput = document.getElementById('inp-guests');
+          if (guestsInput) {
+            guestsInput.value = 0;
+            guestsInput.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        }
+      });
       if (d.manPrice > 0) {
         const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Дополнение';
-        mkRow(manName, d.manPrice, { sign: '+', tone: 'default' });
+        mkRow(manName, d.manPrice, { 
+          sign: '+', 
+          tone: 'default',
+          deletable: true,
+          onDelete: () => {
+            const inp = document.getElementById('inp-manual-price');
+            if (inp) {
+              inp.value = 0;
+              inp.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+          }
+        });
       }
 
       const section = Utils.createElement('div', 'mt-2 text-xs text-slate-500 font-black uppercase tracking-wider px-1');
@@ -2773,8 +2921,30 @@ updatePercentLabels: () => {
 
       const addVariant = (name, total, tax, agency) => {
         mkRow(name, total, { sign: '', tone: 'total' });
-        if (d.useCashless && tax > 0) mkRow('— Оплата по безналу', tax, { sign: '+', subtle: true });
-        if (d.useAgency && agency > 0) mkRow('— Комиссия агентства', agency, { sign: '+', subtle: true });
+        if (d.useCashless && tax > 0) mkRow('— Оплата по безналу', tax, { 
+          sign: '+', 
+          subtle: true,
+          deletable: true,
+          onDelete: () => {
+            const checkbox = document.getElementById('inp-tax');
+            if (checkbox) {
+              checkbox.checked = false;
+              checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+          }
+        });
+        if (d.useAgency && agency > 0) mkRow('— Комиссия агентства', agency, { 
+          sign: '+', 
+          subtle: true,
+          deletable: true,
+          onDelete: () => {
+            const checkbox = document.getElementById('inp-agency');
+            if (checkbox) {
+              checkbox.checked = false;
+              checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+          }
+        });
       };
 
       addVariant('Базовый', d.basicTotal || 0, d.basicTax || 0, d.basicAgencyMarkup || 0);
@@ -2788,22 +2958,81 @@ updatePercentLabels: () => {
     const preDiscount = Utils.prettyRound((d.servicesTotal || 0) + (d.discount || 0));
     if (preDiscount > 0) mkRow('Услуги', preDiscount, { sign: '+', tone: 'default' });
     if (d.discount > 0) mkRow('Скидка', d.discount, { sign: '-', tone: 'minus' });
-    if (d.travel > 0) mkRow('Логистика', d.travel, { sign: '+', tone: 'default' });
-    if (d.guestPrice > 0) mkRow('Гости', d.guestPrice, { sign: '+', tone: 'default' });
+    if (d.travel > 0) mkRow('Логистика', d.travel, { 
+      sign: '+', 
+      tone: 'default',
+      deletable: true,
+      onDelete: () => {
+        // Сбрасываем город чтобы убрать логистику
+        const citySelect = document.getElementById('inp-city');
+        if (citySelect) {
+          citySelect.value = '';
+          citySelect.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+    });
+    if (d.guestPrice > 0) mkRow('Гости', d.guestPrice, { 
+      sign: '+', 
+      tone: 'default',
+      deletable: true,
+      onDelete: () => {
+        const guestsInput = document.getElementById('inp-guests');
+        if (guestsInput) {
+          guestsInput.value = 0;
+          guestsInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+    });
     if (d.manPrice > 0) {
       const manName = Utils.sanitizeText(document.getElementById('inp-manual-name')?.value, 100) || 'Дополнение';
-      mkRow(manName, d.manPrice, { sign: '+', tone: 'default' });
+      mkRow(manName, d.manPrice, { 
+        sign: '+', 
+        tone: 'default',
+        deletable: true,
+        onDelete: () => {
+          const inp = document.getElementById('inp-manual-price');
+          if (inp) {
+            inp.value = 0;
+            inp.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        }
+      });
     }
-    if (d.useCashless && d.tax > 0) mkRow('Оплата по безналу', d.tax, { sign: '+', tone: 'default' });
+    if (d.useCashless && d.tax > 0) mkRow('Оплата по безналу', d.tax, { 
+      sign: '+', 
+      tone: 'default',
+      deletable: true,
+      onDelete: () => {
+        const checkbox = document.getElementById('inp-tax');
+        if (checkbox) {
+          checkbox.checked = false;
+          checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+    });
 
     const baseBeforeAgency = d.useAgency ? Math.max(0, (State.finalTotal || 0) - (d.agencyMarkup || 0)) : (State.finalTotal || 0);
     if (d.useAgency && d.agencyMarkup > 0) {
       mkRow('Подытог (без комиссии)', baseBeforeAgency, { sign: '', tone: 'default' });
-      mkRow('Комиссия агентства', d.agencyMarkup, { sign: '+', tone: 'default' });
+      mkRow('Комиссия агентства', d.agencyMarkup, { 
+        sign: '+', 
+        tone: 'default',
+        deletable: true,
+        onDelete: () => {
+          const checkbox = document.getElementById('inp-agency');
+          if (checkbox) {
+            checkbox.checked = false;
+            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+      });
       mkRow('Итого для клиента', State.finalTotal || 0, { sign: '', tone: 'total' });
     } else {
       mkRow('Итого', State.finalTotal || 0, { sign: '', tone: 'total' });
     }
+
+    // Рендерим иконки Lucide для кнопок удаления
+    if (window.lucide) lucide.createIcons();
   },
 
   calc: () => {
@@ -3211,8 +3440,9 @@ updatePercentLabels: () => {
         .filter(Boolean);
 
       const uniqBonuses = Array.from(new Set(allBonuses));
-      const bonusLine = uniqBonuses.length
-        ? `\n   Бонусы: ${uniqBonuses.map(b => `✅ ${b}`).join(' ')}`
+      const showBonuses = !!document.getElementById('inp-show-bonuses')?.checked;
+      const bonusLine = (showBonuses && uniqBonuses.length)
+        ? `\n  Бонусы:\n${uniqBonuses.map(b => `    ✅ ${b}`).join('\n')}`
         : '';
 
       lines.push(`• ${safeName} — ${Utils.formatPrice(finalPrice)} ₽${bonusLine}`);
@@ -3232,10 +3462,49 @@ updatePercentLabels: () => {
       const hours = Utils.sanitizeNumber(DB.config?.burnHours ?? 48, 1, 240, 48);
       const bonusTitle = Utils.sanitizeText(DB.config?.burnBonusTitle ?? '', 120) || 'Бонус';
       const bonusPrice = Utils.sanitizeNumber(DB.config?.burnBonusPrice ?? 0, 0, 99999999, 0);
+      const bonusDiscountPrice = Utils.sanitizeNumber(DB.config?.burnBonusDiscountPrice ?? 0, 0, 99999999, 0);
       const deadline = new Date(Date.now() + hours * 60 * 60 * 1000);
-      const deadlineStr = new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(deadline);
-      text += `⏳ Сгорающий бонус\n`;
-      text += `Бонус "${bonusTitle}" (цена ${Utils.formatPrice(bonusPrice)} ₽) идет в подарок при бронировании даты до ${deadlineStr}.\n\n`;
+      
+      // Форматируем дату И ВРЕМЯ
+      const deadlineDate = new Intl.DateTimeFormat('ru-RU', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric' 
+      }).format(deadline);
+      
+      const deadlineTime = new Intl.DateTimeFormat('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false
+      }).format(deadline);
+      
+      // Вычисляем цены
+      const discount = bonusPrice - bonusDiscountPrice; // Скидка
+      const oldTotal = State.finalTotal + discount; // Старая цена (без скидки)
+      const newTotal = State.finalTotal; // Новая цена (со скидкой)
+      
+      // Определяем текст новой цены бонуса
+      const newPriceText = bonusDiscountPrice === 0 
+        ? 'БЕСПЛАТНО! 🎁' 
+        : `${Utils.formatPrice(bonusDiscountPrice)} ₽ 🔥`;
+      
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `💰 ЦЕНА\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+      text += `Обычная цена: ~~${Utils.formatPrice(oldTotal)} ₽~~\n`;
+      text += `🔥 ЦЕНА СО СКИДКОЙ: ${Utils.formatPrice(newTotal)} ₽\n`;
+      text += `Экономия: ${Utils.formatPrice(discount)} ₽ 🎁\n\n`;
+      
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `🔥 СГОРАЮЩИЙ БОНУС!\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+      text += `${bonusTitle}\n`;
+      text += `Стоимость: ~~${Utils.formatPrice(bonusPrice)} ₽~~ → ${newPriceText}\n\n`;
+      text += `⏰ УСПЕЙ ЗАБРОНИРОВАТЬ!\n`;
+      text += `Акция действует до: ${deadlineDate} ${deadlineTime}\n`;
+      text += `(осталось ${hours} ч.)\n\n`;
+      text += `💎 Забронируй дату СЕЙЧАС и получи бонус в подарок!\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     }
 
     if (Array.isArray(DB.links) && DB.links.length) {
@@ -3251,7 +3520,7 @@ updatePercentLabels: () => {
     }
 
     if (Array.isArray(DB.payments) && DB.payments.length) {
-      text += `Способы оплаты:\n`;
+      text += `Способы предоплаты и брони:\n`;
       DB.payments.forEach(p => {
         if (Utils.isValidObject(p)) {
           const title = Utils.sanitizeText(p.title, 80);
@@ -3276,6 +3545,40 @@ updatePercentLabels: () => {
 
 
   copyQuote: async () => {
+    // Проверка 1: Есть ли услуги в корзине
+    const hasServices = (State.cart || []).filter(it => it && it.name).length > 0;
+    if (!hasServices) {
+      await PremiumDialog.alert({
+        message: 'Добавьте хотя бы одну услугу в корзину!',
+        okText: 'Понятно',
+        icon: 'alert-triangle'
+      });
+      return;
+    }
+
+    // Проверка 2: Указан ли регион
+    const region = document.getElementById('inp-region')?.value || '';
+    if (!region) {
+      await PremiumDialog.alert({
+        message: 'Выберите регион перед формированием КП!',
+        okText: 'Понятно',
+        icon: 'map-pin'
+      });
+      return;
+    }
+
+    // Проверка 3: Указан ли город
+    const city = document.getElementById('inp-city')?.value || '';
+    if (!city) {
+      await PremiumDialog.alert({
+        message: 'Выберите город перед формированием КП!',
+        okText: 'Понятно',
+        icon: 'map-pin'
+      });
+      return;
+    }
+
+    // Проверка 4: Есть ли итоговая сумма
     if (!State.finalTotal || State.finalTotal <= 0) {
       App.showToast('Сумма 0 ₽');
       return;
@@ -3289,10 +3592,11 @@ updatePercentLabels: () => {
     const timeRaw = document.getElementById('inp-time')?.value || '';
     const timeFmt = timeRaw ? timeRaw : 'по согласованию';
 
-    const region = Utils.sanitizeText(document.getElementById('inp-region')?.value || '', 80);
-    const city = Utils.sanitizeText(document.getElementById('inp-city')?.value || '', 80);
-
-    const locationLine = [city, region].filter(Boolean).join(', ') || 'по согласованию';
+    // Проверяем сколько уникальных городов
+    const uniqueCities = new Set(State.cart.map(item => `${item.region}_${item.city}`));
+    const hasMultipleCities = uniqueCities.size > 1;
+    
+    const locationLine = hasMultipleCities ? 'несколько городов' : (Utils.sanitizeText(city, 80) || 'по согласованию');
 
     let text = `Ваше персональное предложение\n\n`;
     text += `📅 Дата: ${dateFmt}\n`;
@@ -3313,7 +3617,8 @@ updatePercentLabels: () => {
         text += `${v.title}\n\n`;
         if (v.data?.description) text += `${Utils.sanitizeText(v.data.description, 500)}\n\n`;
 
-        if (Array.isArray(v.data?.bonuses) && v.data.bonuses.length) {
+        const showBonuses = !!document.getElementById('inp-show-bonuses')?.checked;
+        if (showBonuses && Array.isArray(v.data?.bonuses) && v.data.bonuses.length) {
           text += `Бонусы:\n`;
           v.data.bonuses.forEach(b => text += `  ✅ ${Utils.sanitizeText(b, 160)}\n`);
           text += `\n`;
@@ -3327,76 +3632,169 @@ updatePercentLabels: () => {
 
     } else {
       // ====== NORMAL MODE ======
-      const details = State.finalDetails || {};
-      const kLine = details.k || State.holidayK || 1;
-      const hasDiscount = !!(details.discount && details.discount > 0);
-      const discountFactor = hasDiscount ? 0.9 : 1;
-
-      const cartItems = (State.cart || [])
-        .filter(it => it && !String(it.name || '').startsWith('ПАКЕТ:'));
-
-      const rows = cartItems
-        .map(it => {
-          const name = Utils.sanitizeText(it.name || '', 120);
-          const qty = Utils.sanitizeNumber(it.qty || 1, 1, 99, 1);
-          const price = Utils.sanitizeNumber(it.price || 0, 0, 99999999, 0);
-          if (!name || !qty || !price) return null;
-
-          const base = Utils.prettyRound(price * qty * kLine);
-          const serviceTotal = Utils.prettyRound(base * discountFactor);
-
-          return { title: qty > 1 ? `${name} ×${qty}` : name, serviceTotal };
-        })
-        .filter(Boolean);
-
-      if (!rows.length) {
+      const kLine = State.holidayK || 1;
+      const cartItems = (State.cart || []).filter(it => it && !String(it.name || '').startsWith('ПАКЕТ:'));
+      
+      if (!cartItems.length) {
         App.showToast('Добавьте хотя бы одну услугу');
         return;
       }
 
-      const servicesSum = rows.reduce((s, r) => s + (r.serviceTotal || 0), 0);
-      const total = Utils.sanitizeNumber(State.finalTotal || 0, 0, 999999999, 0);
-      const extras = Math.max(0, total - servicesSum);
+      // Группируем услуги по городам
+      const cityGroups = {};
+      cartItems.forEach(item => {
+        const cityKey = `${item.region || 'unknown'}_${item.city || 'unknown'}`;
+        if (!cityGroups[cityKey]) {
+          cityGroups[cityKey] = {
+            cityName: item.cityName || 'Город не указан',
+            region: item.region,
+            city: item.city,
+            items: []
+          };
+        }
+        cityGroups[cityKey].items.push(item);
+      });
 
-      // Раскладываем "скрытые" суммы (логистика/гости/доплаты/безнал/агентство) внутрь услуг,
-      // чтобы клиент видел только позиции услуг, а цифры при этом сходились.
-      let allocatedSoFar = 0;
-      rows.forEach((r, idx) => {
-        const isLast = idx === rows.length - 1;
+      const cityKeys = Object.keys(cityGroups);
+      const hasMultipleCities = cityKeys.length > 1;
+      
+      // Общие доплаты
+      const manPrice = Utils.sanitizeNumber(document.getElementById('inp-manual-price')?.value, 0, 999999, 0);
+      const guestPrice = Utils.sanitizeNumber(document.getElementById('inp-guests')?.value, 0, 999999, 0);
+      const useTax = !!document.getElementById('inp-tax')?.checked;
+      const useAgency = !!document.getElementById('inp-agency')?.checked;
+      const cashlessPct = Utils.sanitizeNumber(DB.config?.cashlessPercent ?? 6, 0, 100, 6);
+      const agencyPct = Utils.sanitizeNumber(DB.config?.agencyPercent ?? 15, 0, 99, 15);
+      
+      // Скидка за объём
+      const bulkEnabled = DB.config?.bulkDiscountEnabled ?? true;
+      const bulkPercent = Utils.sanitizeNumber(DB.config?.bulkDiscountPercent ?? 10, 0, 100, 10);
+      const bulkMinServices = Utils.sanitizeNumber(DB.config?.bulkDiscountMinServices ?? 2, 1, 100, 2);
+      const hasDiscount = bulkEnabled && cartItems.length >= bulkMinServices;
+      const discountFactor = hasDiscount ? (1 - bulkPercent / 100) : 1;
 
-        let alloc = 0;
-        if (extras > 0 && servicesSum > 0) {
-          if (isLast) {
-            alloc = extras - allocatedSoFar;
-          } else {
-            alloc = Utils.prettyRound(extras * (r.serviceTotal / servicesSum));
-            allocatedSoFar += alloc;
+      // Вычисляем для каждого города
+      cityKeys.forEach(cityKey => {
+        const group = cityGroups[cityKey];
+        
+        // 1. Сумма услуг
+        let servicesTotal = 0;
+        group.items.forEach(item => {
+          const base = Utils.prettyRound(item.price * item.qty * kLine);
+          servicesTotal += Utils.prettyRound(base * discountFactor);
+        });
+        
+        // 2. Логистика для этого города
+        let travel = 0;
+        if (group.region && group.city && DB.travel?.[group.region]) {
+          if (group.city === 'other') {
+            travel = Utils.prettyRound((DB.travel[group.region].fee || 0) * (kLine > 1 ? 1.5 : 1));
+          } else if (DB.travel[group.region].cities && DB.travel[group.region].cities[group.city]) {
+            const cityData = DB.travel[group.region].cities[group.city];
+            const baseTravel = typeof cityData === 'number' ? cityData : (cityData.price || 0);
+            travel = Utils.prettyRound(baseTravel * (kLine > 1 ? 1.5 : 1));
           }
         }
-
-        r.clientTotal = Math.max(0, (r.serviceTotal || 0) + alloc);
-        r.prepay = Utils.prettyRound(r.clientTotal * (depositPct / 100));
-
-        const bonusTexts = App.getBonusesForTotal(r.clientTotal)
+        
+        // 3. Итого до налога
+        const preTax = servicesTotal + travel + manPrice + guestPrice;
+        
+        // 4. Безнал
+        const tax = useTax ? Utils.prettyRound(preTax * (cashlessPct / 100)) : 0;
+        
+        // 5. Подытог
+        const subTotal = preTax + tax;
+        
+        // 6. Агентство
+        const total = useAgency ? Utils.prettyRound(subTotal * (1 + agencyPct / 100)) : subTotal;
+        
+        // 7. Бонусы для этой суммы
+        const bonusTexts = App.getBonusesForTotal(total)
           .map(b => b?.text)
           .filter(Boolean)
           .map(t => Utils.sanitizeText(t, 160))
           .filter(Boolean);
-
-        r.bonuses = Array.from(new Set(bonusTexts));
+        
+        group.total = total;
+        group.bonuses = Array.from(new Set(bonusTexts));
       });
 
-      text += `Позиции и стоимость:\n`;
-      rows.forEach(r => {
-        text += `• ${r.title} — ${Utils.formatPrice(r.clientTotal)} ₽\n`;
-        if (r.bonuses && r.bonuses.length) {
-          text += `  Бонусы:\n`;
-          r.bonuses.forEach(b => {
-            text += `    ✅ ${b}\n`;
+      const showBonuses = !!document.getElementById('inp-show-bonuses')?.checked;
+
+      // Формируем текст КП
+      if (hasMultipleCities) {
+        // МУЛЬТИ-ГОРОД
+        text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+        text += `ВАРИАНТЫ ПО ГОРОДАМ:\n`;
+        text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        
+        cityKeys.forEach((cityKey, index) => {
+          const group = cityGroups[cityKey];
+          
+          text += `${index + 1}. ${group.cityName}\n\n`;
+          
+          // Услуги
+          group.items.forEach(item => {
+            const name = Utils.sanitizeText(item.name || '', 120);
+            const qty = Utils.sanitizeNumber(item.qty || 1, 1, 99, 1);
+            text += `• ${name}${qty > 1 ? ` ×${qty}` : ''}\n`;
+            
+            // Описание услуги (если есть)
+            if (item.description && item.description.trim()) {
+              const desc = Utils.sanitizeText(item.description, 500);
+              text += `  ${desc}\n`;
+            }
           });
-        }
-        text += `  Предоплата ${depositPct}%: ${Utils.formatPrice(r.prepay)} ₽\n\n`;
-      });
+          
+          text += `\n`;
+          text += `Стоимость: ${Utils.formatPrice(group.total)} ₽\n`;
+          
+          // Бонусы
+          if (showBonuses && group.bonuses && group.bonuses.length) {
+            text += `Бонусы:\n`;
+            group.bonuses.forEach(b => {
+              text += `  ✅ ${b}\n`;
+            });
+          }
+          
+          const dep = Utils.prettyRound(group.total * (depositPct / 100));
+          text += `Бронь ${depositPct}%: ${Utils.formatPrice(dep)} ₽\n`;
+          
+          if (index < cityKeys.length - 1) {
+            text += `\n━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+          }
+        });
+        
+      } else {
+        // ОДИН ГОРОД (старая логика)
+        const group = cityGroups[cityKeys[0]];
+        
+        text += `Позиции и стоимость:\n`;
+        
+        group.items.forEach(item => {
+          const name = Utils.sanitizeText(item.name || '', 120);
+          const qty = Utils.sanitizeNumber(item.qty || 1, 1, 99, 1);
+          const title = qty > 1 ? `${name} ×${qty}` : name;
+          
+          text += `• ${title} — ${Utils.formatPrice(group.total)} ₽\n`;
+          
+          // Описание услуги (если есть)
+          if (item.description && item.description.trim()) {
+            const desc = Utils.sanitizeText(item.description, 500);
+            text += `  ${desc}\n`;
+          }
+          
+          if (showBonuses && group.bonuses && group.bonuses.length) {
+            text += `  Бонусы:\n`;
+            group.bonuses.forEach(b => {
+              text += `    ✅ ${b}\n`;
+            });
+          }
+          
+          const dep = Utils.prettyRound(group.total * (depositPct / 100));
+          text += `  Предоплата ${depositPct}%: ${Utils.formatPrice(dep)} ₽\n\n`;
+        });
+      }
     }
 
     // Expiring bonus (сгорающий бонус)
@@ -3405,10 +3803,49 @@ updatePercentLabels: () => {
       const hours = Utils.sanitizeNumber(DB.config?.burnHours ?? 48, 1, 240, 48);
       const bonusTitle = Utils.sanitizeText(DB.config?.burnBonusTitle ?? '', 120) || 'Бонус';
       const bonusPrice = Utils.sanitizeNumber(DB.config?.burnBonusPrice ?? 0, 0, 99999999, 0);
+      const bonusDiscountPrice = Utils.sanitizeNumber(DB.config?.burnBonusDiscountPrice ?? 0, 0, 99999999, 0);
       const deadline = new Date(Date.now() + hours * 60 * 60 * 1000);
-      const deadlineStr = new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(deadline);
-      text += `⏳ Сгорающий бонус\n`;
-      text += `Бонус "${bonusTitle}" (цена ${Utils.formatPrice(bonusPrice)} ₽) идет в подарок при бронировании даты до ${deadlineStr}.\n\n`;
+      
+      // Форматируем дату И ВРЕМЯ
+      const deadlineDate = new Intl.DateTimeFormat('ru-RU', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric' 
+      }).format(deadline);
+      
+      const deadlineTime = new Intl.DateTimeFormat('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false
+      }).format(deadline);
+      
+      // Вычисляем цены
+      const discount = bonusPrice - bonusDiscountPrice; // Скидка
+      const oldTotal = State.finalTotal + discount; // Старая цена (без скидки)
+      const newTotal = State.finalTotal; // Новая цена (со скидкой)
+      
+      // Определяем текст новой цены бонуса
+      const newPriceText = bonusDiscountPrice === 0 
+        ? 'БЕСПЛАТНО! 🎁' 
+        : `${Utils.formatPrice(bonusDiscountPrice)} ₽ 🔥`;
+      
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `💰 ЦЕНА\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+      text += `Обычная цена: ~~${Utils.formatPrice(oldTotal)} ₽~~\n`;
+      text += `🔥 ЦЕНА СО СКИДКОЙ: ${Utils.formatPrice(newTotal)} ₽\n`;
+      text += `Экономия: ${Utils.formatPrice(discount)} ₽ 🎁\n\n`;
+      
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+      text += `🔥 СГОРАЮЩИЙ БОНУС!\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+      text += `${bonusTitle}\n`;
+      text += `Стоимость: ~~${Utils.formatPrice(bonusPrice)} ₽~~ → ${newPriceText}\n\n`;
+      text += `⏰ УСПЕЙ ЗАБРОНИРОВАТЬ!\n`;
+      text += `Акция действует до: ${deadlineDate} ${deadlineTime}\n`;
+      text += `(осталось ${hours} ч.)\n\n`;
+      text += `💎 Забронируй дату СЕЙЧАС и получи бонус в подарок!\n`;
+      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     }
 
     // Links
@@ -3426,7 +3863,7 @@ updatePercentLabels: () => {
 
     // Payments
     if (Array.isArray(DB.payments) && DB.payments.length) {
-      text += `Способы оплаты:\n`;
+      text += `Способы предоплаты и брони:\n`;
       DB.payments.forEach(p => {
         if (Utils.isValidObject(p)) {
           const title = Utils.sanitizeText(p.title, 80);
@@ -3603,208 +4040,245 @@ updatePercentLabels: () => {
     }, 5000); // 5 секунд чтобы успеть нажать UNDO
   },
 
+  editServiceDescription: async (idx) => {
+    if (idx < 0 || idx >= State.cart.length) return;
+    
+    const item = State.cart[idx];
+    if (!item) return;
+    
+    const currentDesc = item.description || '';
+    
+    const result = await PremiumDialog.prompt({
+      title: `Редактировать описание`,
+      message: `Услуга: ${item.name}`,
+      defaultValue: currentDesc,
+      placeholder: 'Введите описание услуги...',
+      okText: 'Сохранить',
+      cancelText: 'Отмена',
+      multiline: true,
+      icon: 'file-text'
+    });
+    
+    if (result !== null && result !== undefined) {
+      State.cart[idx].description = Utils.sanitizeText(result, 500);
+      App.renderCart();
+      App.showToast('Описание обновлено');
+    }
+  },
+
   editPackageInCart: async (idx) => {
     if (idx < 0 || idx >= State.cart.length) return;
     
     const item = State.cart[idx];
-    if (!item || !item.packageTemplate) return;
+    if (!item || !item.name.startsWith('ПАКЕТ:')) return;
 
-    const tpl = item.packageTemplate;
-
-    // Диалог выбора: редактировать шаблон или заменить на другой
-    const choice = await PremiumDialog.prompt({
-      title: 'Редактирование пакета',
-      message: 'Выберите действие:\n\n1 — Редактировать шаблон\n2 — Заменить на другой шаблон\n\nВведите номер:',
-      defaultValue: '1',
-      okText: 'Продолжить',
-      cancelText: 'Отмена',
-      icon: 'edit-3'
-    });
-
-    if (!choice) return;
-
-    if (choice === '2') {
-      // ЗАМЕНА НА ДРУГОЙ ШАБЛОН
-      const templates = DB.packageTemplates || [];
-      if (templates.length === 0) {
-        await PremiumDialog.alert({ message: 'Нет других шаблонов!', okText: 'Ок', icon: 'sparkles' });
-        return;
-      }
-
-      let message = 'Выберите новый шаблон:\n\n';
-      templates.forEach((t, i) => {
-        message += `${i + 1}. ${t.name}\n`;
-      });
-      message += '\nВведите номер:';
-
-      const num = await PremiumDialog.prompt({
-        title: 'Выбор шаблона',
-        message: message,
-        defaultValue: '',
-        okText: 'Выбрать',
-        cancelText: 'Отмена',
-        icon: 'list'
-      });
-
-      if (!num) return;
-
-      const selectedIdx = parseInt(num) - 1;
-      if (isNaN(selectedIdx) || selectedIdx < 0 || selectedIdx >= templates.length) {
-        await PremiumDialog.alert({ message: 'Неверный номер!', okText: 'Ок', icon: 'sparkles' });
-        return;
-      }
-
-      const newTemplate = templates[selectedIdx];
-      State.cart[idx] = {
-        name: `ПАКЕТ: ${newTemplate.name}`,
-        price: 0,
-        qty: 1,
-        packageTemplate: newTemplate
+    // Если нет packageTemplate, создаём дефолтный
+    let tpl = item.packageTemplate;
+    if (!tpl) {
+      const packageName = item.name.replace('ПАКЕТ: ', '').trim() || 'Пакет';
+      tpl = {
+        id: 'temp_' + Date.now(),
+        name: packageName,
+        basic: {
+          name: packageName + ' — Базовый',
+          price: 50000,
+          description: '',
+          bonuses: []
+        },
+        optimal: {
+          name: packageName + ' — Оптимал',
+          price: 75000,
+          description: '',
+          bonuses: []
+        },
+        premium: {
+          name: packageName + ' — Премиум',
+          price: 120000,
+          description: '',
+          bonuses: []
+        }
       };
-
-      App.renderCart();
-      App.calc();
-      App.showToast('Пакет заменён');
-      return;
+      item.packageTemplate = tpl;
     }
 
-    // РЕДАКТИРОВАНИЕ ТЕКУЩЕГО ШАБЛОНА
-    await PremiumDialog.alert({ message: 'Сейчас отредактируем 3 пакета: Базовый, Оптимал, Премиум', okText: 'Ок', icon: 'sparkles' });
+    // Создаём форму редактирования (такую же как в настройках)
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-4';
+    overlay.style.backdropFilter = 'blur(8px)';
 
-    // ===== БАЗОВЫЙ =====
-    await PremiumDialog.alert({ message: '📦 БАЗОВЫЙ ПАКЕТ', okText: 'Ок', icon: 'sparkles' });
+    const modal = document.createElement('div');
+    modal.className = 'glass rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto';
 
-    const basicDesc = await PremiumDialog.prompt({
-      title: 'БАЗОВЫЙ — Описание:',
-      defaultValue: tpl.basic.description || '',
-      okText: 'Далее',
-      cancelText: 'Отмена',
-      icon: 'edit-3'
-    });
-    if (basicDesc === null) return;
+    modal.innerHTML = `
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-white">✏️ Редактирование пакета</h2>
+        <button id="edit-close" class="text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
 
-    const basicBonuses = await PremiumDialog.prompt({
-      title: 'БАЗОВЫЙ — Бонусы (через запятую):',
-      defaultValue: (tpl.basic.bonuses || []).join(', '),
-      okText: 'Далее',
-      cancelText: 'Отмена',
-      icon: 'edit-3'
-    });
+      <div class="space-y-4">
+        <!-- Название -->
+        <div>
+          <label class="block text-sm font-bold text-amber-400 mb-2">Название пакета</label>
+          <input type="text" id="edit-name" value="${Utils.escapeHtml(tpl.name)}" 
+            class="w-full bg-white/5 border-2 border-amber-500/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none transition">
+        </div>
 
-    const basicPrice = await PremiumDialog.prompt({
-      title: 'БАЗОВЫЙ — Цена (₽):',
-      defaultValue: String(tpl.basic.price || 50000),
-      okText: 'Далее',
-      cancelText: 'Отмена',
-      icon: 'edit-3'
-    });
-    if (!basicPrice) return;
+        <!-- БАЗОВЫЙ -->
+        <div class="border-t-2 border-amber-500/20 pt-4">
+          <h3 class="text-lg font-bold text-amber-400 mb-3">📦 Базовый пакет</h3>
+          
+          <label class="block text-sm font-bold text-white mb-2">Описание</label>
+          <textarea id="edit-basic-desc" rows="3" 
+            class="w-full bg-white/5 border-2 border-amber-500/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none transition mb-3">${Utils.escapeHtml(tpl.basic.description || '')}</textarea>
 
-    // ===== ОПТИМАЛ =====
-    await PremiumDialog.alert({ message: '📦 ОПТИМАЛ ПАКЕТ', okText: 'Ок', icon: 'sparkles' });
+          <label class="block text-sm font-bold text-white mb-2">Бонусы (через запятую)</label>
+          <input type="text" id="edit-basic-bonuses" value="${Utils.escapeHtml((tpl.basic.bonuses || []).join(', '))}" 
+            class="w-full bg-white/5 border-2 border-amber-500/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none transition mb-3">
 
-    const optimalDesc = await PremiumDialog.prompt({
-      title: 'ОПТИМАЛ — Описание:',
-      defaultValue: tpl.optimal.description || '',
-      okText: 'Далее',
-      cancelText: 'Отмена',
-      icon: 'edit-3'
-    });
-    if (optimalDesc === null) return;
+          <label class="block text-sm font-bold text-white mb-2">Цена (₽)</label>
+          <input type="number" id="edit-basic-price" value="${tpl.basic.price || 50000}" 
+            class="w-full bg-white/5 border-2 border-amber-500/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none transition">
+        </div>
 
-    const optimalBonuses = await PremiumDialog.prompt({
-      title: 'ОПТИМАЛ — Бонусы (через запятую):',
-      defaultValue: (tpl.optimal.bonuses || []).join(', '),
-      okText: 'Далее',
-      cancelText: 'Отмена',
-      icon: 'edit-3'
-    });
+        <!-- ОПТИМАЛ -->
+        <div class="border-t-2 border-amber-500/20 pt-4">
+          <h3 class="text-lg font-bold text-amber-400 mb-3">📦 Оптимал пакет</h3>
+          
+          <label class="block text-sm font-bold text-white mb-2">Описание</label>
+          <textarea id="edit-optimal-desc" rows="3" 
+            class="w-full bg-white/5 border-2 border-amber-500/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none transition mb-3">${Utils.escapeHtml(tpl.optimal.description || '')}</textarea>
 
-    const optimalPrice = await PremiumDialog.prompt({
-      title: 'ОПТИМАЛ — Цена (₽):',
-      defaultValue: String(tpl.optimal.price || 75000),
-      okText: 'Далее',
-      cancelText: 'Отмена',
-      icon: 'edit-3'
-    });
-    if (!optimalPrice) return;
+          <label class="block text-sm font-bold text-white mb-2">Бонусы (через запятую)</label>
+          <input type="text" id="edit-optimal-bonuses" value="${Utils.escapeHtml((tpl.optimal.bonuses || []).join(', '))}" 
+            class="w-full bg-white/5 border-2 border-amber-500/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none transition mb-3">
 
-    // ===== ПРЕМИУМ =====
-    await PremiumDialog.alert({ message: '📦 ПРЕМИУМ ПАКЕТ', okText: 'Ок', icon: 'sparkles' });
+          <label class="block text-sm font-bold text-white mb-2">Цена (₽)</label>
+          <input type="number" id="edit-optimal-price" value="${tpl.optimal.price || 75000}" 
+            class="w-full bg-white/5 border-2 border-amber-500/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none transition">
+        </div>
 
-    const premiumDesc = await PremiumDialog.prompt({
-      title: 'ПРЕМИУМ — Описание:',
-      defaultValue: tpl.premium.description || '',
-      okText: 'Далее',
-      cancelText: 'Отмена',
-      icon: 'edit-3'
-    });
-    if (premiumDesc === null) return;
+        <!-- ПРЕМИУМ -->
+        <div class="border-t-2 border-amber-500/20 pt-4">
+          <h3 class="text-lg font-bold text-amber-400 mb-3">📦 Премиум пакет</h3>
+          
+          <label class="block text-sm font-bold text-white mb-2">Описание</label>
+          <textarea id="edit-premium-desc" rows="3" 
+            class="w-full bg-white/5 border-2 border-amber-500/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none transition mb-3">${Utils.escapeHtml(tpl.premium.description || '')}</textarea>
 
-    const premiumBonuses = await PremiumDialog.prompt({
-      title: 'ПРЕМИУМ — Бонусы (через запятую):',
-      defaultValue: (tpl.premium.bonuses || []).join(', '),
-      okText: 'Далее',
-      cancelText: 'Отмена',
-      icon: 'edit-3'
-    });
+          <label class="block text-sm font-bold text-white mb-2">Бонусы (через запятую)</label>
+          <input type="text" id="edit-premium-bonuses" value="${Utils.escapeHtml((tpl.premium.bonuses || []).join(', '))}" 
+            class="w-full bg-white/5 border-2 border-amber-500/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none transition mb-3">
 
-    const premiumPrice = await PremiumDialog.prompt({
-      title: 'ПРЕМИУМ — Цена (₽):',
-      defaultValue: String(tpl.premium.price || 120000),
-      okText: 'Сохранить',
-      cancelText: 'Отмена',
-      icon: 'edit-3'
-    });
-    if (!premiumPrice) return;
+          <label class="block text-sm font-bold text-white mb-2">Цена (₽)</label>
+          <input type="number" id="edit-premium-price" value="${tpl.premium.price || 120000}" 
+            class="w-full bg-white/5 border-2 border-amber-500/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none transition">
+        </div>
 
-    // Обновляем шаблон
-    const updatedTemplate = {
-      ...tpl,
-      basic: {
-        name: tpl.name + ' — Базовый',
-        price: parseInt(basicPrice) || tpl.basic.price,
-        description: basicDesc.trim(),
-        bonuses: basicBonuses ? basicBonuses.split(',').map(b => b.trim()).filter(b => b) : []
-      },
-      optimal: {
-        name: tpl.name + ' — Оптимал',
-        price: parseInt(optimalPrice) || tpl.optimal.price,
-        description: optimalDesc.trim(),
-        bonuses: optimalBonuses ? optimalBonuses.split(',').map(b => b.trim()).filter(b => b) : []
-      },
-      premium: {
-        name: tpl.name + ' — Премиум',
-        price: parseInt(premiumPrice) || tpl.premium.price,
-        description: premiumDesc.trim(),
-        bonuses: premiumBonuses ? premiumBonuses.split(',').map(b => b.trim()).filter(b => b) : []
-      }
+        <!-- Кнопки -->
+        <div class="flex gap-3 pt-4">
+          <button id="edit-cancel" class="flex-1 bg-slate-600 hover:bg-slate-500 text-white font-bold py-3 px-6 rounded-xl transition">
+            Отмена
+          </button>
+          <button id="edit-save" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-xl transition">
+            💾 Сохранить
+          </button>
+        </div>
+      </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    if (window.lucide) lucide.createIcons();
+
+    // Закрытие
+    const closeForm = () => {
+      overlay.remove();
     };
 
-    // Обновляем в корзине
-    State.cart[idx].packageTemplate = updatedTemplate;
-
-    // Обновляем в базе шаблонов (если это не одноразовое редактирование)
-    const saveToDb = await PremiumDialog.confirm({
-      message: 'Сохранить изменения в базу шаблонов?\n\n✅ Да — изменения сохранятся для будущих использований\n❌ Нет — изменения только для текущего КП',
-      okText: 'Да',
-      cancelText: 'Нет',
-      icon: 'save'
+    document.getElementById('edit-close').addEventListener('click', closeForm);
+    document.getElementById('edit-cancel').addEventListener('click', closeForm);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeForm();
     });
 
-    if (saveToDb) {
-      const dbTemplates = DB.packageTemplates || [];
-      const dbIdx = dbTemplates.findIndex(t => t.id === tpl.id);
-      if (dbIdx >= 0) {
-        dbTemplates[dbIdx] = updatedTemplate;
+    // Сохранение
+    document.getElementById('edit-save').addEventListener('click', async () => {
+      const newName = document.getElementById('edit-name').value.trim();
+      if (!newName) {
+        App.showToast('❌ Введите название!');
+        return;
+      }
+
+      const basicDesc = document.getElementById('edit-basic-desc').value.trim();
+      const basicBonuses = document.getElementById('edit-basic-bonuses').value;
+      const basicPrice = parseInt(document.getElementById('edit-basic-price').value) || 50000;
+
+      const optimalDesc = document.getElementById('edit-optimal-desc').value.trim();
+      const optimalBonuses = document.getElementById('edit-optimal-bonuses').value;
+      const optimalPrice = parseInt(document.getElementById('edit-optimal-price').value) || 75000;
+
+      const premiumDesc = document.getElementById('edit-premium-desc').value.trim();
+      const premiumBonuses = document.getElementById('edit-premium-bonuses').value;
+      const premiumPrice = parseInt(document.getElementById('edit-premium-price').value) || 120000;
+
+      // Обновляем шаблон
+      const updatedTemplate = {
+        ...tpl,
+        name: newName,
+        basic: {
+          name: newName + ' — Базовый',
+          price: basicPrice,
+          description: basicDesc,
+          bonuses: basicBonuses ? basicBonuses.split(',').map(b => b.trim()).filter(b => b) : []
+        },
+        optimal: {
+          name: newName + ' — Оптимал',
+          price: optimalPrice,
+          description: optimalDesc,
+          bonuses: optimalBonuses ? optimalBonuses.split(',').map(b => b.trim()).filter(b => b) : []
+        },
+        premium: {
+          name: newName + ' — Премиум',
+          price: premiumPrice,
+          description: premiumDesc,
+          bonuses: premiumBonuses ? premiumBonuses.split(',').map(b => b.trim()).filter(b => b) : []
+        }
+      };
+
+      // Обновляем в корзине
+      State.cart[idx].packageTemplate = updatedTemplate;
+      State.cart[idx].name = `ПАКЕТ: ${newName}`;
+
+      // Спрашиваем, сохранить ли в базу
+      const saveToDb = await PremiumDialog.confirm({
+        message: 'Сохранить изменения в базу шаблонов?\n\n✅ Да — изменения сохранятся для будущих использований\n❌ Нет — изменения только для текущего КП',
+        okText: 'Да',
+        cancelText: 'Нет',
+        icon: 'save'
+      });
+
+      if (saveToDb) {
+        const dbTemplates = DB.packageTemplates || [];
+        const dbIdx = dbTemplates.findIndex(t => t.id === tpl.id);
+        if (dbIdx >= 0) {
+          // Обновляем существующий
+          dbTemplates[dbIdx] = updatedTemplate;
+        } else {
+          // Добавляем новый
+          dbTemplates.push(updatedTemplate);
+        }
         DB.packageTemplates = dbTemplates;
         Storage.save();
       }
-    }
 
-    App.renderCart();
-    App.calc();
-    App.showToast('✅ Пакет обновлён!');
+      App.renderCart();
+      App.calc();
+      App.showToast('✅ Пакет обновлён!');
+      closeForm();
+    });
   },
 
   updateLicenseStatus: () => {
@@ -4931,7 +5405,7 @@ Object.assign(Admin, {
     Utils.clearElement(container);
 
     if (!Array.isArray(DB.payments) || DB.payments.length === 0) {
-      container.innerHTML = `<div class="text-sm text-slate-500">Нет реквизитов</div>`;
+      container.innerHTML = `<div class="text-sm text-slate-500">Нет способов брони</div>`;
       return;
     }
 
@@ -5785,50 +6259,68 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = 'glass rounded-xl p-3 mb-2';
 
-      card.innerHTML = `
-        <div class="flex justify-between items-start">
-          <div class="flex-1">
-            <div class="font-bold text-amber-400 text-sm">${Utils.escapeHtml(tpl.name)}</div>
-            <div class="text-xs text-slate-300 mt-1">
-              Базовый: ${Utils.formatPrice(tpl.basic.price)} ₽ •
-              Оптимал: ${Utils.formatPrice(tpl.optimal.price)} ₽ •
-              Премиум: ${Utils.formatPrice(tpl.premium.price)} ₽
-            </div>
-          </div>
-          <div class="flex gap-2">
-            <button class="btn-icon" data-edit="${tpl.id}" title="Редактировать">
-              <i data-lucide="pencil" class="w-4 h-4"></i>
-            </button>
-            <button class="btn-icon" data-del="${tpl.id}" title="Удалить">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
-          </div>
-        </div>
-      `;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'flex justify-between items-start';
 
-      const editBtn = card.querySelector('[data-edit]');
-      if (editBtn) {
-        editBtn.addEventListener('click', async () => {
-          await editTemplateInSettings(tpl);
-        });
-      }
+      // Левая часть - инфо
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'flex-1';
 
-      const delBtn = card.querySelector('[data-del]');
-      if (delBtn) {
-        delBtn.addEventListener('click', async () => {
-          if (await PremiumDialog.confirm({ message: `Удалить шаблон "${tpl.name}"?`, danger: true, okText: 'Да', cancelText: 'Отмена', icon: 'shield-alert' })) {
-            const templates = DB.packageTemplates || [];
-            const idx = templates.findIndex(t => t.id === tpl.id);
-            if (idx >= 0) {
-              templates.splice(idx, 1);
-              DB.packageTemplates = templates;
-              Storage.save();
-              renderTemplatesAdmin();
-              App.showToast('Удалено');
-            }
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'font-bold text-amber-400 text-sm';
+      nameDiv.textContent = tpl.name;
+
+      const pricesDiv = document.createElement('div');
+      pricesDiv.className = 'text-xs text-slate-300 mt-1';
+      pricesDiv.textContent = `Базовый: ${Utils.formatPrice(tpl.basic.price)} ₽ • Оптимал: ${Utils.formatPrice(tpl.optimal.price)} ₽ • Премиум: ${Utils.formatPrice(tpl.premium.price)} ₽`;
+
+      infoDiv.appendChild(nameDiv);
+      infoDiv.appendChild(pricesDiv);
+
+      // Правая часть - кнопки
+      const buttonsDiv = document.createElement('div');
+      buttonsDiv.className = 'flex gap-2';
+
+      // Кнопка редактирования
+      const editBtn = document.createElement('button');
+      editBtn.className = 'btn-icon';
+      editBtn.title = 'Редактировать';
+      const editIcon = document.createElement('i');
+      editIcon.setAttribute('data-lucide', 'pencil');
+      editIcon.className = 'w-4 h-4';
+      editBtn.appendChild(editIcon);
+      editBtn.addEventListener('click', async () => {
+        await editTemplateInSettings(tpl);
+      });
+
+      // Кнопка удаления
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-icon';
+      delBtn.title = 'Удалить';
+      const delIcon = document.createElement('i');
+      delIcon.setAttribute('data-lucide', 'trash-2');
+      delIcon.className = 'w-4 h-4';
+      delBtn.appendChild(delIcon);
+      delBtn.addEventListener('click', async () => {
+        if (await PremiumDialog.confirm({ message: `Удалить шаблон "${tpl.name}"?`, danger: true, okText: 'Да', cancelText: 'Отмена', icon: 'shield-alert' })) {
+          const templates = DB.packageTemplates || [];
+          const idx = templates.findIndex(t => t.id === tpl.id);
+          if (idx >= 0) {
+            templates.splice(idx, 1);
+            DB.packageTemplates = templates;
+            Storage.save();
+            renderTemplatesAdmin();
+            App.showToast('Удалено');
           }
-        });
-      }
+        }
+      });
+
+      buttonsDiv.appendChild(editBtn);
+      buttonsDiv.appendChild(delBtn);
+
+      wrapper.appendChild(infoDiv);
+      wrapper.appendChild(buttonsDiv);
+      card.appendChild(wrapper);
 
       container.appendChild(card);
     });
@@ -6118,8 +6610,17 @@ window.PremiumDialog = (() => {
     // focus
     setTimeout(() => {
       try {
-        if (mode === 'prompt') (activePromptEl || inputEl).focus();
-        else okBtn.focus();
+        if (mode === 'prompt') {
+          const el = activePromptEl || inputEl;
+          el.focus();
+          // Снимаем выделение чтобы можно было сразу скроллить
+          if (el.setSelectionRange) {
+            const len = (el.value || '').length;
+            el.setSelectionRange(len, len);
+          }
+        } else {
+          okBtn.focus();
+        }
       } catch (e) {}
     }, 0);
 
@@ -6405,5 +6906,135 @@ window.PremiumDialog = (() => {
 
 })();
 </script>
+
+<!-- Кнопки прокрутки -->
+<div id="scroll-buttons" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 12px;">
+  <!-- Кнопка вверх -->
+  <button id="scroll-to-top" 
+    style="
+      width: 48px;
+      height: 48px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(245,158,11,0.95) 0%, rgba(251,191,36,0.95) 100%);
+      border: 2px solid rgba(245,158,11,0.3);
+      box-shadow: 0 8px 24px rgba(245,158,11,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+      transform: scale(0.8);
+      pointer-events: none;
+      backdrop-filter: blur(10px);
+    "
+    title="Наверх">
+    <i data-lucide="arrow-up" style="width: 24px; height: 24px; color: white; stroke-width: 3;"></i>
+  </button>
+  
+  <!-- Кнопка вниз -->
+  <button id="scroll-to-bottom" 
+    style="
+      width: 48px;
+      height: 48px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(245,158,11,0.95) 0%, rgba(251,191,36,0.95) 100%);
+      border: 2px solid rgba(245,158,11,0.3);
+      box-shadow: 0 8px 24px rgba(245,158,11,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+      transform: scale(0.8);
+      pointer-events: none;
+      backdrop-filter: blur(10px);
+    "
+    title="Вниз">
+    <i data-lucide="arrow-down" style="width: 24px; height: 24px; color: white; stroke-width: 3;"></i>
+  </button>
+</div>
+
+<script>
+(function() {
+  const scrollToTop = document.getElementById('scroll-to-top');
+  const scrollToBottom = document.getElementById('scroll-to-bottom');
+  
+  // Плавная прокрутка
+  function smoothScroll(target) {
+    window.scrollTo({
+      top: target,
+      behavior: 'smooth'
+    });
+  }
+  
+  // Обработчики кнопок
+  scrollToTop.addEventListener('click', () => {
+    smoothScroll(0);
+  });
+  
+  scrollToBottom.addEventListener('click', () => {
+    smoothScroll(document.documentElement.scrollHeight);
+  });
+  
+  // Эффект при наведении
+  [scrollToTop, scrollToBottom].forEach(btn => {
+    btn.addEventListener('mouseenter', function() {
+      this.style.transform = 'scale(1.1)';
+      this.style.boxShadow = '0 12px 32px rgba(245,158,11,0.6), 0 0 0 1px rgba(255,255,255,0.2) inset';
+    });
+    
+    btn.addEventListener('mouseleave', function() {
+      this.style.transform = this.style.opacity === '1' ? 'scale(1)' : 'scale(0.8)';
+      this.style.boxShadow = '0 8px 24px rgba(245,158,11,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset';
+    });
+  });
+  
+  // Показываем/скрываем кнопки в зависимости от позиции прокрутки
+  function updateScrollButtons() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = document.documentElement.clientHeight;
+    const scrollBottom = scrollHeight - scrollTop - clientHeight;
+    
+    // Показываем кнопку "Вверх" если прокрутили вниз больше 300px
+    if (scrollTop > 300) {
+      scrollToTop.style.opacity = '1';
+      scrollToTop.style.transform = 'scale(1)';
+      scrollToTop.style.pointerEvents = 'auto';
+    } else {
+      scrollToTop.style.opacity = '0';
+      scrollToTop.style.transform = 'scale(0.8)';
+      scrollToTop.style.pointerEvents = 'none';
+    }
+    
+    // Показываем кнопку "Вниз" если есть куда прокручивать (больше 300px до конца)
+    if (scrollBottom > 300) {
+      scrollToBottom.style.opacity = '1';
+      scrollToBottom.style.transform = 'scale(1)';
+      scrollToBottom.style.pointerEvents = 'auto';
+    } else {
+      scrollToBottom.style.opacity = '0';
+      scrollToBottom.style.transform = 'scale(0.8)';
+      scrollToBottom.style.pointerEvents = 'none';
+    }
+  }
+  
+  // Слушаем скролл
+  let scrollTimeout;
+  window.addEventListener('scroll', () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(updateScrollButtons, 10);
+  });
+  
+  // Первоначальная проверка
+  updateScrollButtons();
+  
+  // Рендерим иконки
+  if (window.lucide) lucide.createIcons();
+})();
+</script>
+
 </body>
 </html>
