@@ -205,19 +205,6 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
           </div>
         </div>
 
-        <!-- Описание услуги -->
-        <div class="mb-4">
-          <label class="text-sm text-slate-400 font-bold mb-2 block">Описание услуги (опционально)</label>
-          <textarea 
-            id="inp-service-desc" 
-            class="form-input" 
-            rows="3" 
-            placeholder="Например: Увлекательное шоу с картами и монетами, включает интерактив с гостями..."
-            style="resize: vertical; min-height: 80px;"
-          ></textarea>
-          <div class="text-xs text-slate-500 mt-1">💡 Это описание будет показано в КП</div>
-        </div>
-
         <!-- Quantity & Add Button -->
         <div class="flex items-center gap-4 mb-6">
           <div class="flex items-center gap-3">
@@ -2518,7 +2505,6 @@ updatePercentLabels: () => {
     const svcSelect = document.getElementById('inp-svc');
     const regionSelect = document.getElementById('inp-region');
     const citySelect = document.getElementById('inp-city');
-    const descInput = document.getElementById('inp-service-desc');
     
     if (!catSelect || !svcSelect) return;
 
@@ -2539,7 +2525,21 @@ updatePercentLabels: () => {
       return;
     }
 
-    const basePrice = DB.services?.[cat]?.[svc];
+    const serviceData = DB.services?.[cat]?.[svc];
+    
+    // Поддержка старого формата (число) и нового (объект)
+    let basePrice, serviceDescription;
+    if (typeof serviceData === 'number') {
+      basePrice = serviceData;
+      serviceDescription = '';
+    } else if (typeof serviceData === 'object' && serviceData !== null) {
+      basePrice = serviceData.price || 0;
+      serviceDescription = serviceData.description || '';
+    } else {
+      App.showToast('Некорректная услуга');
+      return;
+    }
+    
     if (typeof basePrice !== 'number' || isNaN(basePrice) || basePrice < 0) {
       App.showToast('Некорректная цена услуги');
       return;
@@ -2547,7 +2547,6 @@ updatePercentLabels: () => {
     
     const regionName = regionSelect.options[regionSelect.selectedIndex]?.text || '';
     const cityName = citySelect.options[citySelect.selectedIndex]?.text || '';
-    const description = Utils.sanitizeText(descInput?.value || '', 500);
 
     State.cart.push({
       name: Utils.sanitizeText(svc, 200),
@@ -2557,15 +2556,12 @@ updatePercentLabels: () => {
       city: city,
       regionName: regionName,
       cityName: cityName === 'Другой город' ? 'Другой' : cityName,
-      description: description
+      description: serviceDescription  // Берём из настроек!
     });
 
     State.serviceQty = 1;
     const qtySpan = document.getElementById('svc-qty');
     if (qtySpan) qtySpan.textContent = 1;
-    
-    // Очищаем поле описания
-    if (descInput) descInput.value = '';
 
     App.renderCart();
     App.calc();
@@ -2688,6 +2684,9 @@ updatePercentLabels: () => {
           nameDiv.appendChild(qtySpan);
         }
 
+        const priceDiv = Utils.createElement('div', 'text-sm text-slate-400 mono');
+        priceDiv.textContent = `${Utils.formatPrice(item.price)} ₽`;
+
         leftDiv.appendChild(nameDiv);
         
         // Описание услуги (если есть)
@@ -2696,6 +2695,8 @@ updatePercentLabels: () => {
           descDiv.textContent = item.description;
           leftDiv.appendChild(descDiv);
         }
+        
+        leftDiv.appendChild(priceDiv);
 
         const rightDiv = Utils.createElement('div', 'flex items-center gap-4 flex-shrink-0');
 
@@ -4864,10 +4865,17 @@ Object.assign(Admin, {
     });
   },
 
-  createServiceRow: (category, service, price) => {
-    const row = Utils.createElement('div', 'edit-row ml-4');
+  createServiceRow: (category, service, serviceData) => {
+    // Поддержка старого формата (число) и нового (объект)
+    const price = typeof serviceData === 'number' ? serviceData : (serviceData?.price || 0);
+    const description = typeof serviceData === 'object' ? (serviceData?.description || '') : '';
+    
+    const wrapper = Utils.createElement('div', 'mb-3 ml-4');
+    
+    const row = Utils.createElement('div', 'edit-row');
 
     const nameInput = Utils.createElement('input', 'edit-input flex-1');
+    nameInput.placeholder = 'Название услуги';
     nameInput.value = service;
     nameInput.maxLength = 200;
     nameInput.addEventListener('change', () => {
@@ -4878,6 +4886,7 @@ Object.assign(Admin, {
 
     const priceInput = Utils.createElement('input', 'edit-input w-32 text-right mono');
     priceInput.type = 'number';
+    priceInput.placeholder = 'Цена';
     priceInput.value = price;
     priceInput.min = '0';
     priceInput.addEventListener('change', () => Admin.setSvcPrice(category, service, priceInput.value));
@@ -4889,7 +4898,27 @@ Object.assign(Admin, {
     row.appendChild(nameInput);
     row.appendChild(priceInput);
     row.appendChild(delBtn);
-    return row;
+    
+    // Поле описания
+    const descRow = Utils.createElement('div', 'mt-2');
+    const descTextarea = Utils.createElement('textarea', 'edit-input w-full');
+    descTextarea.placeholder = 'Описание услуги (будет показано в КП)';
+    descTextarea.value = description;
+    descTextarea.rows = 2;
+    descTextarea.maxLength = 500;
+    descTextarea.style.resize = 'vertical';
+    descTextarea.style.minHeight = '60px';
+    descTextarea.addEventListener('change', () => {
+      const newDesc = Utils.sanitizeText(descTextarea.value, 500);
+      Admin.setSvcDescription(category, service, newDesc);
+    });
+    
+    descRow.appendChild(descTextarea);
+    
+    wrapper.appendChild(row);
+    wrapper.appendChild(descRow);
+    
+    return wrapper;
   },
 
   addCategory: async () => {
@@ -5102,7 +5131,36 @@ Object.assign(Admin, {
 
   setSvcPrice: (category, service, value) => {
     if (!DB.services[category]) return;
-    DB.services[category][service] = Utils.sanitizeNumber(value, 0);
+    
+    const currentData = DB.services[category][service];
+    const price = Utils.sanitizeNumber(value, 0);
+    
+    // Если данные уже объект - обновляем только цену
+    if (typeof currentData === 'object' && currentData !== null) {
+      DB.services[category][service].price = price;
+    } else {
+      // Если было число - создаём объект с ценой и пустым описанием
+      DB.services[category][service] = { price: price, description: '' };
+    }
+    
+    Storage.save();
+  },
+  
+  setSvcDescription: (category, service, description) => {
+    if (!DB.services[category]) return;
+    
+    const currentData = DB.services[category][service];
+    const desc = Utils.sanitizeText(description, 500);
+    
+    // Если данные уже объект - обновляем только описание
+    if (typeof currentData === 'object' && currentData !== null) {
+      DB.services[category][service].description = desc;
+    } else {
+      // Если было число - создаём объект с текущей ценой и новым описанием
+      const price = typeof currentData === 'number' ? currentData : 0;
+      DB.services[category][service] = { price: price, description: desc };
+    }
+    
     Storage.save();
   },
 
