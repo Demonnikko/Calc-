@@ -401,7 +401,32 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
 
   <!-- ========== SETTINGS MODAL ========== -->
   <div id="view-settings" aria-hidden="true">
-    <div class="panel glass p-6">
+    <div class="panel glass p-6" style="position: relative;">
+      
+      <!-- КНОПКА ВВЕРХУ ПАНЕЛИ (стрелка ВНИЗ) -->
+      <button id="scroll-down-btn" 
+        style="
+          position: absolute;
+          top: 20px;
+          right: 70px;
+          z-index: 999;
+          width: 44px;
+          height: 44px;
+          border-radius: 22px;
+          background: linear-gradient(135deg, rgba(245,158,11,0.95) 0%, rgba(251,191,36,0.95) 100%);
+          border: 2px solid rgba(245,158,11,0.3);
+          box-shadow: 0 8px 24px rgba(245,158,11,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          backdrop-filter: blur(10px);
+        "
+        title="Прокрутить вниз">
+        <i data-lucide="arrow-down" style="width: 24px; height: 24px; color: white; stroke-width: 3;"></i>
+      </button>
+
       <div class="flex items-center justify-between mb-6">
         <div>
           <div class="font-cinzel text-white text-xl mb-1">Настройки</div>
@@ -411,6 +436,7 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
           <i data-lucide="x" class="w-6 h-6 text-slate-400"></i>
         </button>
       </div>
+
 
       <!-- PERSONAL INFO -->
       <div class="glass rounded-2xl p-5 mb-6 border-2 border-amber-500/20">
@@ -674,6 +700,30 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
           </div>
           <div id="kp-buffer-list" class="space-y-2"></div>
         </div>
+        
+        <!-- ЛИПКАЯ КНОПКА ВВЕРХ (прилипает к низу экрана при прокрутке) -->
+        <div style="position: sticky; bottom: 20px; text-align: right; padding-right: 20px; margin-top: 20px; pointer-events: none;">
+          <button id="scroll-up-btn" 
+            style="
+              width: 56px;
+              height: 56px;
+              border-radius: 28px;
+              background: linear-gradient(135deg, rgba(245,158,11,0.95) 0%, rgba(251,191,36,0.95) 100%);
+              border: 2px solid rgba(245,158,11,0.3);
+              box-shadow: 0 8px 24px rgba(245,158,11,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;
+              cursor: pointer;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+              backdrop-filter: blur(10px);
+              pointer-events: auto;
+            "
+            title="Прокрутить вверх">
+            <i data-lucide="arrow-up" style="width: 28px; height: 28px; color: white; stroke-width: 3;"></i>
+          </button>
+        </div>
+        
       </div>
     </div>
   </div>
@@ -6965,132 +7015,56 @@ window.PremiumDialog = (() => {
 })();
 </script>
 
-<!-- Кнопки прокрутки -->
-<div id="scroll-buttons" style="position: fixed; right: 20px; bottom: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 12px;">
-  <!-- Кнопка вверх -->
-  <button id="scroll-to-top" 
-    style="
-      width: 48px;
-      height: 48px;
-      border-radius: 24px;
-      background: linear-gradient(135deg, rgba(245,158,11,0.95) 0%, rgba(251,191,36,0.95) 100%);
-      border: 2px solid rgba(245,158,11,0.3);
-      box-shadow: 0 8px 24px rgba(245,158,11,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      opacity: 0;
-      transform: scale(0.8);
-      pointer-events: none;
-      backdrop-filter: blur(10px);
-    "
-    title="Наверх">
-    <i data-lucide="arrow-up" style="width: 24px; height: 24px; color: white; stroke-width: 3;"></i>
-  </button>
-  
-  <!-- Кнопка вниз -->
-  <button id="scroll-to-bottom" 
-    style="
-      width: 48px;
-      height: 48px;
-      border-radius: 24px;
-      background: linear-gradient(135deg, rgba(245,158,11,0.95) 0%, rgba(251,191,36,0.95) 100%);
-      border: 2px solid rgba(245,158,11,0.3);
-      box-shadow: 0 8px 24px rgba(245,158,11,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      opacity: 0;
-      transform: scale(0.8);
-      pointer-events: none;
-      backdrop-filter: blur(10px);
-    "
-    title="Вниз">
-    <i data-lucide="arrow-down" style="width: 24px; height: 24px; color: white; stroke-width: 3;"></i>
-  </button>
-</div>
-
+<!-- Скрипт для кнопок прокрутки в настройках -->
 <script>
 (function() {
-  const scrollToTop = document.getElementById('scroll-to-top');
-  const scrollToBottom = document.getElementById('scroll-to-bottom');
+  const settingsPanel = document.querySelector('#view-settings .panel');
+  const scrollDownBtn = document.getElementById('scroll-down-btn');
+  const scrollUpBtn = document.getElementById('scroll-up-btn');
   
-  // Плавная прокрутка
-  function smoothScroll(target) {
-    window.scrollTo({
-      top: target,
+  if (!settingsPanel || !scrollDownBtn || !scrollUpBtn) return;
+  
+  // Плавная прокрутка ВНИЗ (кнопка вверху)
+  scrollDownBtn.addEventListener('click', () => {
+    settingsPanel.scrollTo({
+      top: settingsPanel.scrollHeight,
       behavior: 'smooth'
     });
-  }
-  
-  // Обработчики кнопок
-  scrollToTop.addEventListener('click', () => {
-    smoothScroll(0);
   });
   
-  scrollToBottom.addEventListener('click', () => {
-    smoothScroll(document.documentElement.scrollHeight);
+  // Плавная прокрутка ВВЕРХ (кнопка внизу)
+  scrollUpBtn.addEventListener('click', () => {
+    settingsPanel.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   });
   
-  // Эффект при наведении
-  [scrollToTop, scrollToBottom].forEach(btn => {
+  // Эффекты при наведении
+  [scrollDownBtn, scrollUpBtn].forEach(btn => {
     btn.addEventListener('mouseenter', function() {
       this.style.transform = 'scale(1.1)';
       this.style.boxShadow = '0 12px 32px rgba(245,158,11,0.6), 0 0 0 1px rgba(255,255,255,0.2) inset';
     });
     
     btn.addEventListener('mouseleave', function() {
-      this.style.transform = this.style.opacity === '1' ? 'scale(1)' : 'scale(0.8)';
+      this.style.transform = 'scale(1)';
       this.style.boxShadow = '0 8px 24px rgba(245,158,11,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset';
     });
   });
   
-  // Показываем/скрываем кнопки в зависимости от позиции прокрутки
-  function updateScrollButtons() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight;
-    const clientHeight = document.documentElement.clientHeight;
-    const scrollBottom = scrollHeight - scrollTop - clientHeight;
-    
-    // Показываем кнопку "Вверх" если прокрутили вниз больше 300px
-    if (scrollTop > 300) {
-      scrollToTop.style.opacity = '1';
-      scrollToTop.style.transform = 'scale(1)';
-      scrollToTop.style.pointerEvents = 'auto';
-    } else {
-      scrollToTop.style.opacity = '0';
-      scrollToTop.style.transform = 'scale(0.8)';
-      scrollToTop.style.pointerEvents = 'none';
+  // Рендерим иконки когда открываются настройки
+  const observer = new MutationObserver(() => {
+    const isOpen = document.getElementById('view-settings').classList.contains('active');
+    if (isOpen && window.lucide) {
+      lucide.createIcons();
     }
-    
-    // Показываем кнопку "Вниз" если есть куда прокручивать (больше 300px до конца)
-    if (scrollBottom > 300) {
-      scrollToBottom.style.opacity = '1';
-      scrollToBottom.style.transform = 'scale(1)';
-      scrollToBottom.style.pointerEvents = 'auto';
-    } else {
-      scrollToBottom.style.opacity = '0';
-      scrollToBottom.style.transform = 'scale(0.8)';
-      scrollToBottom.style.pointerEvents = 'none';
-    }
-  }
-  
-  // Слушаем скролл
-  let scrollTimeout;
-  window.addEventListener('scroll', () => {
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(updateScrollButtons, 10);
   });
   
-  // Первоначальная проверка
-  updateScrollButtons();
-  
-  // Рендерим иконки
-  if (window.lucide) lucide.createIcons();
+  observer.observe(document.getElementById('view-settings'), { 
+    attributes: true, 
+    attributeFilter: ['class'] 
+  });
 })();
 </script>
 
