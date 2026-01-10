@@ -3531,32 +3531,21 @@ updatePercentLabels: () => {
         hour12: false
       }).format(deadline);
       
-      // Вычисляем цены
-      const discount = bonusPrice - bonusDiscountPrice; // Скидка
-      const oldTotal = State.finalTotal + discount; // Старая цена (без скидки)
-      const newTotal = State.finalTotal; // Новая цена (со скидкой)
-      
       // Определяем текст новой цены бонуса
       const newPriceText = bonusDiscountPrice === 0 
         ? 'БЕСПЛАТНО! 🎁' 
-        : `${Utils.formatPrice(bonusDiscountPrice)} ₽ 🔥`;
+        : `${Utils.formatPrice(bonusDiscountPrice)} ₽`;
       
+      // КРАСИВЫЙ КОМПАКТНЫЙ БЛОК АКЦИИ
       text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-      text += `💰 ЦЕНА\n`;
-      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-      text += `Обычная цена: ~~${Utils.formatPrice(oldTotal)} ₽~~\n`;
-      text += `🔥 ЦЕНА СО СКИДКОЙ: ${Utils.formatPrice(newTotal)} ₽\n`;
-      text += `Экономия: ${Utils.formatPrice(discount)} ₽ 🎁\n\n`;
-      
-      text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-      text += `🔥 СГОРАЮЩИЙ БОНУС!\n`;
+      text += `🔥 АКЦИЯ — УСПЕЙ ЗАБРОНИРОВАТЬ!\n`;
       text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
       text += `${bonusTitle}\n`;
-      text += `Стоимость: ~~${Utils.formatPrice(bonusPrice)} ₽~~ → ${newPriceText}\n\n`;
-      text += `⏰ УСПЕЙ ЗАБРОНИРОВАТЬ!\n`;
-      text += `Акция действует до: ${deadlineDate} ${deadlineTime}\n`;
-      text += `(осталось ${hours} ч.)\n\n`;
-      text += `💎 Забронируй дату СЕЙЧАС и получи бонус в подарок!\n`;
+      text += `Обычная цена: ~~${Utils.formatPrice(bonusPrice)} ₽~~\n`;
+      text += `Цена по акции: ${newPriceText}\n\n`;
+      text += `⏰ Акция действует до: ${deadlineDate} ${deadlineTime}\n`;
+      text += `   (осталось ${hours} ч.)\n\n`;
+      text += `💎 Забронируй дату СЕЙЧАС — получи бонус в подарок!\n`;
       text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     }
 
@@ -3872,32 +3861,21 @@ updatePercentLabels: () => {
         hour12: false
       }).format(deadline);
       
-      // Вычисляем цены
-      const discount = bonusPrice - bonusDiscountPrice; // Скидка
-      const oldTotal = State.finalTotal + discount; // Старая цена (без скидки)
-      const newTotal = State.finalTotal; // Новая цена (со скидкой)
-      
       // Определяем текст новой цены бонуса
       const newPriceText = bonusDiscountPrice === 0 
         ? 'БЕСПЛАТНО! 🎁' 
-        : `${Utils.formatPrice(bonusDiscountPrice)} ₽ 🔥`;
+        : `${Utils.formatPrice(bonusDiscountPrice)} ₽`;
       
+      // КРАСИВЫЙ КОМПАКТНЫЙ БЛОК АКЦИИ
       text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-      text += `💰 ЦЕНА\n`;
-      text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-      text += `Обычная цена: ~~${Utils.formatPrice(oldTotal)} ₽~~\n`;
-      text += `🔥 ЦЕНА СО СКИДКОЙ: ${Utils.formatPrice(newTotal)} ₽\n`;
-      text += `Экономия: ${Utils.formatPrice(discount)} ₽ 🎁\n\n`;
-      
-      text += `━━━━━━━━━━━━━━━━━━━━━━\n`;
-      text += `🔥 СГОРАЮЩИЙ БОНУС!\n`;
+      text += `🔥 АКЦИЯ — УСПЕЙ ЗАБРОНИРОВАТЬ!\n`;
       text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
       text += `${bonusTitle}\n`;
-      text += `Стоимость: ~~${Utils.formatPrice(bonusPrice)} ₽~~ → ${newPriceText}\n\n`;
-      text += `⏰ УСПЕЙ ЗАБРОНИРОВАТЬ!\n`;
-      text += `Акция действует до: ${deadlineDate} ${deadlineTime}\n`;
-      text += `(осталось ${hours} ч.)\n\n`;
-      text += `💎 Забронируй дату СЕЙЧАС и получи бонус в подарок!\n`;
+      text += `Обычная цена: ~~${Utils.formatPrice(bonusPrice)} ₽~~\n`;
+      text += `Цена по акции: ${newPriceText}\n\n`;
+      text += `⏰ Акция действует до: ${deadlineDate} ${deadlineTime}\n`;
+      text += `   (осталось ${hours} ч.)\n\n`;
+      text += `💎 Забронируй дату СЕЙЧАС — получи бонус в подарок!\n`;
       text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     }
 
