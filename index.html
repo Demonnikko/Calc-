@@ -51,7 +51,7 @@
 
   <!-- Critical CSS для мгновенного рендера -->
   <style>
-body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,sans-serif}.hide{opacity:0;pointer-events:none}.mini-chip{display:inline-flex;align-items:center;justify-content:center;padding:0.22rem 0.5rem;border-radius:999px;font-size:0.72rem;font-weight:800;letter-spacing:0.02em;border:1px solid rgba(245,158,11,0.25);background:rgba(245,158,11,0.10);color:rgba(245,158,11,0.95);transition:transform .12s ease,background .12s ease,border-color .12s ease;cursor:pointer;user-select:none;white-space:nowrap;}.mini-chip:hover{transform:translateY(-1px);background:rgba(245,158,11,0.14);border-color:rgba(245,158,11,0.35);}.mini-chip:active{transform:translateY(0px) scale(.98);}.mini-chip--ghost{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.12);color:rgba(226,232,240,0.9);}
+body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,sans-serif;opacity:0;transition:opacity 0.8s ease-in-out;}.hide{opacity:0;pointer-events:none}.mini-chip{display:inline-flex;align-items:center;justify-content:center;padding:0.22rem 0.5rem;border-radius:999px;font-size:0.72rem;font-weight:800;letter-spacing:0.02em;border:1px solid rgba(245,158,11,0.25);background:rgba(245,158,11,0.10);color:rgba(245,158,11,0.95);transition:transform .12s ease,background .12s ease,border-color .12s ease;cursor:pointer;user-select:none;white-space:nowrap;}.mini-chip:hover{transform:translateY(-1px);background:rgba(245,158,11,0.14);border-color:rgba(245,158,11,0.35);}.mini-chip:active{transform:translateY(0px) scale(.98);}.mini-chip--ghost{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.12);color:rgba(226,232,240,0.9);}
 </style>
 
   <!-- Styles -->
@@ -69,12 +69,81 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
 }
 </style>
 
+<style>
+/* ========== SCROLL NAVIGATION BUTTONS ========== */
+.scroll-nav-buttons{
+  position:fixed;
+  right:16px;
+  bottom:calc(80px + env(safe-area-inset-bottom));
+  z-index:50;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.3s ease, transform 0.3s ease;
+  transform:translateX(80px);
+}
+.scroll-nav-buttons.visible{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateX(0);
+}
+.scroll-nav-btn{
+  width:48px;
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:16px;
+  background:rgba(245,158,11,0.12);
+  border:1.5px solid rgba(245,158,11,0.30);
+  color:rgba(245,158,11,0.95);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  box-shadow:0 4px 16px rgba(0,0,0,0.3),0 0 0 1px rgba(255,255,255,0.05) inset;
+  cursor:pointer;
+  transition:all 0.2s ease;
+  -webkit-tap-highlight-color:transparent;
+  flex-shrink:0;
+}
+.scroll-nav-btn:hover{
+  background:rgba(245,158,11,0.20);
+  border-color:rgba(245,158,11,0.45);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(245,158,11,0.25),0 0 0 1px rgba(255,255,255,0.08) inset;
+}
+.scroll-nav-btn:active{
+  transform:translateY(0) scale(0.95);
+}
+@media (max-width:768px){
+  .scroll-nav-buttons{
+    right:12px;
+    bottom:calc(70px + env(safe-area-inset-bottom));
+  }
+  .scroll-nav-btn{
+    width:44px;
+    height:44px;
+  }
+}
+@media (max-width:480px){
+  .scroll-nav-buttons{
+    right:8px;
+    bottom:calc(60px + env(safe-area-inset-bottom));
+  }
+  .scroll-nav-btn{
+    width:42px;
+    height:42px;
+  }
+}
+</style>
+
 </head>
 
 <body class="min-h-screen">
 
 <!-- СТАБИЛЬНАЯ ЗАСТАВКА (НЕ ПРЫГАЕТ В PWA) -->
-<div id="simple-splash" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#050507;display:flex;align-items:center;justify-content:center;z-index:999999;margin:0;padding:0;overflow:hidden;">
+<div id="simple-splash" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#050507;display:flex;align-items:center;justify-content:center;z-index:999999;margin:0;padding:0;overflow:hidden;opacity:0;transition:opacity 0.8s ease-in-out;">
   <div style="text-align:center;max-width:90%;">
     <div style="width:120px;height:120px;margin:0 auto 24px;background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(251,191,36,0.08));border:2px solid rgba(245,158,11,0.3);border-radius:28px;display:flex;align-items:center;justify-content:center;animation:pulse 2s ease-in-out infinite;box-shadow:0 20px 60px rgba(245,158,11,0.2),0 0 0 1px rgba(255,255,255,0.05) inset;">
       <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -126,6 +195,16 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
         <div id="toast-msg" class="text-base text-slate-200 font-semibold"></div>
       </div>
     </div>
+  </div>
+
+  <!-- ========== SCROLL NAVIGATION BUTTONS ========== -->
+  <div id="scroll-buttons" class="scroll-nav-buttons">
+    <button id="scroll-to-top" class="scroll-nav-btn scroll-nav-btn-top" aria-label="Прокрутить вверх" title="Наверх">
+      <i data-lucide="chevron-up" class="w-5 h-5"></i>
+    </button>
+    <button id="scroll-to-bottom" class="scroll-nav-btn scroll-nav-btn-bottom" aria-label="Прокрутить вниз" title="Вниз">
+      <i data-lucide="chevron-down" class="w-5 h-5"></i>
+    </button>
   </div>
 
   <!-- ========== HEADER ========== -->
@@ -728,22 +807,29 @@ body{margin:0;padding:0;background:#050507;font-family:system-ui,-apple-system,s
   // ЗАПУСК ПОСЛЕ ЗАГРУЗКИ СТРАНИЦЫ
   // ============================================
   window.addEventListener('load', function() {
+    // Плавно показываем заставку
+    var s=document.getElementById('simple-splash');
+    if(s){
+      // Сначала плавно появляется заставка
+      requestAnimationFrame(function(){
+        s.style.opacity='1';
+      });
 
-    // Показываем заставку 2.5 сек
-    setTimeout(function(){
-      var s=document.getElementById('simple-splash');
-      if(s){
+      // Держим заставку 2.5 сек, потом плавно скрываем
+      setTimeout(function(){
         s.style.opacity='0';
-        s.style.transition='opacity 0.8s';
 
         setTimeout(function(){
           s.remove();
 
+          // Плавно показываем основное содержимое
+          document.body.style.opacity='1';
+
           // Вызываем проверку лицензии
           checkLicense();
         }, 800);
-      }
-    }, 2500);
+      }, 2500);
+    }
   });
 })();
 
@@ -3966,6 +4052,73 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+// ============================================
+// SCROLL NAVIGATION BUTTONS
+// ============================================
+(function() {
+  const scrollButtons = document.getElementById('scroll-buttons');
+  const scrollToTopBtn = document.getElementById('scroll-to-top');
+  const scrollToBottomBtn = document.getElementById('scroll-to-bottom');
+
+  if (!scrollButtons || !scrollToTopBtn || !scrollToBottomBtn) return;
+
+  // Показываем/скрываем кнопки в зависимости от позиции скролла
+  let scrollTimeout;
+  function updateScrollButtons() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = window.innerHeight;
+    const scrollBottom = scrollHeight - scrollTop - clientHeight;
+
+    // Показываем кнопки если пользователь прокрутил более 300px
+    if (scrollTop > 300 || scrollBottom > 300) {
+      scrollButtons.classList.add('visible');
+    } else {
+      scrollButtons.classList.remove('visible');
+    }
+
+    // Скрываем кнопки после остановки скролла
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      // Оставляем видимыми если далеко от краев
+      if (scrollTop > 300 && scrollBottom > 300) {
+        scrollButtons.classList.add('visible');
+      }
+    }, 150);
+  }
+
+  // Плавная прокрутка вверх
+  scrollToTopBtn.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+
+  // Плавная прокрутка вниз
+  scrollToBottomBtn.addEventListener('click', () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth'
+    });
+  });
+
+  // Отслеживаем скролл
+  window.addEventListener('scroll', updateScrollButtons, { passive: true });
+
+  // Инициализируем иконки lucide для кнопок скролла
+  if (window.lucide) {
+    const initIcons = () => {
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    };
+    // Пробуем сразу
+    initIcons();
+    // И через небольшую задержку на случай если lucide еще загружается
+    setTimeout(initIcons, 100);
+  }
+})();
 
 
 /* === Inlined from admin.js === */
@@ -5831,9 +5984,17 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       container.appendChild(card);
+
+      // Инициализируем иконки для этой карточки
+      if (window.lucide) {
+        lucide.createIcons({ nameAttr: 'data-lucide', attrs: {} });
+      }
     });
 
-    if (window.lucide) lucide.createIcons();
+    // Дополнительная инициализация для всего контейнера
+    if (window.lucide) {
+      setTimeout(() => lucide.createIcons(), 50);
+    }
   }
 
   // КНОПКА СОЗДАНИЯ ШАБЛОНА
