@@ -6882,25 +6882,52 @@ window.PremiumDialog = (() => {
   const DEMO_MODE = false;  // ✅ PRODUCTION - нормальная работа
   
   // ============================================
+  // УНИКАЛЬНЫЙ СЕКРЕТ ПРИЛОЖЕНИЯ
+  // ============================================
+  // Этот секрет уникален для каждой копии приложения
+  // Он генерируется при продаже и связывается с ключом активации
+  const APP_SECRET = '__UNIQUE_SECRET__';
+  const BUYER_NAME = '__BUYER_NAME__';
+  const GENERATION_DATE = '__GENERATION_DATE__';
+  
+  // ============================================
   // INSTALLATION ID - генерируется 1 раз при установке
   // ============================================
+  
+  // УНИКАЛЬНЫЙ ID ФАЙЛА - меняется при каждой покупке
+  const APP_INSTANCE_ID = 'APP-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+  
   function getInstallationId() {
-    // Проверяем есть ли уже сохранённый Installation ID
-    let installId = localStorage.getItem('illusionist_install_id');
+    // ИСПОЛЬЗУЕМ КОМБИНАЦИЮ:
+    // 1. Уникальный ID этого файла (меняется при каждой продаже)
+    // 2. Уникальный ID установки на устройстве
+    
+    const storageKey = 'illusionist_install_' + APP_INSTANCE_ID;
+    let installId = localStorage.getItem(storageKey);
     
     if (!installId) {
       // Генерируем НОВЫЙ уникальный ID для этой установки
       const timestamp = Date.now();
       const random = Math.random().toString(36).substring(2, 15);
       const random2 = Math.random().toString(36).substring(2, 15);
+      const random3 = Math.random().toString(36).substring(2, 15);
+      
+      // Добавляем много случайности
+      const entropy = performance.now().toString() + Math.random() + Math.random() + Math.random();
+      let entropyHash = 0;
+      for (let i = 0; i < entropy.length; i++) {
+        entropyHash = ((entropyHash << 5) - entropyHash) + entropy.charCodeAt(i);
+        entropyHash = entropyHash & entropyHash;
+      }
       
       installId = 'INST-' + timestamp.toString(36).toUpperCase() + '-' + 
-                  (random + random2).toUpperCase().substring(0, 12);
+                  (random + random2 + random3 + Math.abs(entropyHash).toString(36)).toUpperCase().substring(0, 20);
       
-      // Сохраняем навсегда
-      localStorage.setItem('illusionist_install_id', installId);
+      // Сохраняем с уникальным ключом для этого экземпляра приложения
+      localStorage.setItem(storageKey, installId);
       
       console.log('🆕 NEW Installation ID created:', installId);
+      console.log('🔑 Storage key:', storageKey);
     } else {
       console.log('✅ Existing Installation ID:', installId);
     }
@@ -6909,14 +6936,14 @@ window.PremiumDialog = (() => {
   }
   
   // ============================================
-  // УНИКАЛЬНЫЙ FINGERPRINT = Device ID + Installation ID
+  // УНИКАЛЬНЫЙ FINGERPRINT = Device ID + Installation ID + APP Instance
   // ============================================
   function getUniqueFingerprint() {
     const deviceId = getDeviceId();
     const installId = getInstallationId();
     
-    // Комбинируем оба ID для максимальной уникальности
-    const combined = deviceId + '::' + installId;
+    // Комбинируем ВСЕ ID для максимальной уникальности
+    const combined = deviceId + '::' + installId + '::' + APP_INSTANCE_ID;
     
     console.log('🔐 Unique Fingerprint:', combined);
     return combined;
@@ -6925,6 +6952,12 @@ window.PremiumDialog = (() => {
   function checkActivation() {
     // Если DEMO MODE - всегда возвращаем false (нет лицензии)
     if (DEMO_MODE) {
+      return false;
+    }
+    
+    // ПРОВЕРЯЕМ что это не шаблон
+    if (APP_SECRET === '__UNIQUE_SECRET__') {
+      console.log('⚠️ This is a template copy - activation required');
       return false;
     }
 
@@ -6936,6 +6969,13 @@ window.PremiumDialog = (() => {
 
         if (!validateLicense(data.key)) {
           console.log('❌ License validation failed');
+          return false;
+        }
+        
+        // КРИТИЧЕСКАЯ ПРОВЕРКА: Секрет приложения должен совпадать!
+        if (data.secret !== APP_SECRET) {
+          console.log('❌ APP SECRET mismatch!');
+          console.log('   This license is for a different app copy!');
           return false;
         }
 
@@ -6958,6 +6998,7 @@ window.PremiumDialog = (() => {
         }
 
         console.log('✅ License valid!');
+        console.log('🎭 Licensed to:', data.buyer);
         return true;
       } catch (e) {
         console.log('❌ Error checking activation:', e);
@@ -6974,15 +7015,25 @@ window.PremiumDialog = (() => {
     if (!validateLicense(key)) {
       return { success: false, error: 'Неверный формат ключа' };
     }
+    
+    // ПРОВЕРЯЕМ что это не шаблон (приложение должно быть сгенерировано)
+    if (APP_SECRET === '__UNIQUE_SECRET__') {
+      return { 
+        success: false, 
+        error: 'Ошибка: Это базовая копия приложения. Получите уникальную копию от продавца!' 
+      };
+    }
 
     // Генерируем уникальный Fingerprint для ЭТОГО устройства и ЭТОЙ установки
     const fingerprint = getUniqueFingerprint();
     
     const data = {
       key: key,
-      fingerprint: fingerprint,  // Теперь используем комбинированный fingerprint
+      secret: APP_SECRET,         // Сохраняем секрет приложения
+      fingerprint: fingerprint,   // Комбинированный fingerprint
       device: getDeviceId(),      // Оставляем для совместимости
-      install: getInstallationId(), // Добавляем Installation ID отдельно
+      install: getInstallationId(), // Installation ID
+      buyer: BUYER_NAME,          // Имя покупателя
       activated: new Date().toISOString()
     };
 
@@ -6991,6 +7042,7 @@ window.PremiumDialog = (() => {
     
     console.log('✅ License activated!');
     console.log('🔐 Fingerprint:', fingerprint);
+    console.log('🎭 Buyer:', BUYER_NAME);
 
     return { success: true };
   }
