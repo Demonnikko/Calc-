@@ -89,6 +89,56 @@ main{padding-left:max(20px,env(safe-area-inset-left)) !important;padding-right:m
 }
 </style>
 
+<!-- ============================================
+     FIREBASE SDK
+     ============================================ -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+// ============================================
+// FIREBASE CONFIGURATION
+// ============================================
+// ⚠️ ВАЖНО! ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ НА СВОИ ИЗ FIREBASE CONSOLE!
+// 
+// Инструкция:
+// 1. Зайдите на https://console.firebase.google.com
+// 2. Создайте новый проект или выберите существующий
+// 3. Перейдите в Project Settings (⚙️ иконка)
+// 4. Прокрутите вниз до "Your apps" → выберите Web app
+// 5. Скопируйте firebaseConfig и замените значения ниже
+
+const FIREBASE_CONFIG = {
+  apiKey: "YOUR_API_KEY_HERE",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// Глобальная переменная для Firebase
+window.firebaseDB = null;
+window.firebaseEnabled = false;
+
+// Инициализация Firebase
+try {
+  if (FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY_HERE") {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    window.firebaseDB = firebase.database();
+    window.firebaseEnabled = true;
+    console.log("✅ Firebase инициализирован успешно!");
+  } else {
+    console.warn("⚠️ Firebase не настроен. Приложение работает в локальном режиме.");
+    console.warn("📖 Смотрите инструкцию по настройке Firebase в документации.");
+  }
+} catch (error) {
+  console.error("❌ Ошибка инициализации Firebase:", error);
+  window.firebaseEnabled = false;
+}
+</script>
+
 </head>
 
 <body class="min-h-screen">
@@ -779,7 +829,7 @@ main{padding-left:max(20px,env(safe-area-inset-left)) !important;padding-right:m
 
 (function(){
 
-  function checkLicense(){
+  async function checkLicense(){
 
     // Проверяем лицензию (функция checkActivation должна быть определена к этому моменту)
     var hasLic = false;
@@ -787,8 +837,9 @@ main{padding-left:max(20px,env(safe-area-inset-left)) !important;padding-right:m
       if(typeof checkActivation !== 'function') {
         return;
       }
-      hasLic = checkActivation();
+      hasLic = await checkActivation();
     } catch(e) {
+      console.error('License check error:', e);
       hasLic = false;
     }
 
@@ -804,6 +855,7 @@ main{padding-left:max(20px,env(safe-area-inset-left)) !important;padding-right:m
         }
         showLicensePrompt(hasLic==='expired'?'expired':'first');
       } catch(e) {
+        console.error('Show prompt error:', e);
       }
     }
   }
@@ -878,9 +930,9 @@ main{padding-left:max(20px,env(safe-area-inset-left)) !important;padding-right:m
         s.style.opacity = '0';
         s.style.transition = 'opacity 0.8s ease-out';
         
-        setTimeout(function(){
+        setTimeout(async function(){
           s.remove();
-          checkLicense();
+          await checkLicense();
         }, 800);
       }
     }, 2500);
@@ -4353,7 +4405,7 @@ updatePercentLabels: () => {
     });
   },
 
-  updateLicenseStatus: () => {
+  updateLicenseStatus: async () => {
     const statusBadge = document.getElementById('license-status-badge');
     const keyDisplay = document.getElementById('license-key-display');
 
@@ -4367,7 +4419,7 @@ updatePercentLabels: () => {
         return;
       }
 
-      const status = checkActivation();
+      const status = await checkActivation();
 
       if (status === true) {
         // Активирована
@@ -6775,68 +6827,17 @@ window.PremiumDialog = (() => {
 
   // Функция генерации хеша устройства
   function getDeviceId() {
-    // Генерируем уникальный ID устройства с использованием множества параметров
     const nav = navigator;
     const screen = window.screen;
-    
-    // БАЗОВЫЕ ПАРАМЕТРЫ
+
     const components = [
       nav.userAgent,
       nav.language,
-      nav.languages ? nav.languages.join(',') : '',
-      nav.platform,
-      nav.hardwareConcurrency || '',
-      nav.deviceMemory || '',
-      nav.maxTouchPoints || '',
       screen.colorDepth,
-      screen.pixelDepth || '',
       screen.width + 'x' + screen.height,
-      screen.availWidth + 'x' + screen.availHeight,
       new Date().getTimezoneOffset(),
-      Intl.DateTimeFormat().resolvedOptions().timeZone || ''
     ];
-    
-    // CANVAS FINGERPRINT - уникален для каждого устройства
-    try {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = 200;
-      canvas.height = 50;
-      
-      // Рисуем текст с разными стилями
-      ctx.textBaseline = 'top';
-      ctx.font = '14px "Arial"';
-      ctx.textBaseline = 'alphabetic';
-      ctx.fillStyle = '#f60';
-      ctx.fillRect(125, 1, 62, 20);
-      ctx.fillStyle = '#069';
-      ctx.fillText('Device ID 🎭', 2, 15);
-      ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
-      ctx.fillText('Device ID 🎭', 4, 17);
-      
-      // Получаем уникальный хеш canvas
-      const canvasData = canvas.toDataURL();
-      components.push(canvasData.substring(0, 100)); // Первые 100 символов достаточно
-    } catch (e) {
-      components.push('no-canvas');
-    }
-    
-    // WEBGL FINGERPRINT - ещё более уникален
-    try {
-      const canvas = document.createElement('canvas');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      if (gl) {
-        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-        if (debugInfo) {
-          components.push(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
-          components.push(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
-        }
-      }
-    } catch (e) {
-      components.push('no-webgl');
-    }
-    
-    // ГЕНЕРИРУЕМ СТАБИЛЬНЫЙ ХЕШ
+
     let hash = 0;
     const str = components.join('|');
     for (let i = 0; i < str.length; i++) {
@@ -6844,14 +6845,25 @@ window.PremiumDialog = (() => {
       hash = ((hash << 5) - hash) + char;
       hash = hash & hash;
     }
+
+    return 'DEV-' + Math.abs(hash).toString(36).toUpperCase();
+  }
+
+  // Функция получения Installation ID
+  function getInstallationId() {
+    const storageKey = 'illusionist_install_id';
+    let installId = localStorage.getItem(storageKey);
     
-    // Преобразуем в base36 и добавляем префикс для читаемости
-    const deviceId = 'DEV-' + Math.abs(hash).toString(36).toUpperCase();
+    if (!installId) {
+      // Генерируем новый Installation ID
+      const timestamp = Date.now().toString(36);
+      const random = Math.random().toString(36).substring(2, 14);
+      installId = 'INST-' + (timestamp + random).toUpperCase();
+      localStorage.setItem(storageKey, installId);
+      console.log('🆕 Generated new Installation ID:', installId);
+    }
     
-    console.log('🔐 Device ID generated:', deviceId);
-    console.log('📱 Components:', components.length, 'parameters used');
-    
-    return deviceId;
+    return installId;
   }
 
   // Функция проверки лицензионного ключа
@@ -6880,84 +6892,13 @@ window.PremiumDialog = (() => {
   // Установите true чтобы ВСЕГДА показывать экран активации
   // Установите false для нормальной работы (production)
   const DEMO_MODE = false;  // ✅ PRODUCTION - нормальная работа
-  
-  // ============================================
-  // УНИКАЛЬНЫЙ СЕКРЕТ ПРИЛОЖЕНИЯ
-  // ============================================
-  // Этот секрет уникален для каждой копии приложения
-  // Он генерируется при продаже и связывается с ключом активации
-  const APP_SECRET = '__UNIQUE_SECRET__';
-  const BUYER_NAME = '__BUYER_NAME__';
-  const GENERATION_DATE = '__GENERATION_DATE__';
-  
-  // ============================================
-  // INSTALLATION ID - генерируется 1 раз при установке
-  // ============================================
-  
-  // УНИКАЛЬНЫЙ ID ФАЙЛА - меняется при каждой покупке
-  const APP_INSTANCE_ID = 'APP-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-  
-  function getInstallationId() {
-    // ИСПОЛЬЗУЕМ КОМБИНАЦИЮ:
-    // 1. Уникальный ID этого файла (меняется при каждой продаже)
-    // 2. Уникальный ID установки на устройстве
-    
-    const storageKey = 'illusionist_install_' + APP_INSTANCE_ID;
-    let installId = localStorage.getItem(storageKey);
-    
-    if (!installId) {
-      // Генерируем НОВЫЙ уникальный ID для этой установки
-      const timestamp = Date.now();
-      const random = Math.random().toString(36).substring(2, 15);
-      const random2 = Math.random().toString(36).substring(2, 15);
-      const random3 = Math.random().toString(36).substring(2, 15);
-      
-      // Добавляем много случайности
-      const entropy = performance.now().toString() + Math.random() + Math.random() + Math.random();
-      let entropyHash = 0;
-      for (let i = 0; i < entropy.length; i++) {
-        entropyHash = ((entropyHash << 5) - entropyHash) + entropy.charCodeAt(i);
-        entropyHash = entropyHash & entropyHash;
-      }
-      
-      installId = 'INST-' + timestamp.toString(36).toUpperCase() + '-' + 
-                  (random + random2 + random3 + Math.abs(entropyHash).toString(36)).toUpperCase().substring(0, 20);
-      
-      // Сохраняем с уникальным ключом для этого экземпляра приложения
-      localStorage.setItem(storageKey, installId);
-      
-      console.log('🆕 NEW Installation ID created:', installId);
-      console.log('🔑 Storage key:', storageKey);
-    } else {
-      console.log('✅ Existing Installation ID:', installId);
-    }
-    
-    return installId;
-  }
-  
-  // ============================================
-  // УНИКАЛЬНЫЙ FINGERPRINT = Device ID + Installation ID + APP Instance
-  // ============================================
-  function getUniqueFingerprint() {
-    const deviceId = getDeviceId();
-    const installId = getInstallationId();
-    
-    // Комбинируем ВСЕ ID для максимальной уникальности
-    const combined = deviceId + '::' + installId + '::' + APP_INSTANCE_ID;
-    
-    console.log('🔐 Unique Fingerprint:', combined);
-    return combined;
-  }
 
-  function checkActivation() {
+  // ============================================
+  // ПРОВЕРКА АКТИВАЦИИ (с Firebase)
+  // ============================================
+  async function checkActivation() {
     // Если DEMO MODE - всегда возвращаем false (нет лицензии)
     if (DEMO_MODE) {
-      return false;
-    }
-    
-    // ПРОВЕРЯЕМ что это не шаблон
-    if (APP_SECRET === '__UNIQUE_SECRET__') {
-      console.log('⚠️ This is a template copy - activation required');
       return false;
     }
 
@@ -6968,23 +6909,59 @@ window.PremiumDialog = (() => {
         const data = JSON.parse(atob(stored));
 
         if (!validateLicense(data.key)) {
-          console.log('❌ License validation failed');
-          return false;
-        }
-        
-        // КРИТИЧЕСКАЯ ПРОВЕРКА: Секрет приложения должен совпадать!
-        if (data.secret !== APP_SECRET) {
-          console.log('❌ APP SECRET mismatch!');
-          console.log('   This license is for a different app copy!');
+          console.log('❌ Invalid license format');
           return false;
         }
 
-        // ПРОВЕРЯЕМ УНИКАЛЬНЫЙ FINGERPRINT (Device + Installation)
-        const currentFingerprint = getUniqueFingerprint();
-        if (data.fingerprint !== currentFingerprint) {
-          console.log('❌ Fingerprint mismatch!');
-          console.log('   Stored:', data.fingerprint);
-          console.log('   Current:', currentFingerprint);
+        // ОНЛАЙН ПРОВЕРКА через Firebase (если настроен)
+        if (window.firebaseEnabled && window.firebaseDB) {
+          try {
+            const keyRef = window.firebaseDB.ref('licenses/' + data.key.replace(/[\.#$\[\]]/g, '-'));
+            const snapshot = await keyRef.once('value');
+            const firebaseData = snapshot.val();
+            
+            if (!firebaseData) {
+              console.log('❌ License key not found in database');
+              return false;
+            }
+            
+            if (!firebaseData.activated) {
+              console.log('⚠️ License not activated yet');
+              return false;
+            }
+            
+            // Проверяем что это тот же Device ID
+            const currentDevice = getDeviceId();
+            if (firebaseData.deviceId !== currentDevice) {
+              console.log('❌ Device ID mismatch');
+              console.log('   Stored:', firebaseData.deviceId);
+              console.log('   Current:', currentDevice);
+              return false;
+            }
+            
+            // Проверяем срок действия
+            const activated = new Date(firebaseData.activatedDate);
+            const now = new Date();
+            const daysDiff = (now - activated) / (1000 * 60 * 60 * 24);
+            
+            if (daysDiff > 365) {
+              console.log('⏰ License expired');
+              return 'expired';
+            }
+            
+            console.log('✅ License valid (Firebase)');
+            return true;
+            
+          } catch (firebaseError) {
+            console.error('⚠️ Firebase check failed, falling back to local:', firebaseError);
+            // Если Firebase недоступен, проверяем локально
+          }
+        }
+        
+        // ЛОКАЛЬНАЯ ПРОВЕРКА (если Firebase отключен или недоступен)
+        const currentDevice = getDeviceId();
+        if (data.device !== currentDevice) {
+          console.log('❌ Device ID mismatch (local)');
           return false;
         }
 
@@ -6993,15 +6970,14 @@ window.PremiumDialog = (() => {
         const daysDiff = (now - activated) / (1000 * 60 * 60 * 24);
 
         if (daysDiff > 365) {
-          console.log('⏰ License expired');
+          console.log('⏰ License expired (local)');
           return 'expired';
         }
 
-        console.log('✅ License valid!');
-        console.log('🎭 Licensed to:', data.buyer);
+        console.log('✅ License valid (local)');
         return true;
       } catch (e) {
-        console.log('❌ Error checking activation:', e);
+        console.error('❌ Error checking activation:', e);
         return false;
       }
     }
@@ -7010,40 +6986,80 @@ window.PremiumDialog = (() => {
     return false;
   }
 
-  // Активация лицензии
-  function activateLicense(key) {
+  // ============================================
+  // АКТИВАЦИЯ ЛИЦЕНЗИИ (с Firebase)
+  // ============================================
+  async function activateLicense(key) {
     if (!validateLicense(key)) {
       return { success: false, error: 'Неверный формат ключа' };
     }
-    
-    // ПРОВЕРЯЕМ что это не шаблон (приложение должно быть сгенерировано)
-    if (APP_SECRET === '__UNIQUE_SECRET__') {
-      return { 
-        success: false, 
-        error: 'Ошибка: Это базовая копия приложения. Получите уникальную копию от продавца!' 
-      };
-    }
 
-    // Генерируем уникальный Fingerprint для ЭТОГО устройства и ЭТОЙ установки
-    const fingerprint = getUniqueFingerprint();
+    const deviceId = getDeviceId();
+    const installId = getInstallationId();
     
+    // ОНЛАЙН АКТИВАЦИЯ через Firebase (если настроен)
+    if (window.firebaseEnabled && window.firebaseDB) {
+      try {
+        const keyRef = window.firebaseDB.ref('licenses/' + key.replace(/[\.#$\[\]]/g, '-'));
+        const snapshot = await keyRef.once('value');
+        const existingData = snapshot.val();
+        
+        if (!existingData) {
+          return { 
+            success: false, 
+            error: 'Ключ не найден в базе данных.\nПроверьте правильность ключа или обратитесь к продавцу.' 
+          };
+        }
+        
+        // Проверяем: ключ уже активирован?
+        if (existingData.activated) {
+          // Проверяем: это то же устройство?
+          if (existingData.deviceId === deviceId) {
+            // Переактивация на том же устройстве - OK
+            console.log('✅ Re-activation on same device');
+          } else {
+            // Попытка активации на другом устройстве!
+            return { 
+              success: false, 
+              error: 'Этот ключ уже активирован на другом устройстве!\n\nКаждый ключ работает только на одном устройстве.' 
+            };
+          }
+        }
+        
+        // Активируем ключ
+        await keyRef.update({
+          activated: true,
+          deviceId: deviceId,
+          installId: installId,
+          activatedDate: new Date().toISOString(),
+          lastCheck: new Date().toISOString()
+        });
+        
+        console.log('✅ License activated in Firebase');
+        
+      } catch (firebaseError) {
+        console.error('⚠️ Firebase activation failed:', firebaseError);
+        return { 
+          success: false, 
+          error: 'Ошибка подключения к серверу.\nПроверьте интернет-соединение.' 
+        };
+      }
+    } else {
+      console.warn('⚠️ Firebase not enabled, activating locally only');
+    }
+    
+    // ЛОКАЛЬНОЕ СОХРАНЕНИЕ
     const data = {
       key: key,
-      secret: APP_SECRET,         // Сохраняем секрет приложения
-      fingerprint: fingerprint,   // Комбинированный fingerprint
-      device: getDeviceId(),      // Оставляем для совместимости
-      install: getInstallationId(), // Installation ID
-      buyer: BUYER_NAME,          // Имя покупателя
+      device: deviceId,
+      install: installId,
       activated: new Date().toISOString()
     };
 
     const encoded = btoa(JSON.stringify(data));
     localStorage.setItem('illusionist_license', encoded);
-    
-    console.log('✅ License activated!');
-    console.log('🔐 Fingerprint:', fingerprint);
-    console.log('🎭 Buyer:', BUYER_NAME);
 
+    console.log('✅ License activated locally');
     return { success: true };
   }
 
@@ -7146,29 +7162,56 @@ window.PremiumDialog = (() => {
       min-height: 20px;
     `;
 
-    button.addEventListener('click', () => {
+    button.addEventListener('click', async () => {
       const key = input.value.trim();
-      const result = activateLicense(key);
+      
+      // Показываем загрузку
+      button.textContent = '⏳ Проверка...';
+      button.disabled = true;
+      input.disabled = true;
+      
+      try {
+        const result = await activateLicense(key);
 
-      if (result.success) {
-        // Плавно убираем окно активации
-        overlay.style.transition = 'opacity 0.5s';
-        overlay.style.opacity = '0';
+        if (result.success) {
+          // Успех!
+          button.textContent = '✅ Активировано!';
+          
+          // Плавно убираем окно активации
+          overlay.style.transition = 'opacity 0.5s';
+          overlay.style.opacity = '0';
 
-        setTimeout(function(){
-          document.body.removeChild(overlay);
+          setTimeout(function(){
+            document.body.removeChild(overlay);
 
-          // Показываем магическую анимацию
-          if(typeof window.showMagicAfterActivation === 'function'){
-            window.showMagicAfterActivation();
-          }
+            // Показываем магическую анимацию
+            if(typeof window.showMagicAfterActivation === 'function'){
+              window.showMagicAfterActivation();
+            }
 
-          // НЕ ПЕРЕЗАГРУЖАЕМ! Приложение уже работает!
-          // Магическая анимация сама скроется через 3 секунды
-        }, 500);
+            // НЕ ПЕРЕЗАГРУЖАЕМ! Приложение уже работает!
+            // Магическая анимация сама скроется через 3 секунды
+          }, 500);
 
-      } else {
-        error.textContent = result.error || 'Неверный ключ';
+        } else {
+          // Ошибка активации
+          button.textContent = '🔑 Активировать';
+          button.disabled = false;
+          input.disabled = false;
+          
+          error.textContent = result.error || 'Неверный ключ';
+          input.style.borderColor = '#ef4444';
+          setTimeout(() => {
+            input.style.borderColor = 'rgba(245,158,11,0.3)';
+          }, 2000);
+        }
+      } catch (err) {
+        // Обработка непредвиденных ошибок
+        console.error('Activation error:', err);
+        button.textContent = '🔑 Активировать';
+        button.disabled = false;
+        input.disabled = false;
+        error.textContent = 'Произошла ошибка. Попробуйте снова.';
         input.style.borderColor = '#ef4444';
         setTimeout(() => {
           input.style.borderColor = 'rgba(245,158,11,0.3)';
