@@ -6775,17 +6775,68 @@ window.PremiumDialog = (() => {
 
   // Функция генерации хеша устройства
   function getDeviceId() {
+    // Генерируем уникальный ID устройства с использованием множества параметров
     const nav = navigator;
     const screen = window.screen;
-
+    
+    // БАЗОВЫЕ ПАРАМЕТРЫ
     const components = [
       nav.userAgent,
       nav.language,
+      nav.languages ? nav.languages.join(',') : '',
+      nav.platform,
+      nav.hardwareConcurrency || '',
+      nav.deviceMemory || '',
+      nav.maxTouchPoints || '',
       screen.colorDepth,
+      screen.pixelDepth || '',
       screen.width + 'x' + screen.height,
+      screen.availWidth + 'x' + screen.availHeight,
       new Date().getTimezoneOffset(),
+      Intl.DateTimeFormat().resolvedOptions().timeZone || ''
     ];
-
+    
+    // CANVAS FINGERPRINT - уникален для каждого устройства
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 200;
+      canvas.height = 50;
+      
+      // Рисуем текст с разными стилями
+      ctx.textBaseline = 'top';
+      ctx.font = '14px "Arial"';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = '#f60';
+      ctx.fillRect(125, 1, 62, 20);
+      ctx.fillStyle = '#069';
+      ctx.fillText('Device ID 🎭', 2, 15);
+      ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+      ctx.fillText('Device ID 🎭', 4, 17);
+      
+      // Получаем уникальный хеш canvas
+      const canvasData = canvas.toDataURL();
+      components.push(canvasData.substring(0, 100)); // Первые 100 символов достаточно
+    } catch (e) {
+      components.push('no-canvas');
+    }
+    
+    // WEBGL FINGERPRINT - ещё более уникален
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (gl) {
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        if (debugInfo) {
+          components.push(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+          components.push(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+        }
+      }
+    } catch (e) {
+      components.push('no-webgl');
+    }
+    
+    // ГЕНЕРИРУЕМ СТАБИЛЬНЫЙ ХЕШ
     let hash = 0;
     const str = components.join('|');
     for (let i = 0; i < str.length; i++) {
@@ -6793,8 +6844,14 @@ window.PremiumDialog = (() => {
       hash = ((hash << 5) - hash) + char;
       hash = hash & hash;
     }
-
-    return Math.abs(hash).toString(36);
+    
+    // Преобразуем в base36 и добавляем префикс для читаемости
+    const deviceId = 'DEV-' + Math.abs(hash).toString(36).toUpperCase();
+    
+    console.log('🔐 Device ID generated:', deviceId);
+    console.log('📱 Components:', components.length, 'parameters used');
+    
+    return deviceId;
   }
 
   // Функция проверки лицензионного ключа
@@ -6823,6 +6880,47 @@ window.PremiumDialog = (() => {
   // Установите true чтобы ВСЕГДА показывать экран активации
   // Установите false для нормальной работы (production)
   const DEMO_MODE = false;  // ✅ PRODUCTION - нормальная работа
+  
+  // ============================================
+  // INSTALLATION ID - генерируется 1 раз при установке
+  // ============================================
+  function getInstallationId() {
+    // Проверяем есть ли уже сохранённый Installation ID
+    let installId = localStorage.getItem('illusionist_install_id');
+    
+    if (!installId) {
+      // Генерируем НОВЫЙ уникальный ID для этой установки
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(2, 15);
+      const random2 = Math.random().toString(36).substring(2, 15);
+      
+      installId = 'INST-' + timestamp.toString(36).toUpperCase() + '-' + 
+                  (random + random2).toUpperCase().substring(0, 12);
+      
+      // Сохраняем навсегда
+      localStorage.setItem('illusionist_install_id', installId);
+      
+      console.log('🆕 NEW Installation ID created:', installId);
+    } else {
+      console.log('✅ Existing Installation ID:', installId);
+    }
+    
+    return installId;
+  }
+  
+  // ============================================
+  // УНИКАЛЬНЫЙ FINGERPRINT = Device ID + Installation ID
+  // ============================================
+  function getUniqueFingerprint() {
+    const deviceId = getDeviceId();
+    const installId = getInstallationId();
+    
+    // Комбинируем оба ID для максимальной уникальности
+    const combined = deviceId + '::' + installId;
+    
+    console.log('🔐 Unique Fingerprint:', combined);
+    return combined;
+  }
 
   function checkActivation() {
     // Если DEMO MODE - всегда возвращаем false (нет лицензии)
@@ -6837,11 +6935,16 @@ window.PremiumDialog = (() => {
         const data = JSON.parse(atob(stored));
 
         if (!validateLicense(data.key)) {
+          console.log('❌ License validation failed');
           return false;
         }
 
-        const currentDevice = getDeviceId();
-        if (data.device !== currentDevice) {
+        // ПРОВЕРЯЕМ УНИКАЛЬНЫЙ FINGERPRINT (Device + Installation)
+        const currentFingerprint = getUniqueFingerprint();
+        if (data.fingerprint !== currentFingerprint) {
+          console.log('❌ Fingerprint mismatch!');
+          console.log('   Stored:', data.fingerprint);
+          console.log('   Current:', currentFingerprint);
           return false;
         }
 
@@ -6850,15 +6953,19 @@ window.PremiumDialog = (() => {
         const daysDiff = (now - activated) / (1000 * 60 * 60 * 24);
 
         if (daysDiff > 365) {
+          console.log('⏰ License expired');
           return 'expired';
         }
 
+        console.log('✅ License valid!');
         return true;
       } catch (e) {
+        console.log('❌ Error checking activation:', e);
         return false;
       }
     }
 
+    console.log('⚠️ No license found');
     return false;
   }
 
@@ -6868,15 +6975,22 @@ window.PremiumDialog = (() => {
       return { success: false, error: 'Неверный формат ключа' };
     }
 
-    const deviceId = getDeviceId();
+    // Генерируем уникальный Fingerprint для ЭТОГО устройства и ЭТОЙ установки
+    const fingerprint = getUniqueFingerprint();
+    
     const data = {
       key: key,
-      device: deviceId,
+      fingerprint: fingerprint,  // Теперь используем комбинированный fingerprint
+      device: getDeviceId(),      // Оставляем для совместимости
+      install: getInstallationId(), // Добавляем Installation ID отдельно
       activated: new Date().toISOString()
     };
 
     const encoded = btoa(JSON.stringify(data));
     localStorage.setItem('illusionist_license', encoded);
+    
+    console.log('✅ License activated!');
+    console.log('🔐 Fingerprint:', fingerprint);
 
     return { success: true };
   }
