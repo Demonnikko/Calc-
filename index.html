@@ -116,6 +116,21 @@ main{padding-left:max(20px,env(safe-area-inset-left)) !important;padding-right:m
   </div>
 </div>
 
+<!-- БЛОКИРОВКА ДЕСКТОПА - показывается только на ПК -->
+<div id="desktop-block" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#050507;z-index:999998;align-items:center;justify-content:center;padding:40px 20px;">
+  <div style="text-align:center;max-width:500px;">
+    <div style="width:120px;height:120px;margin:0 auto 32px;background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(251,191,36,0.08));border:2px solid rgba(245,158,11,0.3);border-radius:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 20px 60px rgba(245,158,11,0.2),0 0 0 1px rgba(255,255,255,0.05) inset;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+      </svg>
+    </div>
+    <h1 style="font-family:Georgia,'Palatino Linotype','Book Antiqua',Palatino,'Times New Roman',serif;font-size:32px;font-weight:700;background:linear-gradient(135deg,#f59e0b,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:0 0 16px 0;letter-spacing:2px;">📱 Только для смартфонов</h1>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:18px;color:#94a3b8;line-height:1.6;margin:0 0 24px 0;">Это приложение оптимизировано для мобильных устройств.</p>
+    <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:16px;color:#64748b;line-height:1.5;margin:0;">Откройте эту страницу на своём<br><strong style="color:#f59e0b;">iPhone или Android</strong> смартфоне.</p>
+  </div>
+</div>
+
 <!-- МАГИЧЕСКАЯ АНИМАЦИЯ -->
 <div id="magic-welcome" style="position:fixed;inset:0;background:rgba(10,10,15,0.95);display:none;align-items:center;justify-content:center;z-index:999998;opacity:0;">
   <div style="text-align:center;">
@@ -807,9 +822,55 @@ main{padding-left:max(20px,env(safe-area-inset-left)) !important;padding-right:m
   window.showMagicAfterActivation=showMagic;
 
   // ============================================
+  // ПРОВЕРКА УСТРОЙСТВА - БЛОКИРОВКА ДЕСКТОПА
+  // ============================================
+  function isMobileDevice() {
+    // Проверяем User Agent
+    const ua = navigator.userAgent.toLowerCase();
+    const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua);
+    
+    // Проверяем размер экрана (мобильные обычно < 768px)
+    const isSmallScreen = window.innerWidth <= 768;
+    
+    // Проверяем touch support
+    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    // Устройство считается мобильным если хотя бы 2 из 3 критериев выполнены
+    const mobileScore = [isMobile, isSmallScreen, hasTouch].filter(Boolean).length;
+    return mobileScore >= 2;
+  }
+  
+  function checkDevice() {
+    if (!isMobileDevice()) {
+      // Это десктоп - показываем блокировку
+      const desktopBlock = document.getElementById('desktop-block');
+      const splash = document.getElementById('simple-splash');
+      
+      if (desktopBlock) {
+        // Прячем заставку
+        if (splash) splash.style.display = 'none';
+        
+        // Показываем блокировку
+        desktopBlock.style.display = 'flex';
+        
+        // Блокируем весь остальной контент
+        document.body.style.overflow = 'hidden';
+        
+        return false; // Блокируем загрузку приложения
+      }
+    }
+    return true; // Разрешаем загрузку
+  }
+
+  // ============================================
   // ЗАПУСК ПОСЛЕ ЗАГРУЗКИ СТРАНИЦЫ
   // ============================================
   window.addEventListener('load', function() {
+    // ПЕРВЫМ ДЕЛОМ проверяем устройство
+    if (!checkDevice()) {
+      return; // Если десктоп - не загружаем приложение
+    }
+    
     // Системные шрифты загружаются мгновенно - просто показываем заставку 2.5 сек
     setTimeout(function(){
       var s = document.getElementById('simple-splash');
@@ -1099,65 +1160,29 @@ const Utils = {
 // ============================================
 const DEFAULT_DB = {
   version: DB_VERSION,
-  travel: {
-    "Ярославская область": {
-      fee: 3000,
-      cities: { "Ярославль": 0, "Ростов Великий": 1500 }
-    },
-    "Костромская область": {
-      fee: 5000,
-      cities: { "Кострома": 0 }
-    }
-  },
-  services: {
-    "Сцена": {
-      "Шоу Секрет (45 минут)": 35000,
-      "Шоу Секрет (60 минут)": 45000
-    },
-    "Микромагия": {
-      "Микромагия (30 минут)": 20000,
-      "Микромагия (60 минут)": 30000
-    },
-    "Детские шоу": {
-      "Индив. детское шоу (30 минут + мастер класс 1 час)": 25000,
-      "Детское шоу (60 минут)": 35000
-    }
-  },
-  holidays: {
-    "12-31": 2.0,
-    "01-01": 2.0
-  },
-  holidayRanges: [
-    { sm: 12, sd: 20, em: 12, ed: 30, k: 1.5 }
-  ],
-  bonuses: [
-    { threshold: 30000, text: "Мини-сувенир гостям" },
-    { threshold: 50000, text: "Фото/видео с фишкой шоу" },
-    { threshold: 70000, text: "Доп. интерактив / сюрприз эффект" }
-  ],
-  payments: [
-    { title: "Перевод", text: "СБП / карта: +7 (___) ___-__-__" }
-  ],
-  links: [
-    { label: "Портфолио", url: "https://example.com" }
-  ],
+  travel: {},  // Пусто - пользователь добавит свои регионы и города
+  services: {},  // Пусто - пользователь добавит свои услуги
+  holidays: {},  // Пусто - пользователь добавит свои праздники
+  holidayRanges: [],  // Пусто - пользователь добавит диапазоны праздников
+  bonuses: [],  // Пусто - пользователь добавит свои бонусы
+  payments: [],  // Пусто - пользователь добавит способы оплаты
+  links: [],  // Пусто - пользователь добавит свои ссылки
   kpBuffer: [],
-  packageTemplates: [],  // Шаблоны пакетов (Basic/Optimal/Premium)
+  packageTemplates: [],  // Пусто - пользователь создаст пакеты
   config: {
-    performer: "Illusionist",
-    deposit: 30,
-    cashlessPercent: 6,
-    agencyPercent: 15,
-    burnBonusTitle: "Появление Гендиректора",
-    burnBonusPrice: 15000,           // Старая цена (зачёркнутая)
-    burnBonusDiscountPrice: 0,       // Новая цена (0 = БЕСПЛАТНО, >0 = цена со скидкой)
-    burnHours: 48,
-    personalName: "",
-    enableBackgroundAnimation: false,  // Фоновая анимация отключена для экономии батареи
-    // СКИДКА ЗА ОБЪЁМ
-    bulkDiscountEnabled: true,         // Включить скидку за объём
-    bulkDiscountPercent: 10,           // Процент скидки (%)
-    bulkDiscountMinServices: 2         // Минимум услуг для скидки
+    performer: "",  // Пусто - пользователь введёт своё имя
+    deposit: 30,  // Стандартная предоплата 30%
+    cashlessPercent: 6,  // Стандартная комиссия банка 6%
+    agencyPercent: 15,  // Стандартная комиссия агентства 15%
+    burnBonusTitle: "",  // Пусто - пользователь настроит акцию
+    burnBonusPrice: 0,  // 0 - пользователь установит цену
+    burnBonusDiscountPrice: 0,  // 0 - пользователь установит цену со скидкой
+    burnHours: 48,  // Стандартное время акции 48 часов
+    personalName: "",  // Пусто
+    enableBackgroundAnimation: false,  // Отключено для экономии батареи
+    bulkDiscountEnabled: false,  // Выключено по умолчанию
+    bulkDiscountPercent: 10,  // 10% стандартная скидка
+    bulkDiscountMinServices: 2  // От 2 услуг
   }
 };
 
