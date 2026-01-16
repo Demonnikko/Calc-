@@ -361,6 +361,11 @@ try {
                   <input type="checkbox" id="inp-burn" class="accent-amber-500 w-5 h-5" />
                   <span id="lbl-burn">Предложение действует 48 часов</span>
                 </label>
+
+                <label class="flex items-center gap-3 text-sm text-slate-200 font-bold bg-white/5 px-4 py-2 rounded-2xl w-full cursor-pointer hover:bg-white/10 transition">
+                  <input type="checkbox" id="inp-show-links" class="accent-amber-500 w-5 h-5" checked />
+                  <span>Показывать ссылки в КП</span>
+                </label>
 </div>
             </div>
 
@@ -438,34 +443,6 @@ try {
               <div id="total-sum" class="text-3xl font-extrabold text-amber-400 mono">0 ₽</div>
             </div>
 
-            <!-- Rounding controls -->
-            <div id="rounding-controls" class="hidden mb-6">
-              <div class="flex items-center justify-between mb-3">
-                <div class="text-sm text-slate-400 font-bold">Округлить</div>
-                <div id="rounding-applied" class="hidden text-xs text-slate-400 font-bold flex items-center gap-2">
-                  <span>Разница:</span>
-                  <span id="rounding-diff" class="text-amber-400 mono">+0 ₽</span>
-                  <button id="btn-round-reset" class="rounding-btn-reset hidden" title="Сбросить">
-                    <i data-lucide="x" class="w-3 h-3"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div class="flex flex-wrap gap-2">
-                <button id="btn-round-down" class="rounding-btn">
-                  <i data-lucide="corner-down-left" class="w-4 h-4"></i>
-                  <span id="round-down-value">0</span>
-                </button>
-                <button id="btn-round-nearest" class="rounding-btn rounding-btn-main">
-                  <i data-lucide="target" class="w-4 h-4"></i>
-                  <span id="round-nearest-value">0</span>
-                </button>
-                <button id="btn-round-up" class="rounding-btn">
-                  <i data-lucide="corner-up-right" class="w-4 h-4"></i>
-                  <span id="round-up-value">0</span>
-                </button>
-              </div>
-            </div>
 
             <!-- Bonuses -->
             <div>
@@ -919,9 +896,9 @@ try {
   // ============================================
   window.addEventListener('load', function() {
     // ПЕРВЫМ ДЕЛОМ проверяем устройство
-    if (!checkDevice()) {
-      return; // Если десктоп - не загружаем приложение
-    }
+    // if (!checkDevice()) {
+    //   return; // Если десктоп - не загружаем приложение
+    // }
     
     // Системные шрифты загружаются мгновенно - просто показываем заставку 2.5 сек
     setTimeout(function(){
@@ -1008,33 +985,12 @@ const Utils = {
   // КРАСИВОЕ ОКРУГЛЕНИЕ (делает числа круглыми)
   prettyRound: (num) => {
     if (typeof num !== 'number' || isNaN(num)) return 0;
-    
-    // ВСЕГДА округляем В БОЛЬШУЮ СТОРОНУ сначала
-    const rounded = Math.ceil(num);
-    
-    // >= 10,000 → округляем до тысяч В БОЛЬШУЮ СТОРОНУ (14,100 → 15,000)
-    if (rounded >= 10000) {
-      return Math.ceil(rounded / 1000) * 1000;
-    }
-    
-    // >= 1,000 → округляем до сотен В БОЛЬШУЮ СТОРОНУ (1,420 → 1,500)
-    if (rounded >= 1000) {
-      return Math.ceil(rounded / 100) * 100;
-    }
-    
-    // >= 100 → округляем до десятков В БОЛЬШУЮ СТОРОНУ (342 → 350)
-    if (rounded >= 100) {
-      return Math.ceil(rounded / 10) * 10;
-    }
-    
-    // < 100 → оставляем как есть (47 → 47)
-    return rounded;
+    return Math.round(num * 100) / 100;
   },
 
   formatPrice: (num) => {
     if (typeof num !== 'number' || isNaN(num)) return '0';
-    const pretty = Utils.prettyRound(num);
-    return pretty.toLocaleString('ru-RU');
+    return Math.round(num).toLocaleString('ru-RU');
   },
   
   formatPriceDisplay: (num) => {
@@ -2232,6 +2188,7 @@ const App = {
 
     document.getElementById('inp-agency')?.addEventListener('change', App.calc);
     document.getElementById('inp-agency')?.addEventListener('input', App.calc);
+
     // Admin buttons
     const bind = (id, fn) => {
       const el = document.getElementById(id);
@@ -3642,7 +3599,8 @@ updatePercentLabels: () => {
       text += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
     }
 
-    if (Array.isArray(DB.links) && DB.links.length) {
+    const showLinks = !!document.getElementById('inp-show-links')?.checked;
+    if (showLinks && Array.isArray(DB.links) && DB.links.length) {
       text += `Ссылки:\n`;
       DB.links.forEach(l => {
         if (Utils.isValidObject(l)) {
@@ -3811,45 +3769,51 @@ updatePercentLabels: () => {
       // Вычисляем для каждого города
       cityKeys.forEach(cityKey => {
         const group = cityGroups[cityKey];
-        
-        // 1. Сумма услуг
-        let servicesTotal = 0;
+
+        // Для каждой услуги считаем полную цену
         group.items.forEach(item => {
-          const base = Utils.prettyRound(item.price * item.qty * kLine);
-          servicesTotal += Utils.prettyRound(base * discountFactor);
-        });
-        
-        // 2. Логистика для этого города
-        let travel = 0;
-        if (group.region && group.city && DB.travel?.[group.region]) {
-          if (group.city === 'other') {
-            travel = Utils.prettyRound((DB.travel[group.region].fee || 0) * (kLine > 1 ? 1.5 : 1));
-          } else if (DB.travel[group.region].cities && DB.travel[group.region].cities[group.city]) {
-            const cityData = DB.travel[group.region].cities[group.city];
-            const baseTravel = typeof cityData === 'number' ? cityData : (cityData.price || 0);
-            travel = Utils.prettyRound(baseTravel * (kLine > 1 ? 1.5 : 1));
+          // 1. Базовая цена услуги с праздниками и скидкой
+          let servicePrice = Utils.prettyRound(item.price * item.qty * kLine * discountFactor);
+
+          // 2. Логистика
+          let travel = 0;
+          if (item.region && item.city && DB.travel?.[item.region]) {
+            if (item.city === 'other') {
+              travel = Utils.prettyRound((DB.travel[item.region].fee || 0) * (kLine > 1 ? 1.5 : 1));
+            } else if (DB.travel[item.region].cities && DB.travel[item.region].cities[item.city]) {
+              const cityData = DB.travel[item.region].cities[item.city];
+              const baseTravel = typeof cityData === 'number' ? cityData : (cityData.price || 0);
+              travel = Utils.prettyRound(baseTravel * (kLine > 1 ? 1.5 : 1));
+            }
           }
-        }
-        
-        // 3. Итого до налога
-        const preTax = servicesTotal + travel + manPrice + guestPrice;
-        
-        // 4. Безнал
-        const tax = useTax ? Utils.prettyRound(preTax * (cashlessPct / 100)) : 0;
-        
-        // 5. Подытог
-        const subTotal = preTax + tax;
-        
-        // 6. Агентство
-        const total = useAgency ? Utils.prettyRound(subTotal * (1 + agencyPct / 100)) : subTotal;
-        
-        // 7. Бонусы для этой суммы
+
+          // 3. Доплаты (разделить на количество услуг)
+          const itemManPrice = Utils.prettyRound(manPrice / group.items.length);
+          const itemGuestPrice = Utils.prettyRound(guestPrice / group.items.length);
+
+          // 4. Итого до налога
+          const preTax = servicePrice + travel + itemManPrice + itemGuestPrice;
+
+          // 5. Безнал
+          const tax = useTax ? Utils.prettyRound(preTax * (cashlessPct / 100)) : 0;
+
+          // 6. Подытог
+          const subTotal = preTax + tax;
+
+          // 7. Агентство
+          const total = useAgency ? Utils.prettyRound(subTotal * (1 + agencyPct / 100)) : subTotal;
+
+          item.calculatedTotal = total;
+        });
+
+        // Общий итог города
+        const total = group.items.reduce((sum, item) => sum + (item.calculatedTotal || 0), 0);
         const bonusTexts = App.getBonusesForTotal(total)
           .map(b => b?.text)
           .filter(Boolean)
           .map(t => Utils.sanitizeText(t, 160))
           .filter(Boolean);
-        
+
         group.total = total;
         group.bonuses = Array.from(new Set(bonusTexts));
       });
@@ -3904,31 +3868,32 @@ updatePercentLabels: () => {
         // ОДИН ГОРОД (старая логика)
         const group = cityGroups[cityKeys[0]];
         
-        text += `Позиции и стоимость:\n`;
-        
         group.items.forEach(item => {
           const name = Utils.sanitizeText(item.name || '', 120);
           const qty = Utils.sanitizeNumber(item.qty || 1, 1, 99, 1);
           const title = qty > 1 ? `${name} ×${qty}` : name;
-          
-          text += `• ${title} — ${Utils.formatPrice(group.total)} ₽\n`;
-          
+          const itemTotal = item.calculatedTotal || 0;
+          const itemDep = Utils.prettyRound(itemTotal * (depositPct / 100));
+
+          text += `${title}\n`;
+          text += `Стоимость: ${Utils.formatPrice(itemTotal)} ₽\n`;
+          text += `Предоплата ${depositPct}%: ${Utils.formatPrice(itemDep)} ₽\n`;
+
           // Описание услуги (если есть)
           if (item.description && item.description.trim()) {
             const desc = Utils.sanitizeText(item.description, 500);
-            text += `  ${desc}\n`;
+            text += `${desc}\n`;
           }
-          
-          if (showBonuses && group.bonuses && group.bonuses.length) {
-            text += `  Бонусы:\n`;
-            group.bonuses.forEach(b => {
-              text += `    ✅ ${b}\n`;
-            });
-          }
-          
-          const dep = Utils.prettyRound(group.total * (depositPct / 100));
-          text += `  Предоплата ${depositPct}%: ${Utils.formatPrice(dep)} ₽\n\n`;
+          text += `\n`;
         });
+
+        if (showBonuses && group.bonuses && group.bonuses.length) {
+          text += `Бонусы:\n`;
+          group.bonuses.forEach(b => {
+            text += `  ✅ ${b}\n`;
+          });
+          text += `\n`;
+        }
       }
     }
 
@@ -3973,7 +3938,8 @@ updatePercentLabels: () => {
     }
 
     // Links
-    if (Array.isArray(DB.links) && DB.links.length) {
+    const showLinks = !!document.getElementById('inp-show-links')?.checked;
+    if (showLinks && Array.isArray(DB.links) && DB.links.length) {
       text += `Ссылки:\n`;
       DB.links.forEach(l => {
         if (Utils.isValidObject(l)) {
@@ -5755,172 +5721,13 @@ Object.assign(Admin, {
 // ============================================
 
 // ============================================
-// ROUNDING MODULE
+// ROUNDING MODULE (DISABLED)
 // ============================================
 const Rounding = {
-  step: 1000,
-
-  state: {
-    isApplied: false,
-    originalTotal: 0,
-    roundedTotal: 0,
-    diff: 0
-  },
-
-  calculate: (total) => {
-    if (total <= 0) return { down: 0, nearest: 0, up: 0 };
-    const step = Rounding.step;
-    const down = Math.floor(total / step) * step;
-    const up = Math.ceil(total / step) * step;
-    const nearest = (total - down) < (up - total) ? down : up;
-
-    if (total === down) {
-      return { down: down - step, nearest: down, up: down + step };
-    }
-    return { down, nearest, up };
-  },
-
-  apply: (roundedValue) => {
-    const originalTotal = Rounding.state.isApplied ? Rounding.state.originalTotal : State.finalTotal;
-
-    if (roundedValue === originalTotal) {
-      Rounding.reset();
-      return;
-    }
-
-    Rounding.state.isApplied = true;
-    Rounding.state.originalTotal = originalTotal;
-    Rounding.state.roundedTotal = roundedValue;
-    Rounding.state.diff = roundedValue - originalTotal;
-
-    State.finalTotal = roundedValue;
-
-    const totalEl = document.getElementById('total-sum');
-    if (totalEl) {
-      totalEl.classList.add('round-pulse');
-      totalEl.textContent = `${Utils.formatPrice(roundedValue)} ₽`;
-      setTimeout(() => totalEl.classList.remove('round-pulse'), 300);
-    }
-
-    Rounding.updateUI();
-    App.updateBonuses();
-
-    const diffStr = Rounding.state.diff >= 0
-      ? `+${Utils.formatPrice(Rounding.state.diff)}`
-      : Utils.formatPrice(Rounding.state.diff);
-    App.showToast(`Округлено: ${diffStr} ₽`);
-  },
-
-  reset: () => {
-    if (!Rounding.state.isApplied) return;
-
-    State.finalTotal = Rounding.state.originalTotal;
-
-    const totalEl = document.getElementById('total-sum');
-    if (totalEl) {
-      totalEl.textContent = `${Utils.formatPrice(State.finalTotal)} ₽`;
-    }
-
-    Rounding.state = {
-      isApplied: false,
-      originalTotal: 0,
-      roundedTotal: 0,
-      diff: 0
-    };
-    Rounding.updateUI();
-    App.updateBonuses();
-
-    App.showToast('Округление сброшено');
-  },
-
-  clearStateSilently: () => {
-    Rounding.state = {
-      isApplied: false,
-      originalTotal: 0,
-      roundedTotal: 0,
-      diff: 0
-    };
-  },
-
-  updateUI: () => {
-    const controls = document.getElementById('rounding-controls');
-    const applied = document.getElementById('rounding-applied');
-    const resetBtn = document.getElementById('btn-round-reset');
-    const diffEl = document.getElementById('rounding-diff');
-
-    const baseTotal = Rounding.state.isApplied ? Rounding.state.originalTotal : State.finalTotal;
-
-    if (baseTotal > 0) {
-      if (controls) controls.classList.remove('hidden');
-
-      const options = Rounding.calculate(baseTotal);
-
-      const downEl = document.getElementById('round-down-value');
-      const nearestEl = document.getElementById('round-nearest-value');
-      const upEl = document.getElementById('round-up-value');
-
-      if (downEl) downEl.textContent = Utils.formatPrice(options.down);
-      if (nearestEl) nearestEl.textContent = Utils.formatPrice(options.nearest);
-      if (upEl) upEl.textContent = Utils.formatPrice(options.up);
-    } else {
-      if (controls) controls.classList.add('hidden');
-    }
-
-    if (Rounding.state.isApplied) {
-      if (applied) applied.classList.remove('hidden');
-      if (resetBtn) resetBtn.classList.remove('hidden');
-
-      if (diffEl) {
-        const diffStr = Rounding.state.diff >= 0
-          ? `+${Utils.formatPrice(Rounding.state.diff)} ₽`
-          : `${Utils.formatPrice(Rounding.state.diff)} ₽`;
-        diffEl.textContent = diffStr;
-      }
-    } else {
-      if (applied) applied.classList.add('hidden');
-      if (resetBtn) resetBtn.classList.add('hidden');
-    }
-
-    if (window.lucide) lucide.createIcons();
-  },
-
-  setStep: (step) => {
-    Rounding.step = Utils.sanitizeNumber(step, 100, 100000, 1000);
-    Rounding.updateUI();
-  },
-
-  init: () => {
-    const downBtn = document.getElementById('btn-round-down');
-    const nearestBtn = document.getElementById('btn-round-nearest');
-    const upBtn = document.getElementById('btn-round-up');
-    const resetBtn = document.getElementById('btn-round-reset');
-
-    if (downBtn) {
-      downBtn.addEventListener('click', () => {
-        const baseTotal = Rounding.state.isApplied ? Rounding.state.originalTotal : State.finalTotal;
-        const options = Rounding.calculate(baseTotal);
-        Rounding.apply(options.down);
-      });
-    }
-
-    if (nearestBtn) {
-      nearestBtn.addEventListener('click', () => {
-        const baseTotal = Rounding.state.isApplied ? Rounding.state.originalTotal : State.finalTotal;
-        const options = Rounding.calculate(baseTotal);
-        Rounding.apply(options.nearest);
-      });
-    }
-
-    if (upBtn) {
-      upBtn.addEventListener('click', () => {
-        const baseTotal = Rounding.state.isApplied ? Rounding.state.originalTotal : State.finalTotal;
-        const options = Rounding.calculate(baseTotal);
-        Rounding.apply(options.up);
-      });
-    }
-
-    if (resetBtn) resetBtn.addEventListener('click', Rounding.reset);
-  }
+  state: { isApplied: false, originalTotal: 0, roundedTotal: 0, diff: 0 },
+  clearStateSilently: () => {},
+  updateUI: () => {},
+  init: () => {}
 };
 
 // ============================================
