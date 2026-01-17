@@ -3837,8 +3837,8 @@ updatePercentLabels: () => {
             const name = Utils.sanitizeText(item.name || '', 120);
             const qty = Utils.sanitizeNumber(item.qty || 1, 1, 99, 1);
             text += `• ${name}${qty > 1 ? ` ×${qty}` : ''}\n`;
-            
-            // Описание услуги (если есть)
+
+            // Описание услуги (если есть) - СРАЗУ ПОСЛЕ НАЗВАНИЯ
             if (item.description && item.description.trim()) {
               const desc = Utils.sanitizeText(item.description, 500);
               text += `  ${desc}\n`;
@@ -3876,14 +3876,15 @@ updatePercentLabels: () => {
           const itemDep = Utils.prettyRound(itemTotal * (depositPct / 100));
 
           text += `${title}\n`;
-          text += `Стоимость: ${Utils.formatPrice(itemTotal)} ₽\n`;
-          text += `Предоплата ${depositPct}%: ${Utils.formatPrice(itemDep)} ₽\n`;
 
-          // Описание услуги (если есть)
+          // Описание услуги (если есть) - СРАЗУ ПОСЛЕ НАЗВАНИЯ
           if (item.description && item.description.trim()) {
             const desc = Utils.sanitizeText(item.description, 500);
             text += `${desc}\n`;
           }
+
+          text += `Стоимость: ${Utils.formatPrice(itemTotal)} ₽\n`;
+          text += `Предоплата ${depositPct}%: ${Utils.formatPrice(itemDep)} ₽\n`;
           text += `\n`;
         });
 
