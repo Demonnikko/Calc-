@@ -1,6 +1,6 @@
 // Service Worker для Illusionist Calculator
-// Версия: 14.0 (FULL OFFLINE WITH LOCAL DEPENDENCIES)
-const CACHE_NAME = 'illusionist-calc-v15-offline';
+// Версия: 15.0 (FULL OFFLINE WITH LOCAL DEPENDENCIES)
+const CACHE_NAME = 'illusionist-calc-v16-offline';
 
 // Критические ресурсы
 const CORE_ASSETS = [
@@ -117,4 +117,11 @@ self.addEventListener('fetch', event => {
       });
     })
   );
+});
+
+// Слушаем сообщения от клиента
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });

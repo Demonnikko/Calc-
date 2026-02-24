@@ -183,6 +183,82 @@
       overscroll-behavior: none;
     }
 
+    /* PWA Update Banner Styles */
+    #pwa-update-banner {
+      position: fixed;
+      top: env(safe-area-inset-top, 0px);
+      left: 0;
+      right: 0;
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.95), rgba(15, 23, 42, 0.98));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 14px 20px;
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transform: translateY(-100%);
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    #pwa-update-banner.show {
+      transform: translateY(0);
+    }
+
+    .pwa-update-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pwa-update-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(59, 130, 246, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #60a5fa;
+    }
+
+    .pwa-update-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pwa-update-title {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .pwa-update-desc {
+      color: rgba(148, 163, 184, 0.9);
+      font-size: 12px;
+    }
+
+    .pwa-update-btn {
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      transition: all 0.2s;
+    }
+
+    .pwa-update-btn:active {
+      transform: scale(0.95);
+      background: #2563eb;
+    }
+
     .font-cinzel {
       font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, 'Times New Roman', serif;
       font-weight: 600;
@@ -4580,8 +4656,42 @@
 
           // Register the external Service Worker for full offline support
           navigator.serviceWorker.register('sw.js')
-            .then(reg => console.log('✅ Service Worker Registered (Offline Ready)', reg))
+            .then(reg => {
+              console.log('✅ Service Worker Registered (Offline Ready)', reg);
+
+              // ПРОВЕРКА ОБНОВЛЕНИЙ
+              reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                if (!newWorker) return;
+
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // Есть новая версия! Показываем баннер
+                    const banner = document.getElementById('pwa-update-banner');
+                    const btn = document.getElementById('pwa-update-btn');
+
+                    if (banner && btn) {
+                      banner.classList.add('show');
+                      btn.onclick = () => {
+                        btn.innerHTML = '<span style="display:inline-block; animation: spin 1s linear infinite;">↻</span> Обновление...';
+                        banner.style.pointerEvents = 'none';
+                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                      };
+                    }
+                  }
+                });
+              });
+            })
             .catch(err => console.error('❌ Service Worker Error:', err));
+
+          // Перезагрузка страницы при активации нового SW
+          let refreshing = false;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+              refreshing = true;
+              window.location.reload();
+            }
+          });
         } catch (e) {
           console.error(e);
         }
@@ -9671,7 +9781,7 @@
         border-radius: 8px; font-size: 16px; font-family: monospace;
         text-align: center; text-transform: uppercase; margin-bottom: 10px;
       `;
-          keyInput.addEventListener('input', function(e) {
+          keyInput.addEventListener('input', function (e) {
             let value = e.target.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
             let formatted = '';
             for (let i = 0; i < value.length && i < 16; i++) {
@@ -9704,13 +9814,13 @@
                 keyBtn.textContent = '✅ Активировано!';
                 keyBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
                 keyBtn.style.color = '#fff';
-                setTimeout(function() {
+                setTimeout(function () {
                   overlay.style.transition = 'opacity 0.6s';
                   overlay.style.opacity = '0';
-                  setTimeout(function() {
+                  setTimeout(function () {
                     document.body.removeChild(overlay);
                     if (typeof window.showMagicAfterActivation === 'function') window.showMagicAfterActivation();
-                    setTimeout(function() {
+                    setTimeout(function () {
                       if (typeof window.showApp === 'function') window.showApp();
                     }, 3000);
                   }, 600);
@@ -9723,7 +9833,7 @@
                 keyInput.style.borderColor = '#ef4444';
                 setTimeout(() => { keyInput.style.borderColor = 'rgba(245,158,11,0.3)'; }, 2000);
               }
-            } catch(err) {
+            } catch (err) {
               keyBtn.textContent = 'Активировать ключ';
               keyBtn.disabled = false;
               keyInput.disabled = false;
