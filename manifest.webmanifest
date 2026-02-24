@@ -1,6 +1,6 @@
 {
-  "name": "Illusionist OS",
-  "short_name": "IllusionOS",
+  "name": "Калькулятор",
+  "short_name": "Калькулятор",
   "description": "Для тех, кто творит магию",
   "start_url": "./",
   "display": "standalone",
