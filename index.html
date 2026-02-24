@@ -2509,6 +2509,24 @@
           </div>
         </div>
 
+        <!-- UPDATE APP -->
+        <div class="glass rounded-2xl p-5 mb-6 border-2 border-blue-500/20">
+          <div class="flex items-center gap-3 mb-4">
+            <i data-lucide="refresh-cw" class="w-6 h-6 text-blue-400"></i>
+            <span class="text-lg font-extrabold text-white">Обновление приложения</span>
+          </div>
+
+          <div class="text-xs text-slate-500 mb-4 leading-relaxed">
+            Нажмите, чтобы загрузить последнюю версию с новыми функциями. Ваши данные и ключ <b>не удалятся</b>.
+          </div>
+
+          <button onclick="window.forceAppUpdate()"
+            class="w-full btn-secondary bg-blue-500/10 border-blue-500/25 text-blue-300 hover:bg-blue-500/20">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            <span>Очистить кэш и обновить</span>
+          </button>
+        </div>
+
         <!-- ACTIVATION STATUS -->
         <div class="glass rounded-2xl p-5 mb-6 border-2 border-amber-500/20">
           <div class="flex items-center gap-3 mb-4">
@@ -7007,6 +7025,35 @@
       },
 
       // ... (продолжение Admin методов в следующей части)
+    };
+
+    // ============================================
+    // UPDATE LOGIC
+    // ============================================
+
+    // Сброс кэша PWA и принудительное обновление
+    window.forceAppUpdate = function () {
+      App.showToast('Обновление... Пожалуйста, подождите');
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+          for (let registration of registrations) {
+            registration.unregister();
+          }
+        });
+
+        caches.keys().then(function (names) {
+          for (let name of names) {
+            caches.delete(name);
+          }
+        }).then(function () {
+          setTimeout(() => {
+            window.location.reload(true);
+          }, 1500);
+        });
+      } else {
+        window.location.reload(true);
+      }
     };
 
     // ============================================
