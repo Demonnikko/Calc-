@@ -180,7 +180,6 @@
       padding-bottom: var(--safe-bottom);
       padding-left: var(--safe-left);
       padding-right: var(--safe-right);
-      overscroll-behavior: none;
     }
 
     /* PWA Update Banner Styles */
@@ -7032,6 +7031,7 @@
     // ============================================
 
     // Сброс кэша PWA и принудительное обновление
+    // Сброс кэша PWA и принудительное обновление
     window.forceAppUpdate = function () {
       App.showToast('Обновление... Пожалуйста, подождите');
 
@@ -7048,11 +7048,11 @@
           }
         }).then(function () {
           setTimeout(() => {
-            window.location.reload(true);
+            window.location.href = window.location.pathname + '?update=' + new Date().getTime();
           }, 1500);
         });
       } else {
-        window.location.reload(true);
+        window.location.href = window.location.pathname + '?update=' + new Date().getTime();
       }
     };
 
